@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GOAT MCH — Viewer</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--blue:#1565c0;--blue-lt:#e3f2fd;--blue-dk:#0d47a1;--bg:#fff;--bg2:#f5f7f6;--bg3:#eef1ef;--tx:#1c2b26;--tx2:#4a6358;--tx3:#8aaa9a;--bd:#cdd8d3;--bd2:#b0c4bc;--r:7px;--rl:11px;--g:#1a7a5c;--gl:#e8f5f0;--gb:#a8d5c5;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Tahoma,sans-serif;background:#f0f4f2;color:var(--tx);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+#gate{width:100%;max-width:360px}
+.gate-card{background:var(--bg);border-radius:var(--rl);padding:32px 28px;border:1px solid var(--bd);box-shadow:0 4px 20px rgba(0,0,0,.08);text-align:center}
+.gate-icon{font-size:46px;color:var(--blue);margin-bottom:12px}
+.gate-title{font-size:20px;font-weight:700;margin-bottom:4px}
+.gate-sub{font-size:12px;color:var(--tx2);margin-bottom:24px;line-height:1.5}
+.gate-input{width:100%;padding:10px 14px;border:1px solid var(--bd);border-radius:var(--r);font-size:14px;margin-bottom:12px;background:var(--bg);color:var(--tx)}
+.gate-input:focus{outline:2px solid var(--blue);border-color:var(--blue)}
+.gate-btn{width:100%;padding:11px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-size:14px;font-weight:700;cursor:pointer}
+.gate-btn:hover{background:var(--blue-dk)}
+.gate-err{color:#c62828;font-size:12px;margin-top:8px;display:none}
+#viewer{display:none;width:100%;max-width:860px}
+.top{background:var(--blue);color:#fff;padding:11px 18px;border-radius:var(--rl);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.top-l{display:flex;align-items:center;gap:10px}
+.top-icon{font-size:22px}
+.top-title{font-size:15px;font-weight:700}
+.top-sub{font-size:10px;opacity:.8;margin-top:1px}
+.logout-btn{padding:5px 12px;background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:20px;font-size:12px;font-weight:600;cursor:pointer}
+.notice{background:var(--blue-lt);border:1px solid #90caf9;border-radius:var(--r);padding:9px 14px;font-size:12px;color:var(--blue);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card{background:var(--bg);border:1px solid var(--bd);border-radius:var(--rl);margin-bottom:12px;overflow:hidden}
+.ch{background:var(--blue);color:#fff;padding:9px 14px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:7px}
+.cb{padding:14px}
+.sgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.sbox{background:var(--bg);border:1px solid var(--bd);border-radius:var(--rl);padding:12px;text-align:center}
+.snum{font-size:24px;font-weight:700;line-height:1}
+.slbl{font-size:10px;color:var(--tx2);margin-top:3px;font-weight:500}
+.muac-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.muac-box{text-align:center;padding:12px;border-radius:var(--r)}
+.vtabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px}
+.vtb{padding:7px 14px;border-radius:var(--r);font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--bd);background:var(--bg2);color:var(--tx2)}
+.vtb:hover{background:var(--bg3)}
+.vtb.act{background:var(--blue);color:#fff;border-color:var(--blue)}
+.frow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
+.frow input{flex:1;min-width:160px;padding:7px 10px;border:1px solid var(--bd);border-radius:var(--r);font-size:12px;background:var(--bg);color:var(--tx)}
+.fbtn{padding:7px 13px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px}
+.fbtn:hover{background:var(--blue-dk)}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:11px;min-width:500px}
+th{background:var(--blue);color:#fff;padding:7px 8px;text-align:left;font-weight:700;font-size:10px;text-transform:uppercase;white-space:nowrap}
+td{padding:6px 8px;border-bottom:1px solid var(--bd);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}
+tr:hover td{background:var(--blue-lt)}
+.pill{display:inline-block;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700}
+.pan{background:#d4f0e6;color:#0a3d26}.ppn{background:#fce4ec;color:#880e4f}
+.pfp{background:#fff3cd;color:#5d4037}.prpt{background:var(--blue-lt);color:var(--blue)}
+.pok{background:#d4f0e6;color:#0a3d26}.ppend{background:#fff3cd;color:#5d4037}
+.ptitem{background:var(--bg2);border-radius:var(--r);padding:10px 12px;margin-bottom:7px;border:1px solid var(--bd)}
+.ptname{font-weight:700;font-size:13px;margin-bottom:3px}
+.ptmeta{font-size:11px;color:var(--tx2);display:flex;flex-wrap:wrap;gap:10px}
+.ep-note{font-size:11px;color:var(--tx2);background:var(--bg2);border-radius:var(--r);padding:8px 12px;margin-bottom:10px;line-height:1.5}
+.loading{text-align:center;padding:30px;color:var(--tx2);font-size:13px}
+@media(max-width:520px){.sgrid{grid-template-columns:repeat(2,1fr)}.muac-grid{grid-template-columns:1fr}.vtb{font-size:11px;padding:6px 10px}}
+
+/* MONTHLY STATS */
+.month-sel{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.month-sel select{padding:6px 10px;border:1px solid var(--bd2,#b0c4bc);border-radius:7px;font-size:12px;background:#fff;color:#1c2b26;cursor:pointer}
+.month-sel label{font-size:11px;font-weight:600;color:#4a6358}
+.mw-table{width:100%;border-collapse:collapse;font-size:12px}
+.mw-table th{padding:8px 10px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;color:#fff}
+.mw-table td{padding:8px 10px;border-bottom:1px solid #cdd8d3;vertical-align:middle}
+.mw-table tr:hover td{background:#e8f5f0}
+.count-pill{display:inline-flex;align-items:center;justify-content:center;min-width:32px;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:700}
+.cp-an{background:#e3f2fd;color:#1565c0}
+.cp-pn{background:#fce4ec;color:#880e4f}
+.cp-fp{background:#fff3cd;color:#e65100}
+.cp-rpt{background:#f3e5f5;color:#6a1b9a}
+.cp-tot{background:#1a7a5c;color:#fff}
+.no-data-mw{text-align:center;color:#4a6358;padding:20px;font-size:13px}
+</style>
+</head>
+<body>
+<div id="gate">
+  <div class="gate-card">
+    <div class="gate-icon"><i class="ti ti-eye"></i></div>
+    <div class="gate-title">GOAT MCH — Data Viewer</div>
+    <div class="gate-sub">View-only access · No export · No delete<br>Enter your password to continue.</div>
+    <input type="password" id="pw" class="gate-input" placeholder="Viewer password...">
+    <button class="gate-btn" onclick="tryLogin()"><i class="ti ti-login"></i> Enter</button>
+    <div class="gate-err" id="err">Incorrect password</div>
+  </div>
+</div>
+
+<div id="viewer">
+  <div class="top">
+    <div class="top-l">
+      <div class="top-icon"><i class="ti ti-eye"></i></div>
+      <div><div class="top-title">GOAT MCH — Data Viewer</div><div class="top-sub">View only · No export · No delete · Khan Younis</div></div>
+    </div>
+    <button class="logout-btn" onclick="logout()"><i class="ti ti-logout"></i> Logout</button>
+  </div>
+
+  <div class="notice"><i class="ti ti-info-circle"></i> Read-only. You can browse and search all records but cannot export or delete anything.</div>
+
+  <!-- EP CONFIG -->
+  <div class="card">
+    <div class="ch"><i class="ti ti-cloud"></i>Load data from Google Sheets</div>
+    <div class="cb">
+      <div class="ep-note">Enter the Apps Script URL to load live data from Google Sheets.</div>
+      <div class="frow">
+        <input type="url" id="ep-url" placeholder="https://script.google.com/macros/s/.../exec" oninput="saveEP()">
+        <button class="fbtn" onclick="loadAll()"><i class="ti ti-cloud-download"></i> Load data</button>
+      </div>
+      <div id="ep-res" style="font-size:12px;color:var(--tx2)"></div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="sgrid">
+    <div class="sbox"><div class="snum" style="color:var(--g)" id="s-pt">—</div><div class="slbl">Patients</div></div>
+    <div class="sbox"><div class="snum" style="color:var(--blue)" id="s-an">—</div><div class="slbl">AN visits</div></div>
+    <div class="sbox"><div class="snum" style="color:#880e4f" id="s-pn">—</div><div class="slbl">PN visits</div></div>
+    <div class="sbox"><div class="snum" style="color:#e65100" id="s-fp">—</div><div class="slbl">FP visits</div></div>
+  </div>
+
+  <!-- MUAC -->
+  <div class="muac-grid">
+    <div class="muac-box" style="background:#d4f0e6;border:1px solid #27ae60"><div style="font-size:26px;font-weight:700;color:#0a3d26" id="m-ok">—</div><div style="font-size:11px;color:#1a7a5c;font-weight:600;margin-top:4px">Normal ≥240mm</div></div>
+    <div class="muac-box" style="background:#fff3cd;border:1px solid #ffc107"><div style="font-size:26px;font-weight:700;color:#5d4037" id="m-mam">—</div><div style="font-size:11px;color:#e65100;font-weight:600;margin-top:4px">MAM 220–239mm</div></div>
+    <div class="muac-box" style="background:#ffebee;border:1px solid #ef9a9a"><div style="font-size:26px;font-weight:700;color:#c62828" id="m-sam">—</div><div style="font-size:11px;color:#c62828;font-weight:600;margin-top:4px">SAM &lt;220mm</div></div>
+  </div>
+
+
+  <!-- MONTHLY STATS PER MIDWIFE -->
+  <div class="card">
+    <div class="ch" style="background:#1565c0"><i class="ti ti-chart-bar"></i>Monthly statistics per midwife</div>
+    <div class="cb">
+      <div class="month-sel">
+        <label>Month:</label>
+        <select id="vw_stat-month" onchange="renderMwStatsR(REMOTE,'vw_')">
+          <option value="all">All time</option>
+          <option>January</option><option>February</option><option>March</option>
+          <option>April</option><option>May</option><option>June</option>
+          <option>July</option><option>August</option><option>September</option>
+          <option>October</option><option>November</option><option>December</option>
+        </select>
+        <label>Year:</label>
+        <select id="vw_stat-year" onchange="renderMwStatsR(REMOTE,'vw_')"></select>
+      </div>
+      <div id="vw_mw-stats-table"><div class="no-data-mw">Load data first</div></div>
+    </div>
+  </div>
+  <!-- BROWSER -->
+  <div class="card">
+    <div class="ch"><i class="ti ti-table"></i>Browse records — live from Google Sheets</div>
+    <div class="cb">
+      <div class="vtabs">
+        <button class="vtb act" onclick="setSheet('an')"><i class="ti ti-baby-carriage"></i> AN</button>
+        <button class="vtb" onclick="setSheet('pn')"><i class="ti ti-user-heart"></i> PN</button>
+        <button class="vtb" onclick="setSheet('fp')"><i class="ti ti-shield-heart"></i> FP</button>
+        <button class="vtb" onclick="setSheet('rpt')"><i class="ti ti-file-report"></i> Reporting</button>
+        <button class="vtb" onclick="setSheet('patients')"><i class="ti ti-users"></i> Patients</button>
+      </div>
+      <div class="frow">
+        <input type="text" id="srch" placeholder="Search by ID, name, date, HC..." oninput="renderTable()">
+        <button class="fbtn" onclick="renderTable()"><i class="ti ti-refresh"></i> Refresh</button>
+      </div>
+      <div style="font-size:11px;color:var(--tx2);margin-bottom:8px" id="rec-count">Load data first</div>
+      <div class="tw"><div id="tbl-wrap"><div class="loading">Enter the Apps Script URL above and click Load data</div></div></div>
+    </div>
+  </div>
+
+  <!-- PATIENT HISTORY -->
+  <div class="card">
+    <div class="ch"><i class="ti ti-user-search"></i>Patient full history</div>
+    <div class="cb">
+      <div class="frow">
+        <input type="text" id="pt-q" placeholder="Enter ID Number of Lady..." style="flex:1;padding:9px 11px;font-size:13px;font-weight:600">
+        <button class="fbtn" onclick="lookupPt()"><i class="ti ti-search"></i> Lookup</button>
+      </div>
+      <div id="pt-detail"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+// ══════════════════════════
+var VIEWER_PASSWORD = 'GoatMCH@View2026';
+// ══════════════════════════
+
+function tryLogin(){
+  var pw=document.getElementById('pw').value;
+  if(pw===VIEWER_PASSWORD){
+    sessionStorage.setItem('goat_viewer','1');
+    document.getElementById('gate').style.display='none';
+    document.getElementById('viewer').style.display='block';
+    document.body.style.alignItems='flex-start';
+    init();
+  } else {
+    document.getElementById('err').style.display='block';
+    document.getElementById('pw').value='';
+  }
+}
+function logout(){sessionStorage.removeItem('goat_viewer');location.reload();}
+document.getElementById('pw').addEventListener('keydown',function(e){if(e.key==='Enter')tryLogin();});
+if(sessionStorage.getItem('goat_viewer')==='1'){
+  document.getElementById('gate').style.display='none';
+  document.getElementById('viewer').style.display='block';
+  document.body.style.alignItems='flex-start';
+}
+
+var EP=localStorage.getItem('mch_ep')||'';
+function saveEP(){EP=document.getElementById('ep-url').value.trim();localStorage.setItem('mch_ep',EP);}
+
+var REMOTE={patients:[],an:[],pn:[],fp:[],rpt:[]};
+var loaded=false;
+
+async function loadAll(){
+  var ep=document.getElementById('ep-url').value.trim();
+  if(!ep){document.getElementById('ep-res').textContent='Enter the Apps Script URL first';return;}
+  var res=document.getElementById('ep-res');
+  res.textContent='Loading...';res.style.color='';
+  try{
+    var sheets=['Patients','AN','PN','FP','REPORTING'];
+    for(var i=0;i<sheets.length;i++){
+      var sn=sheets[i];
+      res.textContent='Loading '+sn+'...';
+      var r=await fetch(ep+'?action=getData&sheet='+sn,{method:'GET',mode:'cors'});
+      var d=await r.json();
+      if(d.status==='ok'){
+        var key={Patients:'patients',AN:'an',PN:'pn',FP:'fp',REPORTING:'rpt'}[sn];
+        REMOTE[key]=d.data||[];
+      }
+    }
+    loaded=true;
+    res.textContent='✓ Data loaded';res.style.color='#27ae60';
+    updateStats();renderTable();initYearSelR('vw_');renderMwStatsR(REMOTE,'vw_');
+  }catch(e){res.textContent='✗ Failed: '+e.message;res.style.color='#c62828';}
+}
+
+function updateStats(){
+  document.getElementById('s-pt').textContent=REMOTE.patients.length;
+  document.getElementById('s-an').textContent=REMOTE.an.length;
+  document.getElementById('s-pn').textContent=REMOTE.pn.length;
+  document.getElementById('s-fp').textContent=REMOTE.fp.length;
+  var all=[].concat(REMOTE.an,REMOTE.pn,REMOTE.fp,REMOTE.rpt);
+  var vm=function(r){return parseInt(r['MUAC']||0);};
+  document.getElementById('m-ok').textContent=all.filter(function(r){return vm(r)>=240;}).length;
+  document.getElementById('m-mam').textContent=all.filter(function(r){var x=vm(r);return x>=220&&x<240;}).length;
+  document.getElementById('m-sam').textContent=all.filter(function(r){var x=vm(r);return x>0&&x<220;}).length;
+}
+
+var curSheet='an';
+var COL_MAP={
+  an:['Date Of Registration','Pregnant Name','National ID','Served HC','Original HC','New Case/ Follow Up','RISK SCORE','MUAC'],
+  pn:['Date of Registration','Name','ID client','Served HF','NEW Case/','Twin pregnancy Y/N','MUAC'],
+  fp:['Date Of Registration','Client name','National ID','Served HC','New Case/Follow Up','Family planning method','MUAC'],
+  rpt:['Date Of Registration','Client Name','National ID','Served HC','Services','Gender','Age','MUAC'],
+  patients:['National ID','Name','Phone','DOB','Refugee Status','RRIS family number']
+};
+function setSheet(s){curSheet=s;document.querySelectorAll('.vtb').forEach(function(b){b.classList.remove('act');});var idx={an:0,pn:1,fp:2,rpt:3,patients:4}[s];if(idx!==undefined)document.querySelectorAll('.vtb')[idx].classList.add('act');document.getElementById('srch').value='';renderTable();}
+function renderTable(){
+  if(!loaded){document.getElementById('tbl-wrap').innerHTML='<div class="loading">Enter the Apps Script URL above and click Load data</div>';return;}
+  var q=(document.getElementById('srch').value||'').toLowerCase().trim();
+  var data=REMOTE[curSheet]||[];
+  if(q)data=data.filter(function(r){return JSON.stringify(r).toLowerCase().includes(q);});
+  document.getElementById('rec-count').textContent=data.length+' record'+(data.length!==1?'s':'')+(q?' matching "'+q+'"':'')+' — showing first 100';
+  data=data.slice(0,100);
+  if(!data.length){document.getElementById('tbl-wrap').innerHTML='<div style="text-align:center;color:var(--tx2);padding:20px;font-size:13px">No records found</div>';return;}
+  var cols=COL_MAP[curSheet]||Object.keys(data[0]||{}).slice(0,7);
+  var heads=cols.map(function(c){return'<th>'+c+'</th>';}).join('');
+  var rows=data.map(function(r){return'<tr>'+cols.map(function(c){var v=r[c];return'<td title="'+(v||'')+'">'+(v===undefined||v===null||v===''?'—':String(v).slice(0,30))+'</td>';}).join('')+'</tr>';}).join('');
+  document.getElementById('tbl-wrap').innerHTML='<table><thead><tr>'+heads+'</tr></thead><tbody>'+rows+'</tbody></table>';
+}
+
+function lookupPt(){
+  var id=document.getElementById('pt-q').value.trim();
+  var div=document.getElementById('pt-detail');
+  if(!id){div.innerHTML='<div style="color:var(--tx2);font-size:13px">Enter an ID number</div>';return;}
+  if(!loaded){div.innerHTML='<div style="color:#c62828;font-size:13px">Load data first</div>';return;}
+  var pt=REMOTE.patients.find(function(r){return(r['National ID']||r['Lady_ID (National ID)']||r['_id']||'').toString()===id;});
+  var anV=REMOTE.an.filter(function(r){return(r['National ID']||r['lady_id']||'').toString()===id;});
+  var pnV=REMOTE.pn.filter(function(r){return(r['ID client']||r['lady_id']||'').toString()===id;});
+  var fpV=REMOTE.fp.filter(function(r){return(r['National ID']||r['lady_id']||'').toString()===id;});
+  var rptV=REMOTE.rpt.filter(function(r){return(r['National ID']||r['lady_id']||'').toString()===id;});
+  if(!pt&&!anV.length&&!pnV.length&&!fpV.length){div.innerHTML='<div style="color:#c62828;font-size:13px;padding:10px;background:#ffebee;border-radius:var(--r)">No records found for ID: '+id+'</div>';return;}
+  function tbl(arr,cols){if(!arr.length)return'<div style="color:var(--tx2);font-size:12px;padding:8px">No records</div>';return'<div class="tw"><table><thead><tr>'+cols.map(function(c){return'<th>'+c+'</th>';}).join('')+'</tr></thead><tbody>'+arr.slice(0,15).map(function(r){return'<tr>'+cols.map(function(c){var v=r[c];return'<td title="'+(v||'')+'">'+(v===undefined||v===null||v===''?'—':String(v).slice(0,28))+'</td>';}).join('')+'</tr>';}).join('')+'</tbody></table></div>';}
+  var html='';
+  if(pt){html+='<div class="ptitem" style="margin-bottom:12px"><div class="ptname">'+(pt['Name']||pt['name']||'—')+' <span class="pill prpt" style="font-size:10px">'+id+'</span></div><div class="ptmeta"><span>📞 '+(pt['Phone']||pt['phone']||'—')+'</span><span>DOB: '+(pt['DOB']||pt['dob']||'—')+'</span><span class="pill '+(( pt['Refugee Status']||pt['refugee'])==='Refugee'?'pan':'ppend')+'">'+(pt['Refugee Status']||pt['refugee']||'—')+'</span></div></div>';}
+  html+='<div style="font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px"><i class="ti ti-baby-carriage"></i> ANC ('+anV.length+')</div>';
+  html+=tbl(anV,['Date Of Registration','New Case/ Follow Up','Served HC','RISK SCORE','MUAC','BP','EDD']);
+  html+='<div style="font-size:11px;font-weight:700;color:#880e4f;text-transform:uppercase;letter-spacing:.06em;margin:12px 0 6px"><i class="ti ti-user-heart"></i> PN ('+pnV.length+')</div>';
+  html+=tbl(pnV,['Date of Registration','NEW Case/','Served HF','Date Od Delivery','Type Delivery','MUAC']);
+  html+='<div style="font-size:11px;font-weight:700;color:#e65100;text-transform:uppercase;letter-spacing:.06em;margin:12px 0 6px"><i class="ti ti-shield-heart"></i> FP ('+fpV.length+')</div>';
+  html+=tbl(fpV,['Date Of Registration','New Case/Follow Up','Served HC','Family planning method','MUAC']);
+  html+='<div style="font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.06em;margin:12px 0 6px"><i class="ti ti-file-report"></i> Reporting ('+rptV.length+')</div>';
+  html+=tbl(rptV,['Date Of Registration','Served HC','Services','MUAC','Case Description / Action Taken']);
+  div.innerHTML=html;
+}
+document.getElementById('pt-q').addEventListener('keydown',function(e){if(e.key==='Enter')lookupPt();});
+
+function init(){var eu=document.getElementById('ep-url');if(eu&&EP){eu.value=EP;loadAll();}initYearSelR('vw_');}
+if(sessionStorage.getItem('goat_viewer')==='1')init();
+
+// ── MONTHLY STATS PER MIDWIFE ─────────────────────────────────────────────
+function initYearSelR(prefix){
+  var sel=document.getElementById(prefix+'stat-year');if(!sel)return;
+  var yr=new Date().getFullYear();sel.innerHTML='';
+  for(var y=yr;y>=yr-3;y--) sel.appendChild(new Option(y,y));
+}
+
+function getMwNameR(r){
+  return(r['MW Name']||r['MW. Name']||r['MW name']||r['Name Of midwife']||r['_submitted_by']||'').trim();
+}
+
+function getRecordMonthR(r){
+  var d=r['Date Of Registration']||r['Date of Registration']||'';
+  if(!d)return{month:'',year:''};
+  var dt=new Date(d);
+  if(isNaN(dt.getTime()))return{month:'',year:''};
+  var months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  return{month:months[dt.getMonth()],year:String(dt.getFullYear())};
+}
+
+function renderMwStatsR(data, prefix){
+  var filterMonth=document.getElementById(prefix+'stat-month') ? document.getElementById(prefix+'stat-month').value : 'all';
+  var filterYear=document.getElementById(prefix+'stat-year') ? document.getElementById(prefix+'stat-year').value : '';
+  var wrap=document.getElementById(prefix+'mw-stats-table');
+  if(!wrap)return;
+
+  var an=data.an||[]; var pn=data.pn||[]; var fp=data.fp||[]; var rpt=data.rpt||[];
+  var all=[
+    ...an.map(function(r){return{sheet:'AN',mw:getMwNameR(r),date:getRecordMonthR(r)};}),
+    ...pn.map(function(r){return{sheet:'PN',mw:getMwNameR(r),date:getRecordMonthR(r)};}),
+    ...fp.map(function(r){return{sheet:'FP',mw:getMwNameR(r),date:getRecordMonthR(r)};}),
+    ...rpt.map(function(r){return{sheet:'RPT',mw:getMwNameR(r),date:getRecordMonthR(r)};})
+  ];
+
+  var filtered=all.filter(function(r){
+    if(filterMonth!=='all'&&r.date.month!==filterMonth)return false;
+    if(filterYear&&r.date.year&&r.date.year!==filterYear)return false;
+    return true;
+  });
+
+  if(!filtered.length){wrap.innerHTML='<div class="no-data-mw">No visits for the selected period</div>';return;}
+
+  var byMw={};
+  filtered.forEach(function(r){
+    var name=r.mw||'(name not recorded)';
+    if(!byMw[name])byMw[name]={AN:0,PN:0,FP:0,RPT:0};
+    byMw[name][r.sheet]=(byMw[name][r.sheet]||0)+1;
+  });
+
+  var rows=Object.entries(byMw).sort(function(a,b){
+    return(b[1].AN+b[1].PN+b[1].FP+b[1].RPT)-(a[1].AN+a[1].PN+a[1].FP+a[1].RPT);
+  });
+
+  var tAN=rows.reduce(function(s,r){return s+r[1].AN;},0);
+  var tPN=rows.reduce(function(s,r){return s+r[1].PN;},0);
+  var tFP=rows.reduce(function(s,r){return s+r[1].FP;},0);
+  var tRPT=rows.reduce(function(s,r){return s+r[1].RPT;},0);
+  var tAll=tAN+tPN+tFP+tRPT;
+
+  var bgCol=wrap.closest('.card') ? (wrap.closest('#viewer') ? '#1565c0' : '#1a7a5c') : '#1a7a5c';
+
+  var thead='<thead><tr style="background:'+bgCol+'">'
+    +'<th style="width:160px">Midwife / Staff</th>'
+    +'<th style="text-align:center">AN</th>'
+    +'<th style="text-align:center">PN</th>'
+    +'<th style="text-align:center">FP</th>'
+    +'<th style="text-align:center">Reporting</th>'
+    +'<th style="text-align:center">Total</th>'
+    +'</tr></thead>';
+
+  var tbody='<tbody>'
+    +rows.map(function(e){
+      var n=e[0],c=e[1],tot=c.AN+c.PN+c.FP+c.RPT;
+      return'<tr><td style="font-weight:600;font-size:12px">'+n+'</td>'
+        +'<td style="text-align:center"><span class="count-pill cp-an">'+c.AN+'</span></td>'
+        +'<td style="text-align:center"><span class="count-pill cp-pn">'+c.PN+'</span></td>'
+        +'<td style="text-align:center"><span class="count-pill cp-fp">'+c.FP+'</span></td>'
+        +'<td style="text-align:center"><span class="count-pill cp-rpt">'+c.RPT+'</span></td>'
+        +'<td style="text-align:center"><span class="count-pill cp-tot">'+tot+'</span></td>'
+        +'</tr>';
+    }).join('')
+    +'<tr style="background:#f5f7f6">'
+    +'<td style="font-weight:700;font-size:12px">TOTAL</td>'
+    +'<td style="text-align:center"><span class="count-pill cp-an">'+tAN+'</span></td>'
+    +'<td style="text-align:center"><span class="count-pill cp-pn">'+tPN+'</span></td>'
+    +'<td style="text-align:center"><span class="count-pill cp-fp">'+tFP+'</span></td>'
+    +'<td style="text-align:center"><span class="count-pill cp-rpt">'+tRPT+'</span></td>'
+    +'<td style="text-align:center"><span class="count-pill cp-tot">'+tAll+'</span></td>'
+    +'</tr></tbody>';
+
+  wrap.innerHTML='<div style="overflow-x:auto"><table class="mw-table">'+thead+tbody+'</table></div>';
+}
+
+</script>
+</body>
+</html>
