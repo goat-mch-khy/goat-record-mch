@@ -1058,7 +1058,7 @@ if('serviceWorker' in navigator){
           <i class="ti ti-cloud-download"></i> Pull my records from Google Sheets
         </div>
         <div style="font-size:12px;color:var(--tx2);margin-bottom:10px;line-height:1.6">
-          Use this if you work on two phones. Pulls all records matching your name from Google Sheets into this device so both phones stay in sync.
+          Pulls all records from your facility from Google Sheets into this device — so you can see and look up any patient seen at your HC, regardless of which midwife entered the record.
         </div>
         <div style="background:var(--gl);border:1px solid var(--gb);border-radius:var(--r);padding:10px 12px;margin-bottom:10px;font-size:12px">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
@@ -1073,8 +1073,8 @@ if('serviceWorker' in navigator){
           <div style="font-size:11px;color:var(--tx2);margin-top:4px"><i class="ti ti-refresh" style="color:var(--g)"></i> Facility records from <span id="pull-facility-name2">your facility</span> sync automatically every 5 minutes when online.</div>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;align-items:center">
-          <button class="btn bsave" onclick="pullFromSheets()" id="pull-btn" style="background:#1565c0;border-color:#1565c0">
-            <i class="ti ti-cloud-download"></i>Pull my records
+          <button class="btn bsave" onclick="pullFromSheets()" id="pull-btn">
+            <i class="ti ti-building-hospital"></i>Pull facility records
           </button>
           <div style="display:flex;flex-direction:column;gap:3px">
             <label style="font-size:10px;color:var(--tx2);font-weight:700">Pull records from</label>
@@ -2156,10 +2156,43 @@ function renderPts(){
   var pAN=pDBV.an||[];var pPN=pDBV.pn||[];var pFP=pDBV.fp||[];
   el.innerHTML=pts.map(function(e){
     var id=e[0],p=e[1];
-    var v=pAN.filter(function(x){return x.lady_id===id;}).length
-        +pPN.filter(function(x){return x.lady_id===id;}).length
-        +pFP.filter(function(x){return x.lady_id===id;}).length;
-    return'<div class="ptitem"><div class="ptname">'+(p.name||'—')+' <span class="pill prpt" style="font-size:10px">'+id+'</span></div><div class="ptmeta"><span>📞 '+(p.phone||'—')+'</span><span>DOB: '+(p.dob||'—')+'</span><span>'+(p.rris||'—')+'</span><span>'+v+' visit'+(v!==1?'s':'')+'</span><span class="pill '+(p.refugee==='Refugee'?'pan':'ppend')+'">'+(p.refugee||'—')+'</span></div></div>';
+    var anRecs=pAN.filter(function(x){return x.lady_id===id;}).sort(function(a,b){return b.ts-a.ts;});
+    var pnRecs=pPN.filter(function(x){return x.lady_id===id;}).sort(function(a,b){return b.ts-a.ts;});
+    var fpRecs=pFP.filter(function(x){return x.lady_id===id;}).sort(function(a,b){return b.ts-a.ts;});
+    var v=anRecs.length+pnRecs.length+fpRecs.length;
+
+    // Last visit across all sheets
+    var allVisits=[].concat(
+      anRecs.map(function(r){return{date:r['Date Of Registration']||'',s:'AN',ts:r.ts||0};}),
+      pnRecs.map(function(r){return{date:r['Date Of Registration']||'',s:'PN',ts:r.ts||0};}),
+      fpRecs.map(function(r){return{date:r['Date Of Registration']||'',s:'FP',ts:r.ts||0};}));
+    allVisits.sort(function(a,b){return b.ts-a.ts;});
+    var lastV=allVisits[0];
+
+    // Next appointment
+    var nextApp='';
+    if(anRecs[0]&&anRecs[0]['Next App']) nextApp=anRecs[0]['Next App'];
+    else if(pnRecs[0]&&pnRecs[0]['Next app.']) nextApp=pnRecs[0]['Next app.'];
+    else if(fpRecs[0]&&fpRecs[0]['Next app']) nextApp=fpRecs[0]['Next app'];
+    var today=new Date().toISOString().slice(0,10);
+    var isOverdue=nextApp&&nextApp<today;
+
+    // Risk from last AN
+    var risk=anRecs[0]?anRecs[0]['RISK SCORE']||'':'';
+    var riskCol=risk.indexOf('HRP')>=0?'#c62828':risk.indexOf('AP')>=0?'#f39c12':'';
+
+    return'<div class="ptitem" onclick="ptQuickLookup(&quot;'+id+'&quot;)" style="cursor:pointer">'
+      +'<div class="ptname">'+(p.name||'—')
+      +' <span class="pill prpt" style="font-size:10px">'+id+'</span>'
+      +(risk?'<span class="pill" style="background:'+riskCol+'20;color:'+riskCol+';font-size:9px;margin-left:4px">'+risk.split(' ')[0]+'</span>':'')
+      +'</div>'
+      +'<div class="ptmeta">'
+      +'<span>📞 '+(p.phone||'—')+'</span>'
+      +'<span>DOB: '+(p.dob||'—')+'</span>'
+      +(lastV?'<span>Last: '+lastV.date+' <span class="pill" style="font-size:9px;background:var(--bg3)">'+lastV.s+'</span></span>':'')
+      +(nextApp?'<span style="color:'+(isOverdue?'#c62828':'var(--g)')+'">'+(isOverdue?'⚠ Overdue: ':'Next: ')+nextApp+'</span>':'')
+      +'<span>'+v+' visit'+(v!==1?'s':'')+'</span>'
+      +'</div></div>';
   }).join('');
 }
 function renderQ(){var el=g('qlist');if(!el)return;var pend=SQ.filter(function(r){return !r.synced;});var done=SQ.filter(function(r){return r.synced;}).slice(0,5);if(!pend.length&&!done.length){el.innerHTML='<div style="text-align:center;color:var(--tx2);padding:12px">All synced</div>';return;}var h='';if(pend.length)h+='<div style="font-size:10px;font-weight:700;color:var(--tx2);text-transform:uppercase;margin-bottom:6px">Pending ('+pend.length+')</div>'+pend.map(function(r){return'<div class="qi"><span class="pill ppend">'+r.sheet+'</span><span style="font-family:monospace;font-size:10px;flex:1">'+r.visit_id+'</span><span style="font-size:10px;color:'+(( r.attempts||0)>=5?'#c62828':'var(--tx2)')+'">×'+(r.attempts||0)+'</span></div>';}).join('');if(done.length)h+='<div style="font-size:10px;font-weight:700;color:var(--tx2);text-transform:uppercase;margin:10px 0 6px">Recently synced</div>'+done.map(function(r){return'<div class="qi"><span class="pill pok">'+r.sheet+'</span><span style="font-family:monospace;font-size:10px;flex:1">'+r.visit_id+'</span><i class="ti ti-circle-check" style="color:#0D7377"></i></div>';}).join('');el.innerHTML=h;}
@@ -3312,6 +3345,20 @@ function renderAppts(){
 }
 
 
+// ── PATIENT QUICK LOOKUP FROM PATIENTS TAB ───────────────────────────────
+// Tapping a patient card in the Patients tab takes the MW to AN tab
+// with that patient's ID pre-filled and lookup triggered
+function ptQuickLookup(id){
+  goTab('an');
+  var idEl = g('an-id');
+  if(idEl){
+    idEl.value = id;
+    lookup('an');
+    window.scrollTo({top:0, behavior:'smooth'});
+    notify('Looking up patient ' + id + '...');
+  }
+}
+
 // ── DEBOUNCED LOOKUP ──────────────────────────────────────────────────────
 var _lookupTimers = {};
 function debounceLookup(s){
@@ -3531,9 +3578,9 @@ async function pullFromSheets(pullAll){
     g('pull-status').style.color = '#c62828';
     return;
   }
-  var myName = CURRENT_USER ? CURRENT_USER.name.trim() : '';
-  if(!pullAll && !myName){
-    g('pull-status').textContent = 'No name set — tap the user badge in the top bar to set your name first';
+  var myFacilityCheck = CURRENT_USER ? CURRENT_USER.facility.trim() : '';
+  if(!myFacilityCheck){
+    g('pull-status').textContent = 'No facility set — tap the user badge to set your facility first';
     g('pull-status').style.color = '#c62828';
     return;
   }
@@ -3571,6 +3618,10 @@ async function pullFromSheets(pullAll){
       sinceParam = '&since=' + sinceD.toISOString().slice(0,10);
       log('Fetching records since: ' + sinceD.toISOString().slice(0,10));
     }
+    // Pass facility as server-side filter — drastically reduces payload on 2G
+    var myFac = CURRENT_USER ? CURRENT_USER.facility.trim() : '';
+    var hcParam = myFac ? ('&hc=' + encodeURIComponent(myFac)) : '';
+    if(myFac) log('Filtering to facility: ' + myFac);
 
     for(var i = 0; i < sheets.length; i++){
       var cfg = sheets[i];
@@ -3586,7 +3637,7 @@ async function pullFromSheets(pullAll){
 
         try {
           // Use a longer timeout for pulls — sheets can be large on 2G
-          var url = EP + (EP.includes('?')?'&':'?') + 'action=getData&sheet=' + encodeURIComponent(cfg.remote) + sinceParam + '&_t=' + Date.now();
+          var url = EP + (EP.includes('?')?'&':'?') + 'action=getData&sheet=' + encodeURIComponent(cfg.remote) + sinceParam + hcParam + '&_t=' + Date.now();
 
           var rawText = null;
 
@@ -3660,14 +3711,9 @@ async function pullFromSheets(pullAll){
 
       var remoteRows = d.data || [];
 
-      // Filter by MW name unless pulling all
-      var filtered = pullAll ? remoteRows : remoteRows.filter(function(row){
-        var mw = (row[cfg.mwField] || '').trim();
-        var myFirst = myName.split(' ')[0].toLowerCase();
-        return mw.toLowerCase().indexOf(myFirst) >= 0;
-      });
-
-      log('✓ ' + cfg.remote + ': found ' + filtered.length + ' matching record(s)');
+      // Server already filtered by facility — use all returned rows
+      var filtered = remoteRows;
+      log('✓ ' + cfg.remote + ': ' + filtered.length + ' record(s) from facility');
 
       // Get existing local records to avoid duplicates
       var existing = DB[cfg.local] || [];
@@ -3801,7 +3847,7 @@ async function pullFromSheets(pullAll){
     addLog('Pull failed: ' + e.message);
   }
 
-  if(btn){ btn.disabled = false; btn.innerHTML = '<i class="ti ti-cloud-download"></i>Pull my records'; }
+  if(btn){ btn.disabled = false; btn.innerHTML = '<i class="ti ti-building-hospital"></i>Pull facility records'; }
 }
 
 
