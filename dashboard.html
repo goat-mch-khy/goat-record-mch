@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="google" content="notranslate">
+<title>GOAT MCH — Supervisor Dashboard</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+:root{
+  --g:#0D7377;--gd:#095E61;--gl:#E8F7F7;--gb:#7CC8CA;
+  --bg:#fff;--bg2:#F2FAFA;--bg3:#E4F4F4;
+  --tx:#0A2E30;--tx2:#2C6B6E;--tx3:#6AABAE;
+  --bd:#B8E0E1;--bd2:#8ECBCC;
+  --r:8px;--rl:12px;
+  --sh:0 2px 12px rgba(13,115,119,.10);
+  --sh2:0 4px 20px rgba(13,115,119,.15);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:linear-gradient(160deg,#EAF5F5 0%,#D6EFEF 100%);min-height:100vh;color:var(--tx);font-size:13px}
+.wrap{max-width:960px;margin:0 auto;padding:14px 12px 60px}
+
+/* ── Top bar ── */
+.top{background:linear-gradient(135deg,var(--gd) 0%,#1A9EA3 100%);color:#fff;padding:12px 18px;border-radius:var(--rl);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;box-shadow:var(--sh2)}
+.top-title{font-size:15px;font-weight:800;display:flex;align-items:center;gap:8px}
+.top-sub{font-size:11px;opacity:.8}
+.top-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+
+/* ── Cards ── */
+.card{background:var(--bg);border:1px solid var(--bd);border-radius:var(--rl);margin-bottom:12px;overflow:hidden;box-shadow:var(--sh)}
+.ch{background:linear-gradient(135deg,var(--gd) 0%,#0F8B8F 100%);color:#fff;padding:9px 14px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:7px;letter-spacing:.02em}
+.cb{padding:14px}
+
+/* ── KPI grid ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:14px}
+.kpi{background:linear-gradient(180deg,#fff 0%,var(--bg2) 100%);border:1px solid var(--bd);border-radius:var(--rl);padding:12px;text-align:center;box-shadow:var(--sh)}
+.kpi-num{font-size:26px;font-weight:800;color:var(--g);line-height:1}
+.kpi-lbl{font-size:10px;color:var(--tx2);margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+
+/* ── Table ── */
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:var(--bg2);color:var(--tx2);font-weight:700;padding:7px 10px;text-align:left;border-bottom:2px solid var(--bd);font-size:10px;text-transform:uppercase;letter-spacing:.06em}
+td{padding:7px 10px;border-bottom:1px solid var(--bg3);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--gl)}
+
+/* ── Pill ── */
+.pill{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap}
+.pan{background:#e3f2fd;color:#1565c0}
+.ppn{background:#fce4ec;color:#880e4f}
+.pfp{background:#fff3e0;color:#e65100}
+.prpt{background:#f3e5f5;color:#6a1b9a}
+.phrp{background:#ffebee;color:#c62828}
+.pok{background:#E8F7F7;color:#095E61}
+
+/* ── Filters ── */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:flex-end}
+.fg{display:flex;flex-direction:column;gap:3px}
+.fg label{font-size:10px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.06em}
+select,input[type=date],input[type=text]{padding:7px 10px;border:1px solid var(--bd2);border-radius:var(--r);font-size:12px;background:var(--bg);color:var(--tx)}
+.btn{padding:8px 16px;border-radius:var(--r);font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;border:1px solid var(--bd2);background:var(--bg2);color:var(--tx);transition:all .15s ease}
+.bprim{background:linear-gradient(135deg,var(--gd),#1A9EA3);border-color:var(--gd);color:#fff;box-shadow:0 2px 8px rgba(13,115,119,.20)}
+
+/* ── Auth screen ── */
+.auth-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh}
+.auth-card{background:#fff;border-radius:20px;padding:36px 32px;box-shadow:0 8px 48px rgba(13,115,119,.18);max-width:360px;width:100%;margin:20px}
+.auth-logo{text-align:center;margin-bottom:20px}
+.auth-logo i{font-size:48px;color:var(--g)}
+.auth-title{font-size:18px;font-weight:800;color:var(--tx);text-align:center;margin-bottom:4px}
+.auth-sub{font-size:12px;color:var(--tx2);text-align:center;margin-bottom:24px}
+.auth-input{width:100%;padding:10px 14px;border:1px solid var(--bd2);border-radius:var(--r);font-size:14px;margin-bottom:12px;color:var(--tx)}
+.auth-btn{width:100%;padding:11px;background:linear-gradient(135deg,var(--gd),#1A9EA3);color:#fff;border:none;border-radius:var(--r);font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(13,115,119,.25)}
+.auth-err{color:#c62828;font-size:12px;text-align:center;margin-top:8px;display:none}
+
+/* ── Loading ── */
+.loading{text-align:center;padding:40px;color:var(--tx2)}
+.loading i{font-size:32px;color:var(--g);display:block;margin-bottom:10px;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── Chart ── */
+.bar-wrap{display:flex;align-items:flex-end;gap:4px;height:80px;margin-top:8px}
+.bar-col{display:flex;flex-direction:column;align-items:center;flex:1;gap:2px}
+.bar{border-radius:3px 3px 0 0;min-height:2px;width:100%}
+.bar-lbl{font-size:9px;color:var(--tx3);text-align:center}
+.bar-val{font-size:9px;font-weight:700;color:var(--tx2)}
+
+/* ── Section header ── */
+.sh{font-size:10px;font-weight:800;color:var(--gd);text-transform:uppercase;letter-spacing:.12em;padding:8px 0 5px;border-bottom:2px solid var(--gb);margin:14px 0 10px}
+
+/* ── Status ── */
+.status-bar{padding:6px 12px;border-radius:var(--r);font-size:11px;font-weight:600;margin-bottom:10px;display:none}
+.status-loading{background:#fff3cd;color:#856404;display:block}
+.status-ok{background:#E8F7F7;color:var(--gd);display:block}
+.status-err{background:#ffebee;color:#c62828;display:block}
+</style>
+</head>
+<body>
+
+<!-- AUTH SCREEN -->
+<div class="auth-wrap" id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo"><i class="ti ti-stethoscope"></i></div>
+    <div class="auth-title">GOAT MCH Dashboard</div>
+    <div class="auth-sub">KHY Area — Supervisor access</div>
+    <input class="auth-input" type="password" id="pwd-input" placeholder="Enter password"
+      onkeydown="if(event.key==='Enter')checkAuth()">
+    <button class="auth-btn" onclick="checkAuth()">Sign in</button>
+    <div class="auth-err" id="auth-err">Incorrect password</div>
+  </div>
+</div>
+
+<!-- MAIN DASHBOARD -->
+<div id="main-dash" style="display:none">
+<div class="wrap">
+
+  <!-- Top bar -->
+  <div class="top">
+    <div>
+      <div class="top-title"><i class="ti ti-chart-bar"></i> GOAT MCH Supervisor Dashboard</div>
+      <div class="top-sub">KHY Area — Real-time data from Google Sheets</div>
+    </div>
+    <div class="top-right">
+      <span id="last-updated" style="font-size:11px;opacity:.8"></span>
+      <button class="btn" onclick="loadData()" style="background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.3);font-size:11px">
+        <i class="ti ti-refresh"></i> Refresh
+      </button>
+      <button class="btn" onclick="logout()" style="background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2);font-size:11px">
+        <i class="ti ti-logout"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Status -->
+  <div class="status-bar" id="status-bar"></div>
+
+  <!-- Filters -->
+  <div class="card">
+    <div class="ch"><i class="ti ti-filter"></i>Filters</div>
+    <div class="cb">
+      <div class="filters">
+        <div class="fg">
+          <label>Facility</label>
+          <select id="f-hc" onchange="applyFilters()">
+            <option value="">All facilities</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>From</label>
+          <input type="date" id="f-from" onchange="applyFilters()">
+        </div>
+        <div class="fg">
+          <label>To</label>
+          <input type="date" id="f-to" onchange="applyFilters()">
+        </div>
+        <div class="fg">
+          <label>Midwife</label>
+          <select id="f-mw" onchange="applyFilters()">
+            <option value="">All midwives</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>&nbsp;</label>
+          <button class="btn bprim" onclick="resetFilters()"><i class="ti ti-x"></i> Clear</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  <div class="loading" id="loading-state" style="display:none">
+    <i class="ti ti-loader"></i>
+    <div id="loading-msg">Loading data from Google Sheets...</div>
+  </div>
+
+  <!-- Dashboard content -->
+  <div id="dash-content" style="display:none">
+
+    <!-- KPI row -->
+    <div class="kpi-grid">
+      <div class="kpi"><div class="kpi-num" id="k-an">0</div><div class="kpi-lbl">ANC Visits</div></div>
+      <div class="kpi"><div class="kpi-num" id="k-pn">0</div><div class="kpi-lbl">PN Visits</div></div>
+      <div class="kpi"><div class="kpi-num" id="k-fp">0</div><div class="kpi-lbl">FP Visits</div></div>
+      <div class="kpi"><div class="kpi-num" id="k-pt">0</div><div class="kpi-lbl">Patients</div></div>
+      <div class="kpi"><div class="kpi-num" id="k-hrp" style="color:#c62828">0</div><div class="kpi-lbl">HRP</div></div>
+      <div class="kpi"><div class="kpi-num" id="k-new">0</div><div class="kpi-lbl">New Cases</div></div>
+    </div>
+
+    <!-- Monthly trend chart -->
+    <div class="card">
+      <div class="ch"><i class="ti ti-chart-line"></i>Monthly trend — last 6 months</div>
+      <div class="cb">
+        <div id="trend-chart"></div>
+      </div>
+    </div>
+
+    <!-- Facility breakdown -->
+    <div class="card">
+      <div class="ch"><i class="ti ti-building-hospital"></i>Visits by facility</div>
+      <div class="cb">
+        <table>
+          <thead><tr><th>Facility</th><th>AN</th><th>PN</th><th>FP</th><th>Total</th><th>HRP</th></tr></thead>
+          <tbody id="fac-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Midwife stats -->
+    <div class="card">
+      <div class="ch"><i class="ti ti-user-heart"></i>Midwife activity</div>
+      <div class="cb">
+        <table>
+          <thead><tr><th>Midwife</th><th>AN</th><th>PN</th><th>FP</th><th>Total</th></tr></thead>
+          <tbody id="mw-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- HRP patients -->
+    <div class="card">
+      <div class="ch"><i class="ti ti-alert-triangle" style="color:#ffcdd2"></i>High Risk Pregnancies</div>
+      <div class="cb">
+        <table>
+          <thead><tr><th>Name</th><th>ID</th><th>Risk</th><th>Facility</th><th>MW</th><th>Last visit</th><th>EDD</th></tr></thead>
+          <tbody id="hrp-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Recent visits -->
+    <div class="card">
+      <div class="ch"><i class="ti ti-clock"></i>Recent visits (last 20)</div>
+      <div class="cb">
+        <table>
+          <thead><tr><th>Date</th><th>Name</th><th>ID</th><th>Type</th><th>Facility</th><th>MW</th><th>Risk</th></tr></thead>
+          <tbody id="recent-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- end dash-content -->
+</div><!-- end wrap -->
+</div><!-- end main-dash -->
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────────────────
+var EP       = 'https://script.google.com/macros/s/AKfycbyZ-nBKAQHPzcagW5687LkJXLX_dHxXkUd_Ab_oFaZL8OSSbmYwO0r723bkMKc-4LPHhA/exec';
+var PASSWORD = 'GoatMCH@Dash2026';
+var TIMEOUT  = 30000; // 30s per sheet request
+
+// ── AUTH ──────────────────────────────────────────────────────────────────
+function checkAuth(){
+  var pwd = document.getElementById('pwd-input').value;
+  if(pwd === PASSWORD){
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('main-dash').style.display   = 'block';
+    sessionStorage.setItem('dash_auth','1');
+    initFilters();
+    loadData();
+  } else {
+    document.getElementById('auth-err').style.display = 'block';
+    document.getElementById('pwd-input').value = '';
+  }
+}
+function logout(){
+  sessionStorage.removeItem('dash_auth');
+  location.reload();
+}
+// Auto-login if session active
+if(sessionStorage.getItem('dash_auth')==='1'){
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('main-dash').style.display='block';
+  initFilters();
+  setTimeout(loadData, 100);
+}
+
+// ── DATA STORE ────────────────────────────────────────────────────────────
+var RAW = { an:[], pn:[], fp:[], rpt:[] };
+var FIL = { an:[], pn:[], fp:[], rpt:[] };
+
+// ── STATUS ────────────────────────────────────────────────────────────────
+function setStatus(msg, type){
+  var el = document.getElementById('status-bar');
+  el.className = 'status-bar status-'+type;
+  el.innerHTML = msg;
+}
+
+// ── FETCH HELPER ──────────────────────────────────────────────────────────
+async function fetchSheet(sheetName){
+  var url = EP + '?action=getData&sheet=' + encodeURIComponent(sheetName) + '&_t=' + Date.now();
+  try{
+    var ctrl = new AbortController();
+    var tid  = setTimeout(function(){ ctrl.abort(); }, TIMEOUT);
+    var resp = await fetch(url, {method:'GET',mode:'cors',cache:'no-store',redirect:'follow',signal:ctrl.signal});
+    clearTimeout(tid);
+    return await resp.json();
+  }catch(fe){
+    // XHR fallback
+    return await new Promise(function(res,rej){
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', url, true); xhr.timeout = TIMEOUT;
+      xhr.onload  = function(){ try{res(JSON.parse(xhr.responseText));}catch(e){rej(e);} };
+      xhr.onerror = function(){ rej(new Error('Network error')); };
+      xhr.ontimeout = function(){ rej(new Error('Timeout after 30s')); };
+      xhr.send();
+    });
+  }
+}
+
+// ── LOAD DATA ─────────────────────────────────────────────────────────────
+async function loadData(){
+  document.getElementById('loading-state').style.display = 'block';
+  document.getElementById('dash-content').style.display  = 'none';
+  setStatus('<i class="ti ti-loader" style="animation:spin 1s linear infinite;display:inline-block;margin-right:6px"></i> Loading sheets from Google Sheets...', 'loading');
+
+  var sheets = [
+    {name:'AN',        key:'an'},
+    {name:'PN',        key:'pn'},
+    {name:'FP',        key:'fp'},
+    {name:'REPORTING', key:'rpt'},
+  ];
+
+  var allOk = true;
+  for(var i=0; i<sheets.length; i++){
+    var s = sheets[i];
+    setStatus('Loading '+s.name+'... ('+( i+1)+'/'+sheets.length+')', 'loading');
+    try{
+      var d = await fetchSheet(s.name);
+      if(d && d.status === 'ok'){
+        RAW[s.key] = d.data || [];
+      } else {
+        setStatus('Error loading '+s.name+': '+(d&&d.message||'unknown'), 'err');
+        allOk = false;
+      }
+    }catch(e){
+      setStatus('Failed to load '+s.name+': '+e.message, 'err');
+      allOk = false;
+    }
+  }
+
+  // Normalize dates
+  function normDate(r, field){
+    var v = (r[field]||'').toString().trim();
+    if(!v) return '';
+    var d = new Date(v);
+    return isNaN(d.getTime()) ? v.slice(0,10) : d.toISOString().slice(0,10);
+  }
+  RAW.an.forEach(function(r){  r._date = normDate(r,'Date Of Registration'); r._id=r['National ID']||''; r._mw=r['MW Name']||r['Name Of midwife']||''; r._hc=r['Served HC']||''; });
+  RAW.pn.forEach(function(r){  r._date = normDate(r,'Date Of Registration'); r._id=r['ID client']||'';    r._mw=r['MW Name']||r['Name Of midwife']||''; r._hc=r['Served HC']||''; });
+  RAW.fp.forEach(function(r){  r._date = normDate(r,'Date Of Registration'); r._id=r['National ID']||''; r._mw=r['MW Name']||r['Name Of midwife']||''; r._hc=r['Served HC']||''; });
+  RAW.rpt.forEach(function(r){ r._date = normDate(r,'Date Of Registration'); r._id=r['National ID']||''; r._mw=r['MW Name']||r['Name Of midwife']||''; r._hc=r['Served HC']||''; });
+
+  populateFilterOptions();
+  applyFilters();
+
+  document.getElementById('loading-state').style.display = 'none';
+  document.getElementById('dash-content').style.display  = 'block';
+  document.getElementById('last-updated').textContent    = 'Updated: '+new Date().toLocaleTimeString();
+
+  if(allOk){
+    setStatus('<i class="ti ti-circle-check"></i> All sheets loaded successfully — '+(RAW.an.length+RAW.pn.length+RAW.fp.length)+' total visits', 'ok');
+  }
+}
+
+// ── FILTERS ───────────────────────────────────────────────────────────────
+function initFilters(){
+  // Default date range: last 6 months
+  var to   = new Date();
+  var from = new Date(); from.setMonth(from.getMonth()-6);
+  document.getElementById('f-from').value = from.toISOString().slice(0,10);
+  document.getElementById('f-to').value   = to.toISOString().slice(0,10);
+}
+
+function populateFilterOptions(){
+  var hcs = new Set(), mws = new Set();
+  [RAW.an,RAW.pn,RAW.fp,RAW.rpt].forEach(function(arr){
+    arr.forEach(function(r){ if(r._hc)hcs.add(r._hc); if(r._mw)mws.add(r._mw); });
+  });
+  var hcSel = document.getElementById('f-hc');
+  var mwSel = document.getElementById('f-mw');
+  var curHC = hcSel.value, curMW = mwSel.value;
+  hcSel.innerHTML = '<option value="">All facilities</option>';
+  mwSel.innerHTML = '<option value="">All midwives</option>';
+  Array.from(hcs).sort().forEach(function(h){ hcSel.innerHTML += '<option>'+ h +'</option>'; });
+  Array.from(mws).sort().forEach(function(m){ mwSel.innerHTML += '<option>'+ m +'</option>'; });
+  if(curHC) hcSel.value = curHC;
+  if(curMW) mwSel.value = curMW;
+}
+
+function applyFilters(){
+  var hc   = document.getElementById('f-hc').value;
+  var from = document.getElementById('f-from').value;
+  var to   = document.getElementById('f-to').value;
+  var mw   = document.getElementById('f-mw').value;
+  function filt(arr){
+    return arr.filter(function(r){
+      if(hc   && r._hc   !== hc)   return false;
+      if(mw   && r._mw   !== mw)   return false;
+      if(from && r._date  < from)   return false;
+      if(to   && r._date  > to)     return false;
+      return true;
+    });
+  }
+  FIL.an  = filt(RAW.an);
+  FIL.pn  = filt(RAW.pn);
+  FIL.fp  = filt(RAW.fp);
+  FIL.rpt = filt(RAW.rpt);
+  renderDash();
+}
+
+function resetFilters(){
+  document.getElementById('f-hc').value   = '';
+  document.getElementById('f-mw').value   = '';
+  initFilters();
+  applyFilters();
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────
+function renderDash(){
+  // KPIs
+  var pts = new Set();
+  [FIL.an,FIL.pn,FIL.fp].forEach(function(a){ a.forEach(function(r){ if(r._id) pts.add(r._id); }); });
+  var hrp = FIL.an.filter(function(r){ return (r['RISK SCORE']||'').indexOf('HRP')>=0; });
+  var newCases = FIL.an.filter(function(r){ return (r['New Case/ Follow Up']||'').toLowerCase().indexOf('new')>=0; });
+  document.getElementById('k-an').textContent  = FIL.an.length;
+  document.getElementById('k-pn').textContent  = FIL.pn.length;
+  document.getElementById('k-fp').textContent  = FIL.fp.length;
+  document.getElementById('k-pt').textContent  = pts.size;
+  document.getElementById('k-hrp').textContent = hrp.length;
+  document.getElementById('k-new').textContent = newCases.length;
+
+  renderTrend();
+  renderFacTable();
+  renderMwTable();
+  renderHRP(hrp);
+  renderRecent();
+}
+
+// ── TREND CHART ───────────────────────────────────────────────────────────
+function renderTrend(){
+  var months = [];
+  var now = new Date();
+  for(var i=5; i>=0; i--){
+    var d = new Date(now.getFullYear(), now.getMonth()-i, 1);
+    months.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'));
+  }
+  var counts = {};
+  months.forEach(function(m){ counts[m]={an:0,pn:0,fp:0}; });
+
+  function addMonth(arr, key){
+    arr.forEach(function(r){
+      var mo = (r._date||'').slice(0,7);
+      if(counts[mo]) counts[mo][key]++;
+    });
+  }
+  addMonth(FIL.an,'an'); addMonth(FIL.pn,'pn'); addMonth(FIL.fp,'fp');
+
+  var maxVal = 0;
+  months.forEach(function(m){ maxVal = Math.max(maxVal, counts[m].an+counts[m].pn+counts[m].fp); });
+  if(maxVal===0) maxVal=1;
+
+  var html2 = '<div class="bar-wrap">';
+  months.forEach(function(m){
+    var an=counts[m].an, pn=counts[m].pn, fp=counts[m].fp, tot=an+pn+fp;
+    var h = Math.round((tot/maxVal)*72);
+    html2 += '<div class="bar-col">'
+      +'<div class="bar-val">'+(tot||'')+'</div>'
+      +'<div style="display:flex;flex-direction:column;justify-content:flex-end;height:72px;gap:1px">'
+      +'<div class="bar" style="height:'+Math.round((an/maxVal)*72)+'px;background:#1565c0;opacity:.8"></div>'
+      +'<div class="bar" style="height:'+Math.round((pn/maxVal)*72)+'px;background:#880e4f;opacity:.8"></div>'
+      +'<div class="bar" style="height:'+Math.round((fp/maxVal)*72)+'px;background:#e65100;opacity:.8"></div>'
+      +'</div>'
+      +'<div class="bar-lbl">'+m.slice(5)+'</div>'
+      +'</div>';
+  });
+  html2 += '</div>';
+  html2 += '<div style="display:flex;gap:12px;margin-top:8px;font-size:10px">'
+    +'<span><span style="display:inline-block;width:10px;height:10px;background:#1565c0;border-radius:2px;margin-right:3px"></span>AN</span>'
+    +'<span><span style="display:inline-block;width:10px;height:10px;background:#880e4f;border-radius:2px;margin-right:3px"></span>PN</span>'
+    +'<span><span style="display:inline-block;width:10px;height:10px;background:#e65100;border-radius:2px;margin-right:3px"></span>FP</span>'
+    +'</div>';
+  document.getElementById('trend-chart').innerHTML = html2;
+}
+
+// ── FACILITY TABLE ────────────────────────────────────────────────────────
+function renderFacTable(){
+  var facs = {};
+  function add(arr, key){
+    arr.forEach(function(r){
+      var hc = r._hc||'Unknown';
+      if(!facs[hc]) facs[hc]={an:0,pn:0,fp:0,hrp:0};
+      facs[hc][key]++;
+      if(key==='an'&&(r['RISK SCORE']||'').indexOf('HRP')>=0) facs[hc].hrp++;
+    });
+  }
+  add(FIL.an,'an'); add(FIL.pn,'pn'); add(FIL.fp,'fp');
+
+  var rows = Object.entries(facs).sort(function(a,b){ return (b[1].an+b[1].pn+b[1].fp)-(a[1].an+a[1].pn+a[1].fp); });
+  document.getElementById('fac-table').innerHTML = rows.map(function(e){
+    var hc=e[0],d=e[1];
+    return '<tr><td style="font-weight:600">'+hc+'</td>'
+      +'<td><span class="pill pan">'+d.an+'</span></td>'
+      +'<td><span class="pill ppn">'+d.pn+'</span></td>'
+      +'<td><span class="pill pfp">'+d.fp+'</span></td>'
+      +'<td style="font-weight:700">'+(d.an+d.pn+d.fp)+'</td>'
+      +'<td>'+(d.hrp?'<span class="pill phrp">'+d.hrp+'</span>':'—')+'</td></tr>';
+  }).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--tx3);padding:20px">No data</td></tr>';
+}
+
+// ── MIDWIFE TABLE ─────────────────────────────────────────────────────────
+function renderMwTable(){
+  var mws = {};
+  function add(arr, key){
+    arr.forEach(function(r){
+      var mw = r._mw||'Unknown';
+      if(!mws[mw]) mws[mw]={an:0,pn:0,fp:0};
+      mws[mw][key]++;
+    });
+  }
+  add(FIL.an,'an'); add(FIL.pn,'pn'); add(FIL.fp,'fp');
+
+  var rows = Object.entries(mws).sort(function(a,b){ return (b[1].an+b[1].pn+b[1].fp)-(a[1].an+a[1].pn+a[1].fp); });
+  document.getElementById('mw-table').innerHTML = rows.map(function(e){
+    var mw=e[0],d=e[1];
+    return '<tr><td style="font-weight:600">'+mw+'</td>'
+      +'<td>'+d.an+'</td><td>'+d.pn+'</td><td>'+d.fp+'</td>'
+      +'<td style="font-weight:700">'+(d.an+d.pn+d.fp)+'</td></tr>';
+  }).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--tx3);padding:20px">No data</td></tr>';
+}
+
+// ── HRP TABLE ─────────────────────────────────────────────────────────────
+function renderHRP(hrp){
+  // Deduplicate by ID — show most recent visit per patient
+  var seen = {};
+  hrp.sort(function(a,b){ return b._date.localeCompare(a._date); }).forEach(function(r){
+    if(!seen[r._id]) seen[r._id]=r;
+  });
+  var rows = Object.values(seen).slice(0,50);
+  document.getElementById('hrp-table').innerHTML = rows.map(function(r){
+    return '<tr>'
+      +'<td style="font-weight:600">'+(r['Pregnant Name']||'—')+'</td>'
+      +'<td style="font-family:monospace;font-size:11px">'+r._id+'</td>'
+      +'<td><span class="pill phrp">'+(r['RISK SCORE']||'—')+'</span></td>'
+      +'<td>'+r._hc+'</td>'
+      +'<td>'+r._mw+'</td>'
+      +'<td>'+r._date+'</td>'
+      +'<td>'+(r['EDD']||'—')+'</td>'
+      +'</tr>';
+  }).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--tx3);padding:20px">No HRP cases in this period</td></tr>';
+}
+
+// ── RECENT VISITS ─────────────────────────────────────────────────────────
+function renderRecent(){
+  var all = [];
+  FIL.an.forEach(function(r){  all.push({s:'AN', date:r._date,name:r['Pregnant Name']||'—',id:r._id,hc:r._hc,mw:r._mw,risk:r['RISK SCORE']||''}); });
+  FIL.pn.forEach(function(r){  all.push({s:'PN', date:r._date,name:r['Name']||'—',          id:r._id,hc:r._hc,mw:r._mw,risk:''}); });
+  FIL.fp.forEach(function(r){  all.push({s:'FP', date:r._date,name:r['Client name']||'—',   id:r._id,hc:r._hc,mw:r._mw,risk:''}); });
+  all.sort(function(a,b){ return b.date.localeCompare(a.date); });
+  var colors={AN:'pan',PN:'ppn',FP:'pfp'};
+  document.getElementById('recent-table').innerHTML = all.slice(0,20).map(function(r){
+    return '<tr>'
+      +'<td>'+r.date+'</td>'
+      +'<td style="font-weight:600">'+r.name+'</td>'
+      +'<td style="font-family:monospace;font-size:11px">'+r.id+'</td>'
+      +'<td><span class="pill '+colors[r.s]+'">'+r.s+'</span></td>'
+      +'<td>'+r.hc+'</td>'
+      +'<td>'+r.mw+'</td>'
+      +'<td>'+(r.risk?'<span class="pill phrp">'+r.risk+'</span>':'')+'</td>'
+      +'</tr>';
+  }).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--tx3);padding:20px">No visits</td></tr>';
+}
+</script>
+</body>
+</html>
