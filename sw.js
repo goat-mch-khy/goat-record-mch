@@ -1,6 +1,6 @@
 // GOAT MCH — Service Worker v63
 // ⚠️ INCREMENT THIS NUMBER every time you upload a new index.html
-const CACHE_VERSION = 'goat-mch-v81';
+const CACHE_VERSION = 'goat-mch-v82';
 
 const CACHE_FILES = [
   './',

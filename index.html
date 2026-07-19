@@ -1758,7 +1758,7 @@ function getDashboardView(){
 }
 
 // ── SYNC ─────────────────────────────────────────────────────────────────
-var SQ=JSON.parse(localStorage.getItem('mch_sq')||'[]');
+var SQ=(function(){try{var v=JSON.parse(localStorage.getItem('mch_sq')||'[]');return Array.isArray(v)?v:[];}catch(e){return [];}})();
 var LG=JSON.parse(localStorage.getItem('mch_log')||'[]');
 var DEFAULT_EP='https://script.google.com/macros/s/AKfycbyZ-nBKAQHPzcagW5687LkJXLX_dHxXkUd_Ab_oFaZL8OSSbmYwO0r723bkMKc-4LPHhA/exec';
 // Validate stored EP — reset to default if corrupted (common from WhatsApp copy-paste)
@@ -1775,11 +1775,15 @@ function resetEP(){
   testEP();
 }
 
+function _ensureSQ(){ if(!Array.isArray(SQ)){ SQ=[]; try{localStorage.setItem('mch_sq','[]');}catch(e){} } }
+
 function sq_save(){localStorage.setItem('mch_sq',JSON.stringify(SQ));}
 function addLog(m){LG.unshift('['+new Date().toLocaleTimeString()+'] '+m);if(LG.length>40)LG=LG.slice(0,40);localStorage.setItem('mch_log',JSON.stringify(LG));var el=g('slog');if(el)el.textContent=LG.join('\n');}
 function saveEP(){EP=gv('epurl').trim();localStorage.setItem('mch_ep',EP);}
 var online=navigator.onLine,syncing=false;
 function updateBar(){
+  // Guard against SQ being undefined (can happen if localStorage is empty on first load)
+  if(!Array.isArray(SQ)) SQ = [];
   // Trust navigator.onLine=true, but don't trust false (unreliable on Android)
   if(navigator.onLine) online = true;
   var dot=g('sdot'),txt=g('stxt'),qc=g('qchip'),sb=g('syncbtn'),cc=g('cnchip');
@@ -1837,6 +1841,7 @@ function fetchWithTimeout(url, options, timeoutMs){
 }
 
 async function doSync(){
+  _ensureSQ();
   if(!EP){notify('Paste the Apps Script URL in the Sync tab first','err');return;}
   if(syncing)return;
   var now = Date.now();
@@ -4323,6 +4328,7 @@ function updateSyncProgress(done, total){
 }
 
 function resetAndRetry(){
+  _ensureSQ();
   var count=0;
   SQ.forEach(function(r){
     if(!r.synced){
