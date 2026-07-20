@@ -1,27 +1,16 @@
 {
   "name": "GOAT Record — MCH",
   "short_name": "GOAT MCH",
-  "description": "Maternal and Child Health field data entry — Gaza Strip",
+  "description": "Maternal & Child Health records for UNRWA Gaza Strip",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#1a7a5c",
-  "theme_color": "#1a7a5c",
+  "background_color": "#EAF5F5",
+  "theme_color": "#095E61",
   "orientation": "portrait-primary",
   "icons": [
-    {
-      "src": "https://api.iconify.design/tabler:heart-handshake.svg?color=%23ffffff&width=192&height=192",
-      "sizes": "192x192",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "https://api.iconify.design/tabler:heart-handshake.svg?color=%23ffffff&width=512&height=512",
-      "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    }
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
   ],
-  "categories": ["health", "medical", "productivity"],
-  "lang": "en",
-  "dir": "ltr"
+  "categories": ["health", "medical"],
+  "lang": "en"
 }

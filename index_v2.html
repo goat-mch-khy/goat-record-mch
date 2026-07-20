@@ -1,0 +1,3936 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="google" content="notranslate">
+<meta name="theme-color" content="#095E61">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>GOAT Record — MCH</title>
+<link rel="manifest" href="manifest.json">
+<style>
+/* GOAT MCH v2 — Design System */
+
+:root {
+  --g:   #0D7377;
+  --gd:  #095E61;
+  --gl:  #E8F7F7;
+  --gb:  #7CC8CA;
+  --bg:  #ffffff;
+  --bg2: #F2FAFA;
+  --bg3: #E4F4F4;
+  --tx:  #0A2E30;
+  --tx2: #2C6B6E;
+  --tx3: #6AABAE;
+  --bd:  #B8E0E1;
+  --bd2: #8ECBCC;
+  --r:   8px;
+  --rl:  12px;
+  --sh:  0 2px 12px rgba(13,115,119,.10);
+  --sh2: 0 4px 20px rgba(13,115,119,.15);
+  --an:  #1565c0;
+  --pn:  #880e4f;
+  --fp:  #e65100;
+  --rpt: #6a1b9a;
+}
+
+*  { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Tahoma, sans-serif;
+  background: linear-gradient(160deg, #EAF5F5 0%, #D6EFEF 100%);
+  min-height: 100vh;
+  color: var(--tx);
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Layout ── */
+.wrap    { max-width: 760px; margin: 0 auto; padding: 10px 12px 80px; }
+.panel   { display: none; }
+.panel.act { display: block; }
+
+/* ── Top bar ── */
+.top {
+  background: linear-gradient(135deg, var(--gd) 0%, #1A9EA3 100%);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: var(--rl);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  box-shadow: var(--sh2);
+}
+.top-title { font-size: 14px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+.top-sub   { font-size: 10px; opacity: .8; margin-top: 2px; }
+
+/* ── Status bar ── */
+.status-bar {
+  background: var(--bg);
+  border: 1px solid var(--bd);
+  border-radius: var(--rl);
+  padding: 8px 14px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  box-shadow: var(--sh);
+}
+.sd      { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.sd.on   { background: var(--g); box-shadow: 0 0 6px var(--g); }
+.sd.off  { background: #c62828; }
+.sd.sy   { background: #f39c12; animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+.chip    { padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+.chip.on { background: var(--gl); color: var(--gd); }
+.chip.off{ background: #ffebee; color: #c62828; }
+
+/* ── Tab bar ── */
+.tabs {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+  background: rgba(255,255,255,.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 5px;
+  border-radius: var(--rl);
+  border: 1px solid var(--bd);
+  margin-bottom: 10px;
+  box-shadow: var(--sh);
+}
+.tb {
+  padding: 6px 10px;
+  border-radius: var(--r);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--tx2);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all .15s;
+  position: relative;
+}
+.tb:hover { background: var(--gl); color: var(--gd); }
+.tb.act   {
+  background: linear-gradient(135deg, var(--gd), #1A9EA3);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(13,115,119,.28);
+}
+.tab-badge {
+  background: #c62828;
+  color: #fff;
+  border-radius: 20px;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 1px 5px;
+  margin-left: 2px;
+  min-width: 16px;
+  text-align: center;
+  display: inline-block;
+}
+
+/* ── Cards ── */
+.card {
+  background: var(--bg);
+  border: 1px solid var(--bd);
+  border-radius: var(--rl);
+  margin-bottom: 10px;
+  overflow: hidden;
+  box-shadow: var(--sh);
+}
+.ch {
+  background: linear-gradient(135deg, var(--gd) 0%, #0F8B8F 100%);
+  color: #fff;
+  padding: 9px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  letter-spacing: .02em;
+}
+.cb { padding: 14px; }
+
+/* ── KPI grid ── */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px,1fr)); gap: 10px; margin-bottom: 14px; }
+.kpi {
+  background: linear-gradient(180deg, #fff 0%, var(--bg2) 100%);
+  border: 1px solid var(--bd);
+  border-radius: var(--rl);
+  padding: 12px;
+  text-align: center;
+  box-shadow: var(--sh);
+}
+.kpi-num { font-size: 26px; font-weight: 800; color: var(--g); line-height: 1; }
+.kpi-lbl { font-size: 10px; color: var(--tx2); margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
+.kpi-sub { font-size: 10px; color: var(--tx3); }
+
+/* ── Form elements ── */
+.fg       { display: flex; flex-direction: column; gap: 3px; margin-bottom: 10px; }
+.fg label { font-size: 10px; font-weight: 700; color: var(--tx2); text-transform: uppercase; letter-spacing: .06em; }
+input, select, textarea {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--bd2);
+  border-radius: var(--r);
+  font-size: 13px;
+  background: var(--bg);
+  color: var(--tx);
+  transition: border-color .15s;
+}
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--g);
+  box-shadow: 0 0 0 2px rgba(13,115,119,.15);
+}
+textarea { resize: vertical; min-height: 60px; }
+input.af  { background: #E8F7F7 !important; border-color: var(--gb) !important; }
+input[readonly], select[readonly] { background: var(--bg2); color: var(--tx2); }
+.sh {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--gd);
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  padding: 8px 0 5px;
+  border-bottom: 2px solid var(--gb);
+  margin: 14px 0 10px;
+}
+
+/* ── Buttons ── */
+.btn {
+  padding: 8px 16px;
+  border-radius: var(--r);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid var(--bd2);
+  background: var(--bg2);
+  color: var(--tx);
+  transition: all .15s;
+}
+.btn:hover  { background: var(--gl); border-color: var(--gb); }
+.bsave, .bprim {
+  background: linear-gradient(135deg, var(--gd), #1A9EA3);
+  border-color: var(--gd);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(13,115,119,.20);
+}
+.bsave:hover, .bprim:hover { opacity: .9; }
+.lkbtn {
+  padding: 9px 16px;
+  background: linear-gradient(135deg, var(--gd), #1A9EA3);
+  color: #fff;
+  border: none;
+  border-radius: var(--r);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(13,115,119,.22);
+  transition: all .15s;
+}
+
+/* ── Pill badges ── */
+.pill  { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; white-space: nowrap; }
+.pan   { background: #e3f2fd; color: #1565c0; }
+.ppn   { background: #fce4ec; color: #880e4f; }
+.pfp   { background: #fff3e0; color: #e65100; }
+.prpt  { background: #f3e5f5; color: #6a1b9a; }
+.phrp  { background: #ffebee; color: #c62828; }
+.pok   { background: #E8F7F7; color: #095E61; }
+.ppend { background: var(--bg3); color: var(--tx2); }
+
+/* ── Found / New banners ── */
+.bfound, .bnew { display: none; padding: 10px 14px; border-radius: var(--r); margin-bottom: 10px; font-size: 12px; }
+.bfound { background: linear-gradient(135deg,#E8F7F7,#D6EFEF); border: 1px solid var(--gb); color: var(--gd); }
+.bnew   { background: #e3f2fd; border: 1px solid #90caf9; color: #1565c0; }
+.bfound.show, .bnew.show { display: flex; align-items: center; gap: 8px; }
+.bedit  { background: #fff3e0; border: 1px solid #ffcc80; color: #e65100; display: none; padding: 8px 14px; border-radius: var(--r); margin-bottom: 10px; font-size: 12px; }
+.bedit.show { display: flex; align-items: center; gap: 8px; }
+.bhrp   { background: #c62828; color: #fff; padding: 10px 14px; border-radius: var(--r); margin-bottom: 8px; display: none; }
+.bhrp.show { display: flex; align-items: center; gap: 10px; }
+
+/* ── Visit ID ── */
+.vid-bar { font-size: 10px; color: var(--tx3); font-family: monospace; margin-bottom: 10px; }
+
+/* ── Multi-select ── */
+select[multiple] { height: auto; min-height: 80px; }
+
+/* ── MUAC bars ── */
+.muac-bar { height: 6px; border-radius: 3px; margin-top: 4px; transition: width .3s; }
+
+/* ── Sync queue ── */
+.sq-item { padding: 8px 12px; border-radius: var(--r); border: 1px solid var(--bd); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.sq-item.synced { opacity: .5; }
+
+/* ── Patient list ── */
+.ptitem { padding: 10px 12px; border-radius: var(--r); border: 1px solid var(--bd); margin-bottom: 6px; cursor: pointer; transition: all .15s; }
+.ptitem:hover { background: var(--gl); border-color: var(--gb); }
+.ptname { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+.ptmeta { font-size: 11px; color: var(--tx2); display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* ── Search results ── */
+.srch-section { font-size: 10px; font-weight: 800; color: var(--tx2); text-transform: uppercase; letter-spacing: .08em; margin: 12px 0 6px; display: flex; align-items: center; gap: 6px; }
+.srch-card { padding: 10px 12px; border-radius: var(--r); margin-bottom: 7px; }
+
+/* ── Appointment cards ── */
+.appt-card { background: var(--bg); border-radius: var(--r); padding: 10px 12px; margin-bottom: 8px; border-left: 4px solid; }
+
+/* ── Clinical summary ── */
+.clinsum { background: var(--bg2); border: 1px solid var(--bd); border-radius: var(--r); padding: 10px 12px; margin-bottom: 10px; }
+.clinsum-row { display: flex; gap: 16px; flex-wrap: wrap; font-size: 11px; }
+.clinsum-val { font-weight: 700; }
+
+/* ── Timeline ── */
+.timeline { padding-left: 16px; border-left: 2px solid var(--bd); margin-bottom: 12px; }
+.tl-item  { position: relative; margin-bottom: 9px; }
+.tl-dot   { position: absolute; left: -20px; top: 4px; width: 8px; height: 8px; border-radius: 50%; }
+
+/* ── Notification ── */
+.notif {
+  position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--gd); color: #fff;
+  padding: 10px 20px; border-radius: 20px;
+  font-size: 12px; font-weight: 700;
+  box-shadow: var(--sh2);
+  opacity: 0; transition: all .3s;
+  z-index: 9999; pointer-events: none;
+  white-space: nowrap; max-width: 90vw;
+  text-overflow: ellipsis; overflow: hidden;
+}
+.notif.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.notif.err  { background: #c62828; }
+
+/* ── Loading spinner ── */
+.spinner { display: inline-block; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Progress bar ── */
+.sync-progress {
+  display: none;
+  font-size: 11px; color: var(--g); font-weight: 600;
+  padding: 6px 10px; background: var(--gl); border-radius: var(--r); margin-bottom: 8px;
+}
+.sync-progress.show { display: block; }
+
+/* ── Tables ── */
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th { background: var(--bg2); color: var(--tx2); font-weight: 700; padding: 7px 10px; text-align: left; border-bottom: 2px solid var(--bd); font-size: 10px; text-transform: uppercase; letter-spacing: .06em; }
+td { padding: 7px 10px; border-bottom: 1px solid var(--bg3); vertical-align: top; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--gl); }
+
+/* ── Count pills for MW stats ── */
+.count-pill { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; min-width: 28px; text-align: center; }
+.cp-an  { background: #e3f2fd; color: #1565c0; }
+.cp-pn  { background: #fce4ec; color: #880e4f; }
+.cp-fp  { background: #fff3e0; color: #e65100; }
+.cp-rpt { background: #f3e5f5; color: #6a1b9a; }
+.cp-tot { background: var(--gl); color: var(--gd); }
+.mw-name { font-weight: 600; }
+
+/* ── Setup screen ── */
+.setup-overlay { position: fixed; inset: 0; background: linear-gradient(160deg,#EAF5F5,#D6EFEF); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.setup-card { background: #fff; border-radius: 20px; padding: 36px 32px; box-shadow: 0 8px 48px rgba(13,115,119,.18); max-width: 380px; width: 100%; }
+.setup-logo { text-align: center; margin-bottom: 20px; font-size: 48px; }
+.setup-title { font-size: 18px; font-weight: 800; text-align: center; margin-bottom: 4px; color: var(--tx); }
+.setup-sub { font-size: 12px; color: var(--tx2); text-align: center; margin-bottom: 24px; }
+
+/* ── HRP alert ── */
+#an-hrp-alert, #pn-hrp-alert, #fp-hrp-alert, #rpt-hrp-alert { }
+
+/* ── Diagnostic box ── */
+.diag-box {
+  display: none;
+  margin-top: 10px;
+  font-size: 11px;
+  background: var(--bg2);
+  border: 1px solid var(--bd);
+  border-radius: var(--r);
+  padding: 10px 12px;
+  font-family: monospace;
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-height: 300px;
+  overflow-y: auto;
+  line-height: 1.7;
+}
+.diag-box.show { display: block; }
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .top-title { font-size: 13px; }
+}
+
+/* ── Scrollbar styling ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bd2); border-radius: 4px; }
+
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<!-- ══ SETUP OVERLAY (shown on first launch) ══════════════════════════════ -->
+<div class="setup-overlay" id="setup-overlay" style="display:none">
+  <div class="setup-card">
+    <div class="setup-logo">🐐</div>
+    <div class="setup-title">GOAT Record — MCH</div>
+    <div class="setup-sub">Gaza Strip · Maternal & Child Health · UNRWA</div>
+    <div class="fg"><label>Your full name</label><input type="text" id="su-name" placeholder="e.g. Dina Jameel Alokka (Midwife)"></div>
+    <div class="fg"><label>Your role</label>
+      <select id="su-role">
+        <option value="">Select role...</option>
+        <option>Midwife</option><option>Doctor</option><option>Nurse</option>
+        <option>Health Educator</option><option>Supervisor</option><option>Other</option>
+      </select>
+    </div>
+    <div class="fg"><label>Your facility</label>
+      <select id="su-fac"><option value="">Select facility...</option></select>
+    </div>
+    <div class="fg"><label>Apps Script URL</label>
+      <input type="url" id="su-ep" placeholder="https://script.google.com/macros/s/...">
+      <div style="font-size:10px;color:var(--tx3);margin-top:3px">Ask your supervisor for this URL</div>
+    </div>
+    <button class="bsave" style="width:100%;padding:12px;border:none;border-radius:var(--r);font-size:14px;font-weight:800;cursor:pointer;margin-top:6px" onclick="SETUP.complete()">
+      <i class="ti ti-check"></i> Start using GOAT MCH
+    </button>
+    <div id="su-err" style="color:#c62828;font-size:11px;margin-top:8px;text-align:center;display:none"></div>
+  </div>
+</div>
+
+<div class="wrap" id="main-app" style="display:none">
+
+<!-- ══ TOP BAR ══════════════════════════════════════════════════════════════ -->
+<div class="top">
+  <div>
+    <div class="top-title"><i class="ti ti-heart-handshake"></i> GOAT Record — MCH</div>
+    <div class="top-sub" id="top-user">Gaza Strip · AN · PN · FP · Reporting</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <span id="epi-wk" style="font-size:10px;background:rgba(255,255,255,.15);padding:3px 8px;border-radius:12px">Epi Wk —</span>
+    <span class="chip off" id="cnchip">Offline</span>
+  </div>
+</div>
+
+<!-- ══ STATUS BAR ══════════════════════════════════════════════════════════ -->
+<div class="status-bar">
+  <div style="display:flex;align-items:center;gap:8px;flex:1">
+    <span class="sd off" id="sdot"></span>
+    <span style="font-size:12px;color:var(--tx2)" id="stxt">Checking...</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px">
+    <span id="qchip" style="display:none" class="pill ppend">0 pending</span>
+    <button id="syncbtn" class="btn bsave" style="display:none;font-size:11px;padding:5px 10px" onclick="SYNC_UI.syncNow()">
+      <i class="ti ti-cloud-upload"></i> Sync
+    </button>
+    <button class="btn" style="font-size:11px;padding:5px 10px" onclick="goTab('sync')">
+      <i class="ti ti-settings"></i> Sync setup
+    </button>
+  </div>
+</div>
+<div class="sync-progress" id="sync-progress"></div>
+
+<!-- ══ TAB BAR ══════════════════════════════════════════════════════════════ -->
+<div class="tabs">
+  <button class="tb act" data-tab="dash"   onclick="goTab('dash')">  <i class="ti ti-layout-dashboard"></i>Dashboard</button>
+  <button class="tb"     data-tab="pts"    onclick="goTab('pts')">   <i class="ti ti-users"></i>Patients</button>
+  <button class="tb"     data-tab="an"     onclick="goTab('an')">    <i class="ti ti-baby-carriage"></i>AN</button>
+  <button class="tb"     data-tab="pn"     onclick="goTab('pn')">    <i class="ti ti-user-heart"></i>PN</button>
+  <button class="tb"     data-tab="fp"     onclick="goTab('fp')">    <i class="ti ti-shield-heart"></i>FP</button>
+  <button class="tb"     data-tab="rpt"    onclick="goTab('rpt')">   <i class="ti ti-report"></i>Reporting</button>
+  <button class="tb"     data-tab="appts"  onclick="goTab('appts')"> <i class="ti ti-calendar-event"></i>Appointments</button>
+  <button class="tb"     data-tab="search" onclick="goTab('search')"><i class="ti ti-search"></i>Search</button>
+  <button class="tb"     data-tab="sync"   onclick="goTab('sync')">  <i class="ti ti-cloud"></i>Sync</button>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     DASHBOARD PANEL
+══════════════════════════════════════════════════════════════════════════ -->
+<div class="panel act" id="p-dash">
+  <div class="kpi-grid">
+    <div class="kpi" onclick="goTab('an')" style="cursor:pointer;border-top:3px solid var(--an)">
+      <div class="kpi-num" id="d-an" style="color:var(--an)">0</div>
+      <div class="kpi-lbl">ANC visits</div>
+      <div class="kpi-sub" id="d-an-new">0 new · 0 FU</div>
+    </div>
+    <div class="kpi" onclick="goTab('pn')" style="cursor:pointer;border-top:3px solid var(--pn)">
+      <div class="kpi-num" id="d-pn" style="color:var(--pn)">0</div>
+      <div class="kpi-lbl">PN visits</div>
+    </div>
+    <div class="kpi" onclick="goTab('fp')" style="cursor:pointer;border-top:3px solid var(--fp)">
+      <div class="kpi-num" id="d-fp" style="color:var(--fp)">0</div>
+      <div class="kpi-lbl">FP visits</div>
+    </div>
+    <div class="kpi" onclick="goTab('pts')" style="cursor:pointer;border-top:3px solid var(--g)">
+      <div class="kpi-num" id="d-pt">0</div>
+      <div class="kpi-lbl">Patients</div>
+      <div class="kpi-sub" id="d-rpt-sub">0 reports</div>
+    </div>
+  </div>
+
+  <!-- Risk distribution -->
+  <div class="card">
+    <div class="ch"><i class="ti ti-alert-circle"></i>ANC Risk distribution</div>
+    <div class="cb" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+      <div style="background:#ffebee;border-radius:var(--r);padding:10px;text-align:center">
+        <div style="font-size:22px;font-weight:800;color:#c62828" id="d-hrp">0</div>
+        <div style="font-size:10px;color:#c62828;font-weight:700">HRP</div>
+      </div>
+      <div style="background:#fff3e0;border-radius:var(--r);padding:10px;text-align:center">
+        <div style="font-size:22px;font-weight:800;color:#f39c12" id="d-ap">0</div>
+        <div style="font-size:10px;color:#f39c12;font-weight:700">AP — At Risk</div>
+      </div>
+      <div style="background:var(--gl);border-radius:var(--r);padding:10px;text-align:center">
+        <div style="font-size:22px;font-weight:800;color:var(--g)" id="d-np">0</div>
+        <div style="font-size:10px;color:var(--g);font-weight:700">NP — Normal</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MUAC -->
+  <div class="card">
+    <div class="ch"><i class="ti ti-ruler"></i>MUAC status</div>
+    <div class="cb" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+      <div style="background:var(--gl);border-radius:var(--r);padding:10px;text-align:center">
+        <div style="font-size:22px;font-weight:800;color:var(--g)" id="d-muac-norm">0</div>
+        <div style="font-size:10px;color:var(--g);font-weight:700">Normal ≥23cm</div>
+      </div>
+      <div style="background:#fff8e1;border-radius:var(--r);padding:10px;text-align:center">
+        <div style="font-size:22px;font-weight:800;color:#f57f17" id="d-muac-mam">0</div>
+        <div style="font-size:10px;color:#f57f17;font-weight:700">MAM 21–23cm</div>
+      </div>
+      <div style="background:#ffebee;border-radius:var(--r);padding:10px;text-align:center">
+        <div style="font-size:22px;font-weight:800;color:#c62828" id="d-muac-sam">0</div>
+        <div style="font-size:10px;color:#c62828;font-weight:700">SAM &lt;21cm</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Facility breakdown -->
+  <div class="card">
+    <div class="ch"><i class="ti ti-building-hospital"></i>Visits by facility</div>
+    <div class="cb" style="overflow-x:auto">
+      <table><thead><tr><th>Facility</th><th>AN</th><th>PN</th><th>FP</th><th>Total</th></tr></thead>
+      <tbody id="ftb"></tbody></table>
+    </div>
+  </div>
+
+  <!-- MW stats -->
+  <div class="card">
+    <div class="ch"><i class="ti ti-user-heart"></i>Midwife stats</div>
+    <div class="cb" style="overflow-x:auto">
+      <table><thead><tr><th>Midwife</th><th>AN</th><th>PN</th><th>FP</th><th>Total</th></tr></thead>
+      <tbody id="mwtb"></tbody></table>
+    </div>
+  </div>
+
+  <!-- Recent visits -->
+  <div class="card">
+    <div class="ch"><i class="ti ti-clock"></i>Recent visits</div>
+    <div class="cb" style="overflow-x:auto">
+      <table><thead><tr><th>Date</th><th>ID</th><th>Type</th><th>Name</th><th>Facility</th></tr></thead>
+      <tbody id="dtb"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     PATIENTS PANEL
+══════════════════════════════════════════════════════════════════════════ -->
+<div class="panel" id="p-pts">
+  <div class="card">
+    <div class="ch"><i class="ti ti-users"></i>Patient registry</div>
+    <div class="cb">
+      <div style="display:flex;gap:6px;margin-bottom:10px">
+        <input type="search" id="ptq" placeholder="Search by name or ID..." oninput="PATIENTS.render()" style="flex:1">
+        <button class="btn bprim" onclick="PATIENTS.render()"><i class="ti ti-search"></i></button>
+      </div>
+      <div id="ptlist"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     AN PANEL
+══════════════════════════════════════════════════════════════════════════ -->
+<div class="panel" id="p-an">
+  <div class="card">
+    <div class="ch"><i class="ti ti-baby-carriage"></i>Antenatal Care (AN)</div>
+    <div class="cb">
+
+      <!-- HRP Alert -->
+      <div id="an-hrp-alert"></div>
+
+      <!-- Lookup row -->
+      <div style="display:flex;gap:6px;margin-bottom:8px">
+        <input type="number" id="an-id" placeholder="National ID" inputmode="numeric"
+          style="flex:1" oninput="FORM_AN.onIdInput()">
+        <button class="lkbtn" onclick="FORM_AN.lookup(document.getElementById('an-id').value.trim())">
+          <i class="ti ti-search"></i>
+        </button>
+      </div>
+
+      <!-- Found / New banners -->
+      <div class="bfound" id="an-found"><i class="ti ti-user-check" style="flex-shrink:0"></i><div id="an-fm"></div></div>
+      <div class="bnew"   id="an-new">  <i class="ti ti-user-plus"  style="flex-shrink:0"></i>New patient — fill all fields</div>
+      <div class="bedit"  id="an-edit"> <i class="ti ti-pencil"      style="flex-shrink:0"></i>
+        Edit mode — <span id="an-edit-vid-label" style="font-family:monospace;font-size:10px"></span>
+        <button onclick="FORM_AN.cancelEdit()" style="margin-left:auto;padding:3px 10px;background:#e65100;color:#fff;border:none;border-radius:20px;font-size:10px;cursor:pointer">Cancel</button>
+      </div>
+
+      <!-- Clinical summary + timeline -->
+      <div id="an-clinsum"></div>
+      <div id="an-timeline"></div>
+
+      <!-- Visit ID -->
+      <div class="vid-bar"><i class="ti ti-fingerprint"></i> Visit ID: <span id="an-vid" style="font-weight:700">—</span></div>
+
+      <!-- FORM FIELDS -->
+      <div class="sh"><i class="ti ti-calendar"></i> Visit details</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>Date <span style="color:#c62828">*</span></label><input type="date" id="an-date"></div>
+        <div class="fg"><label>New / Follow Up</label><select id="an-case"></select></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>Served HC <span style="color:#c62828">*</span></label><select id="an-shc"></select></div>
+        <div class="fg"><label>Original HC</label><select id="an-ohc"></select></div>
+      </div>
+      <div class="fg"><label>MW Name <span style="color:#c62828">*</span></label><input type="text" id="an-mw"></div>
+
+      <div class="sh"><i class="ti ti-user"></i> Patient details</div>
+      <div class="fg"><label>Pregnant Name <span style="color:#c62828">*</span></label><input type="text" id="an-name"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>Phone</label><input type="tel" id="an-phone" inputmode="tel"></div>
+        <div class="fg"><label>Date of Birth</label><input type="date" id="an-dob"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>RRIS family no.</label><input type="text" id="an-rris"></div>
+        <div class="fg"><label>MHR ID</label><input type="text" id="an-mhr"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>Refugee Status</label><select id="an-refugee"></select></div>
+        <div class="fg"><label>Status</label><select id="an-status"></select></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>Husband name</label><input type="text" id="an-husband"></div>
+        <div class="fg"><label>Husband ID</label><input type="text" id="an-hid2" inputmode="numeric"></div>
+      </div>
+
+      <div class="sh"><i class="ti ti-heartbeat"></i> Obstetric</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>LMP</label><input type="date" id="an-lmp" onchange="UI.calcEDD()"></div>
+        <div class="fg"><label>EDD (auto)</label><input type="date" id="an-edd" readonly></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>GA (auto)</label><input type="text" id="an-ga" readonly><span id="an-trim" style="font-size:10px;color:var(--tx2);display:block;margin-top:2px"></span></div>
+        <div class="fg"><label>Fundal Level</label><input type="text" id="an-fundal"></div>
+      </div>
+      <div class="fg"><label>Presentation</label><select id="an-pres"></select></div>
+
+      <div class="sh"><i class="ti ti-activity"></i> Clinical</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>BP</label><input type="text" id="an-bp" placeholder="e.g. 120/80"></div>
+        <div class="fg"><label>Oedema</label><select id="an-oedema"></select></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>Weight (kg)</label><input type="number" id="an-wt" step="0.1" oninput="UI.calcBMI()"></div>
+        <div class="fg"><label>Height (cm)</label><input type="number" id="an-ht" oninput="UI.calcBMI()"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>BMI (auto)</label><input type="text" id="an-bmi" readonly></div>
+        <div class="fg"><label>MUAC (mm)</label><input type="number" id="an-muac" oninput="UI.showMUAC('an-muac','an-muac-bar')">
+          <div class="muac-bar" id="an-muac-bar"></div></div>
+      </div>
+      <div class="fg"><label>Urine Albumin/Sugar</label><input type="text" id="an-urine"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>Supplements</label><input type="text" id="an-supp"></div>
+        <div class="fg"><label>Lab</label><input type="text" id="an-lab"></div>
+      </div>
+      <div class="fg"><label>Lab 2</label><input type="text" id="an-lab2"></div>
+
+      <div class="sh"><i class="ti ti-alert-triangle"></i> Risk factors</div>
+      <div class="fg"><label>Current pregnancy risks</label><select id="an-rcurr" multiple onchange="UI.calcRisk()"></select></div>
+      <div class="fg"><label>Previous pregnancy risks</label><select id="an-rprev" multiple onchange="UI.calcRisk()"></select></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>Risk score (auto)</label><input type="text" id="an-risk" readonly></div>
+        <div class="fg"><label>Combined factors</label><input type="text" id="an-riskdetail" readonly></div>
+      </div>
+
+      <div class="sh"><i class="ti ti-clipboard-heart"></i> Additional</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>GBV</label><select id="an-gbv"></select></div>
+        <div class="fg"><label>STI</label><select id="an-sti"></select></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>Disability</label><select id="an-dis"></select></div>
+        <div class="fg"><label>MHPSS (GHQ Score)</label><input type="number" id="an-ghq" min="0" max="12"></div>
+      </div>
+      <div class="fg"><label>Referral</label><input type="text" id="an-ref"></div>
+      <div class="fg"><label>Remarks</label><textarea id="an-rmk" rows="2"></textarea></div>
+      <div class="fg"><label>Next appointment</label><input type="date" id="an-next"></div>
+
+      <!-- Save button -->
+      <button class="bsave" style="width:100%;padding:13px;border:none;border-radius:var(--r);font-size:14px;font-weight:800;cursor:pointer;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px" onclick="FORM_AN.save()">
+        <i class="ti ti-device-floppy"></i> Save AN record
+      </button>
+      <button class="btn" style="width:100%;margin-top:8px;justify-content:center" onclick="UI.clearForm('an')">
+        <i class="ti ti-x"></i> Clear form
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     PN PANEL
+══════════════════════════════════════════════════════════════════════════ -->
+<div class="panel" id="p-pn">
+  <div class="card">
+    <div class="ch"><i class="ti ti-user-heart"></i>Postnatal Care (PN)</div>
+    <div class="cb">
+      <div id="pn-hrp-alert"></div>
+      <div style="display:flex;gap:6px;margin-bottom:8px">
+        <input type="number" id="pn-id" placeholder="Client ID" inputmode="numeric" style="flex:1" oninput="FORM_PN.onIdInput()">
+        <button class="lkbtn" onclick="FORM_PN.lookup(document.getElementById('pn-id').value.trim())"><i class="ti ti-search"></i></button>
+      </div>
+      <div class="bfound" id="pn-found"><i class="ti ti-user-check" style="flex-shrink:0"></i><div id="pn-fm"></div></div>
+      <div class="bnew"   id="pn-new">  <i class="ti ti-user-plus"  style="flex-shrink:0"></i>New patient — fill all fields</div>
+      <div class="bedit"  id="pn-edit"> <i class="ti ti-pencil"      style="flex-shrink:0"></i>Edit mode — <span id="pn-edit-vid-label" style="font-family:monospace;font-size:10px"></span><button onclick="FORM_PN.cancelEdit()" style="margin-left:auto;padding:3px 10px;background:#e65100;color:#fff;border:none;border-radius:20px;font-size:10px;cursor:pointer">Cancel</button></div>
+      <div id="pn-clinsum"></div><div id="pn-timeline"></div>
+      <div class="vid-bar"><i class="ti ti-fingerprint"></i> Visit ID: <span id="pn-vid">—</span></div>
+
+      <div class="sh">Visit details</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>Date *</label><input type="date" id="pn-date"></div>
+        <div class="fg"><label>New / Follow Up</label><select id="pn-case"></select></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>Served HC *</label><select id="pn-shc"></select></div>
+        <div class="fg"><label>Original HC</label><select id="pn-ohc"></select></div>
+      </div>
+      <div class="fg"><label>MW Name *</label><input type="text" id="pn-mw"></div>
+
+      <div class="sh">Patient details</div>
+      <div class="fg"><label>Name *</label><input type="text" id="pn-name"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>Phone</label><input type="tel" id="pn-phone"></div>
+        <div class="fg"><label>Date of Birth</label><input type="date" id="pn-dob"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>RRIS</label><input type="text" id="pn-rris"></div>
+        <div class="fg"><label>MHR NO</label><input type="text" id="pn-mhr"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>Refugee status</label><select id="pn-refugee"></select></div>
+        <div class="fg"><label>Status</label><select id="pn-status"></select></div>
+      </div>
+
+      <div class="sh">Delivery</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>Date of Delivery</label><input type="date" id="pn-deliv"></div>
+        <div class="fg"><label>Place</label><select id="pn-place"></select></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>Type</label><select id="pn-type"></select></div>
+        <div class="fg"><label>Delivered by</label><select id="pn-by"></select></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>Twin</label><select id="pn-twin"></select></div>
+        <div class="fg"><label>MUAC (mm)</label><input type="number" id="pn-muac"><div class="muac-bar" id="pn-muac-bar"></div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>Sex 1st baby</label><select id="pn-sex1"></select></div>
+        <div class="fg"><label>Weight 1st (kg)</label><input type="number" id="pn-wt1" step="0.01"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>Sex 2nd baby</label><select id="pn-sex2"></select></div>
+        <div class="fg"><label>Weight 2nd (kg)</label><input type="number" id="pn-wt2" step="0.01"></div>
+      </div>
+      <div class="fg"><label>Complications</label><input type="text" id="pn-comp"></div>
+
+      <div class="sh">Additional</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>STIs</label><select id="pn-stis"></select></div>
+        <div class="fg"><label>Disability</label><select id="pn-dis"></select></div>
+      </div>
+      <div class="fg"><label>GBV</label><select id="pn-gbv"></select></div>
+      <div class="fg"><label>Newborn remarks</label><textarea id="pn-nbrm" rows="2"></textarea></div>
+      <div class="fg"><label>BF &amp; FP notes</label><textarea id="pn-bffp" rows="2"></textarea></div>
+      <div class="fg"><label>Remarks</label><textarea id="pn-rmk" rows="2"></textarea></div>
+      <div class="fg"><label>Next appointment</label><input type="date" id="pn-next"></div>
+
+      <button class="bsave" style="width:100%;padding:13px;border:none;border-radius:var(--r);font-size:14px;font-weight:800;cursor:pointer;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px" onclick="FORM_PN.save()">
+        <i class="ti ti-device-floppy"></i> Save PN record
+      </button>
+      <button class="btn" style="width:100%;margin-top:8px;justify-content:center" onclick="UI.clearForm('pn')"><i class="ti ti-x"></i> Clear form</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     FP PANEL
+══════════════════════════════════════════════════════════════════════════ -->
+<div class="panel" id="p-fp">
+  <div class="card">
+    <div class="ch"><i class="ti ti-shield-heart"></i>Family Planning (FP)</div>
+    <div class="cb">
+      <div id="fp-hrp-alert"></div>
+      <div style="display:flex;gap:6px;margin-bottom:8px">
+        <input type="number" id="fp-id" placeholder="National ID" inputmode="numeric" style="flex:1" oninput="FORM_FP.onIdInput()">
+        <button class="lkbtn" onclick="FORM_FP.lookup(document.getElementById('fp-id').value.trim())"><i class="ti ti-search"></i></button>
+      </div>
+      <div class="bfound" id="fp-found"><i class="ti ti-user-check" style="flex-shrink:0"></i><div id="fp-fm"></div></div>
+      <div class="bnew"   id="fp-new">  <i class="ti ti-user-plus"  style="flex-shrink:0"></i>New patient — fill all fields</div>
+      <div class="bedit"  id="fp-edit"> <i class="ti ti-pencil"      style="flex-shrink:0"></i>Edit mode — <span id="fp-edit-vid-label" style="font-family:monospace;font-size:10px"></span><button onclick="FORM_FP.cancelEdit()" style="margin-left:auto;padding:3px 10px;background:#e65100;color:#fff;border:none;border-radius:20px;font-size:10px;cursor:pointer">Cancel</button></div>
+      <div id="fp-clinsum"></div><div id="fp-timeline"></div>
+      <div class="vid-bar"><i class="ti ti-fingerprint"></i> Visit ID: <span id="fp-vid">—</span></div>
+
+      <div class="sh">Visit details</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>Date *</label><input type="date" id="fp-date"></div>
+        <div class="fg"><label>New / Follow Up</label><select id="fp-case"></select></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>Served HC *</label><select id="fp-shc"></select></div>
+        <div class="fg"><label>Original HC</label><select id="fp-ohc"></select></div>
+      </div>
+      <div class="fg"><label>MW Name *</label><input type="text" id="fp-mw"></div>
+
+      <div class="sh">Patient details</div>
+      <div class="fg"><label>Client name *</label><input type="text" id="fp-name"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>Phone</label><input type="tel" id="fp-phone"></div>
+        <div class="fg"><label>Date of Birth</label><input type="date" id="fp-dob"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>RRIS</label><input type="text" id="fp-rris"></div>
+        <div class="fg"><label>MHR ID</label><input type="text" id="fp-mhr"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>Refugee status</label><select id="fp-refugee"></select></div>
+        <div class="fg"><label>Status</label><select id="fp-status"></select></div>
+      </div>
+
+      <div class="sh">Family planning</div>
+      <div class="fg"><label>Method</label><select id="fp-method"></select></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>LAM</label><select id="fp-lam"></select></div>
+        <div class="fg"><label>LMP</label><input type="date" id="fp-lmp"></div>
+      </div>
+      <div class="fg"><label>Quantity provided</label><input type="text" id="fp-qty"></div>
+
+      <div class="sh">Clinical</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>MUAC (mm)</label><input type="number" id="fp-muac"><div class="muac-bar" id="fp-muac-bar"></div></div>
+        <div class="fg"><label>Disability</label><select id="fp-dis"></select></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>STI</label><select id="fp-sti"></select></div>
+        <div class="fg"><label>MHPSS</label><select id="fp-mhpss"></select></div>
+      </div>
+      <div class="fg"><label>GBV</label><select id="fp-gbv"></select></div>
+      <div class="fg"><label>BP / Wt / Breast exam notes</label><textarea id="fp-bpwt" rows="2"></textarea></div>
+      <div class="fg"><label>F/U Notes</label><textarea id="fp-fu" rows="2"></textarea></div>
+      <div class="fg"><label>Remarks</label><textarea id="fp-rmk" rows="2"></textarea></div>
+      <div class="fg"><label>Next appointment</label><input type="date" id="fp-next"></div>
+
+      <button class="bsave" style="width:100%;padding:13px;border:none;border-radius:var(--r);font-size:14px;font-weight:800;cursor:pointer;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px" onclick="FORM_FP.save()">
+        <i class="ti ti-device-floppy"></i> Save FP record
+      </button>
+      <button class="btn" style="width:100%;margin-top:8px;justify-content:center" onclick="UI.clearForm('fp')"><i class="ti ti-x"></i> Clear form</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     REPORTING PANEL
+══════════════════════════════════════════════════════════════════════════ -->
+<div class="panel" id="p-rpt">
+  <div class="card">
+    <div class="ch"><i class="ti ti-report"></i>Reporting</div>
+    <div class="cb">
+      <div style="display:flex;gap:6px;margin-bottom:8px">
+        <input type="number" id="rpt-id" placeholder="National ID (optional)" inputmode="numeric" style="flex:1" oninput="FORM_RPT.onIdInput()">
+        <button class="lkbtn" onclick="FORM_RPT.lookup(document.getElementById('rpt-id').value.trim())"><i class="ti ti-search"></i></button>
+      </div>
+      <div class="bfound" id="rpt-found"><i class="ti ti-user-check" style="flex-shrink:0"></i><div id="rpt-fm" style="font-size:12px"></div></div>
+      <div class="bnew"   id="rpt-new">  <i class="ti ti-user-plus"  style="flex-shrink:0"></i>New / walk-in patient</div>
+      <div class="bedit"  id="rpt-edit"> <i class="ti ti-pencil"      style="flex-shrink:0"></i>Edit mode — <span id="rpt-edit-vid-label" style="font-family:monospace;font-size:10px"></span><button onclick="FORM_RPT.cancelEdit()" style="margin-left:auto;padding:3px 10px;background:#e65100;color:#fff;border:none;border-radius:20px;font-size:10px;cursor:pointer">Cancel</button></div>
+      <div id="rpt-timeline"></div>
+      <div class="vid-bar"><i class="ti ti-fingerprint"></i> Visit ID: <span id="rpt-vid">—</span></div>
+
+      <!-- AN/PN/FP status display -->
+      <div id="rpt-prev-summary" style="display:none;margin-bottom:10px">
+        <div class="sh">Clinical background</div>
+        <div class="fg"><label>ANC status</label><input type="text" id="rpt-anst" readonly></div>
+        <div class="fg"><label>PN status</label><input type="text" id="rpt-pnst" readonly></div>
+        <div class="fg"><label>FP status</label><input type="text" id="rpt-fpst" readonly></div>
+      </div>
+
+      <div class="sh">Visit details</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>Date *</label><input type="date" id="rpt-date"></div>
+        <div class="fg"><label>Month</label><select id="rpt-month"></select></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>Served HC *</label><select id="rpt-shc"></select></div>
+        <div class="fg"><label>Organization</label><select id="rpt-org"></select></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>MW Name *</label><input type="text" id="rpt-mw"></div>
+        <div class="fg"><label>Governorate</label><select id="rpt-gov"></select></div>
+      </div>
+
+      <div class="sh">Patient details</div>
+      <div class="fg"><label>Client Name</label><input type="text" id="rpt-name"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>Phone</label><input type="tel" id="rpt-phone"></div>
+        <div class="fg"><label>Date of Birth</label><input type="date" id="rpt-dob"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>Age</label><input type="number" id="rpt-age"></div>
+        <div class="fg"><label>Gender</label><select id="rpt-gender"></select></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>RRIS</label><input type="text" id="rpt-rris"></div>
+        <div class="fg"><label>MHR ID</label><input type="text" id="rpt-mhr"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>R/N</label><select id="rpt-rn"></select></div>
+        <div class="fg"><label>PWD</label><select id="rpt-pwd"></select></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label>MUAC (mm)</label><input type="number" id="rpt-muac"><div class="muac-bar" id="rpt-muac-bar"></div></div>
+        <div class="fg"></div>
+      </div>
+      <div class="fg"><label>Services</label><select id="rpt-svc" multiple></select></div>
+      <div class="fg"><label>Case description / Action taken</label><textarea id="rpt-case" rows="3"></textarea></div>
+      <div class="fg"><label>Remarks</label><textarea id="rpt-rmk" rows="2"></textarea></div>
+
+      <button class="bsave" style="width:100%;padding:13px;border:none;border-radius:var(--r);font-size:14px;font-weight:800;cursor:pointer;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px" onclick="FORM_RPT.save()">
+        <i class="ti ti-device-floppy"></i> Save Reporting record
+      </button>
+      <button class="btn" style="width:100%;margin-top:8px;justify-content:center" onclick="UI.clearForm('rpt')"><i class="ti ti-x"></i> Clear form</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     APPOINTMENTS PANEL
+══════════════════════════════════════════════════════════════════════════ -->
+<div class="panel" id="p-appts">
+  <div class="card">
+    <div class="ch"><i class="ti ti-calendar-event"></i>Appointments</div>
+    <div class="cb">
+      <!-- Summary boxes -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">
+        <div style="background:#ffebee;border:1px solid #ef9a9a;border-radius:var(--r);padding:10px;text-align:center;cursor:pointer" onclick="APPTS.setFilter('defaulter')">
+          <div style="font-size:22px;font-weight:800;color:#c62828" id="cnt-defaulter">0</div>
+          <div style="font-size:10px;color:#c62828;font-weight:700">Defaulters</div>
+          <div style="font-size:9px;color:#c62828;opacity:.7">Did not show</div>
+        </div>
+        <div style="background:#D6EFEF;border:1px solid var(--gb);border-radius:var(--r);padding:10px;text-align:center;cursor:pointer" onclick="APPTS.setFilter('today')">
+          <div style="font-size:22px;font-weight:800;color:var(--gd)" id="cnt-today">0</div>
+          <div style="font-size:10px;color:var(--gd);font-weight:700">Today</div>
+          <div style="font-size:9px;color:var(--gd);opacity:.7">Expected today</div>
+        </div>
+        <div style="background:#e3f2fd;border:1px solid #90caf9;border-radius:var(--r);padding:10px;text-align:center;cursor:pointer" onclick="APPTS.setFilter('upcoming')">
+          <div style="font-size:22px;font-weight:800;color:#1565c0" id="cnt-upcoming">0</div>
+          <div style="font-size:10px;color:#1565c0;font-weight:700">Upcoming</div>
+          <div style="font-size:9px;color:#1565c0;opacity:.7">Future dates</div>
+        </div>
+      </div>
+      <!-- Date search -->
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:10px">
+        <input type="date" id="appt-date-search" style="flex:1;min-width:130px;padding:8px 10px;border:1px solid var(--bd2);border-radius:var(--r);font-size:12px">
+        <button onclick="APPTS.searchDate()" class="btn bprim" style="flex-shrink:0"><i class="ti ti-search"></i> Search date</button>
+        <button onclick="APPTS.setFilter('all')" class="btn" style="flex-shrink:0"><i class="ti ti-list"></i> All</button>
+      </div>
+      <div id="appt-filter-label" style="font-size:11px;color:var(--tx2);margin-bottom:8px;font-weight:600"></div>
+      <div id="appt-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     SEARCH PANEL
+══════════════════════════════════════════════════════════════════════════ -->
+<div class="panel" id="p-search">
+  <div class="card">
+    <div class="ch"><i class="ti ti-search"></i>Search by ID</div>
+    <div class="cb">
+      <div style="display:flex;gap:6px;margin-bottom:10px">
+        <input type="number" id="srch-id" placeholder="Enter National ID..." inputmode="numeric" style="flex:1"
+          onkeydown="if(event.key==='Enter')SEARCH.doSearch()">
+        <button class="lkbtn" onclick="SEARCH.doSearch()"><i class="ti ti-search"></i></button>
+      </div>
+      <div id="srch-results"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     SYNC PANEL
+══════════════════════════════════════════════════════════════════════════ -->
+<div class="panel" id="p-sync">
+
+  <!-- Sync config -->
+  <div class="card">
+    <div class="ch"><i class="ti ti-cloud-upload"></i>Sync configuration</div>
+    <div class="cb">
+      <div style="font-size:12px;color:var(--tx2);margin-bottom:10px;line-height:1.6">Records save locally first. They sync automatically to your Google Sheet when internet is available.</div>
+      <div class="fg"><label>Google Apps Script endpoint URL</label>
+        <input type="url" id="epurl" placeholder="https://script.google.com/macros/s/..."
+          onfocus="this.value=this.value.trim()" onchange="SYNC_UI.saveEP()">
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:0">
+        <button class="btn bsave" onclick="SYNC_UI.testEP()"><i class="ti ti-wifi"></i> Test connection</button>
+        <button class="btn" onclick="SYNC_UI.syncNow()"><i class="ti ti-cloud-upload"></i> Sync now</button>
+        <button class="btn" onclick="SYNC_UI.resetEP()" title="Reset to default URL" style="background:var(--bg2)"><i class="ti ti-refresh"></i></button>
+      </div>
+      <!-- Diagnostic output — appears under the buttons -->
+      <div class="diag-box" id="epres"></div>
+    </div>
+  </div>
+
+  <!-- Pull from Sheets -->
+  <div class="card">
+    <div class="ch"><i class="ti ti-cloud-download"></i>Pull from Google Sheets</div>
+    <div class="cb">
+      <div style="font-size:12px;color:var(--tx2);margin-bottom:10px">Fetch all records for your facility from the Google Sheet.</div>
+      <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px">
+        <div class="fg" style="flex:1;margin-bottom:0"><label>Date range</label>
+          <select id="pull-since">
+            <option value="30">Last 30 days</option>
+            <option value="90" selected>Last 3 months</option>
+            <option value="180">Last 6 months</option>
+            <option value="365">Last 12 months</option>
+            <option value="0">All time</option>
+          </select>
+        </div>
+        <button class="btn bprim" onclick="SYNC_UI.pullFacility()"><i class="ti ti-download"></i> Pull facility data</button>
+      </div>
+      <div id="pull-status" style="font-size:12px;color:var(--tx2)"></div>
+      <div id="pull-log" style="font-size:10px;color:var(--tx2);margin-top:6px;max-height:120px;overflow-y:auto;font-family:monospace;line-height:1.8"></div>
+    </div>
+  </div>
+
+  <!-- Backup & Restore -->
+  <div class="card">
+    <div class="ch"><i class="ti ti-shield-lock"></i>Device backup &amp; restore</div>
+    <div class="cb">
+      <div style="font-size:12px;color:var(--tx2);margin-bottom:12px;line-height:1.6">
+        Save an encrypted backup of all your local records to a <strong>.goat</strong> file.
+        The file is unreadable without this app — safe to store or send to your supervisor.
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+        <button class="btn bsave" id="export-btn" onclick="SYNC_UI.exportBackup()" style="flex:1;min-width:140px">
+          <i class="ti ti-download"></i> Save backup (.goat)
+        </button>
+        <button class="btn" onclick="g('import-file').click()" style="flex:1;min-width:140px;background:var(--bg2);color:var(--tx)">
+          <i class="ti ti-upload"></i> Restore from backup
+        </button>
+        <input type="file" id="import-file" accept=".goat" style="display:none"
+          onchange="if(this.files[0])SYNC_UI.importBackup(this.files[0])">
+      </div>
+      <!-- Excel import -->
+      <div style="border-top:1px solid var(--bd);padding-top:10px;margin-top:4px">
+        <div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:7px;text-transform:uppercase;letter-spacing:.06em">
+          <i class="ti ti-table-import"></i> Restore from Excel (.xlsx)
+        </div>
+        <div style="font-size:11px;color:var(--tx2);margin-bottom:8px;line-height:1.6">
+          If your data was lost, receive a <strong>.xlsx</strong> file from your supervisor via WhatsApp, then import it here.
+        </div>
+        <button class="btn" onclick="g('import-xlsx').click()"
+          style="background:var(--gl);color:var(--gd);border-color:var(--gb);font-weight:700;display:flex;align-items:center;gap:6px">
+          <i class="ti ti-file-spreadsheet"></i> Import from Excel (.xlsx)
+        </button>
+        <input type="file" id="import-xlsx" accept=".xlsx,.xls" style="display:none"
+          onchange="if(this.files[0])SYNC_UI.importExcel(this.files[0])">
+        <div id="xlsx-status" style="font-size:11px;margin-top:8px;min-height:18px;line-height:1.6"></div>
+      </div>
+      <div style="font-size:10px;color:var(--tx3);margin-top:10px;line-height:1.5">
+        <i class="ti ti-info-circle"></i>
+        Data is also mirrored to browser IndexedDB automatically — survives cache clearing.
+      </div>
+    </div>
+  </div>
+
+  <!-- Sync queue -->
+  <div class="card">
+    <div class="ch"><i class="ti ti-list-check"></i>Sync queue</div>
+    <div class="cb">
+      <div id="sq-display" style="font-size:12px;color:var(--tx2);text-align:center;padding:12px">All synced</div>
+    </div>
+  </div>
+
+  <!-- User settings -->
+  <div class="card">
+    <div class="ch"><i class="ti ti-user-cog"></i>Your settings</div>
+    <div class="cb">
+      <div class="fg"><label>Your name</label><input type="text" id="set-name" placeholder="Full name"></div>
+      <div class="fg"><label>Role</label>
+        <select id="set-role">
+          <option>Midwife</option><option>Doctor</option><option>Nurse</option>
+          <option>Health Educator</option><option>Supervisor</option><option>Other</option>
+        </select>
+      </div>
+      <div class="fg"><label>Facility</label><select id="set-fac"></select></div>
+      <button class="btn bprim" style="width:100%;justify-content:center" onclick="SYNC_UI.saveUser()">
+        <i class="ti ti-check"></i> Save settings
+      </button>
+    </div>
+  </div>
+
+  <!-- Sync log -->
+  <div class="card">
+    <div class="ch"><i class="ti ti-terminal"></i>Sync log</div>
+    <div class="cb">
+      <div id="slog" style="font-family:monospace;font-size:10px;max-height:200px;overflow-y:auto;line-height:1.8;color:var(--tx2)"></div>
+      <button class="btn" style="width:100%;justify-content:center;margin-top:8px" onclick="SYNC_UI.clearLog()">
+        <i class="ti ti-trash"></i> Clear log
+      </button>
+    </div>
+  </div>
+
+</div><!-- end p-sync -->
+</div><!-- end wrap -->
+
+<!-- ══ NOTIFICATION TOAST ═════════════════════════════════════════════════ -->
+<div class="notif" id="notif"></div>
+
+<!-- ══ SCRIPTS — order matters ════════════════════════════════════════════ -->
+<script>
+// ── js/schema.js ──────────────────────────
+/**
+ * GOAT MCH v2 — Schema
+ * Single source of truth for all field names, types, and sheet mappings.
+ * Change a field name here → changes everywhere automatically.
+ */
+
+const SCHEMA = {
+
+  // ── SHARED FIELDS (same name in all sheets) ──────────────────────────────
+  COMMON: {
+    DATE:     'Date Of Registration',
+    SERVED_HC:'Served HC',
+    MW_NAME:  'MW Name',
+    MUAC:     'MUAC',
+    REMARKS:  'REMARKS',
+  },
+
+  // ── PATIENT REGISTRY ──────────────────────────────────────────────────────
+  PATIENT: {
+    ID:       'National ID',
+    NAME:     'Pregnant Name',   // canonical — used for AN/FP
+    PHONE:    'Contact Number',
+    DOB:      'DOB',
+    RRIS:     'RRIS family number',
+    MHR:      'MHR ID رقم الامومة',
+    REFUGEE:  'Refugee Status',
+    HUSBAND:  'Husband name',
+    HUSBAND_ID:'National ID - Husband',
+    STATUS:   'Status',
+  },
+
+  // ── AN SHEET ──────────────────────────────────────────────────────────────
+  AN: {
+    sheet:    'AN',
+    idField:  'National ID',
+    dateField:'Date Of Registration',
+    mwField:  'MW Name',
+    hcField:  'Served HC',
+    nameField:'Pregnant Name',
+    nextAppt: 'Next App',
+    fields: [
+      { id:'an-date',    key:'Date Of Registration',           type:'date',   required:true  },
+      { id:'an-name',    key:'Pregnant Name',                  type:'text',   required:true  },
+      { id:'an-natid',   key:'National ID',                    type:'text',   required:true  },
+      { id:'an-shc',     key:'Served HC',                      type:'select', required:true  },
+      { id:'an-ohc',     key:'Original HC',                    type:'select'                 },
+      { id:'an-mw',      key:'MW Name',                        type:'text',   required:true  },
+      { id:'an-case',    key:'New Case/ Follow Up',            type:'select'                 },
+      { id:'an-refugee', key:'Refugee Status',                 type:'select'                 },
+      { id:'an-status',  key:'Status',                         type:'select'                 },
+      { id:'an-phone',   key:'Contact Number',                 type:'tel'                    },
+      { id:'an-dob',     key:'DOB',                            type:'date'                   },
+      { id:'an-rris',    key:'RRIS family number',             type:'text'                   },
+      { id:'an-mhr',     key:'MHR ID رقم الامومة',            type:'text'                   },
+      { id:'an-husband', key:'Husband name',                   type:'text'                   },
+      { id:'an-hid2',    key:'National ID - Husband',          type:'text'                   },
+      { id:'an-lmp',     key:'LMP',                            type:'date'                   },
+      { id:'an-edd',     key:'EDD',                            type:'date',   readonly:true  },
+      { id:'an-ga',      key:'GA',                             type:'text',   readonly:true  },
+      { id:'an-fundal',  key:'Fundal Level (1)',               type:'text'                   },
+      { id:'an-pres',    key:'Presentation',                   type:'select'                 },
+      { id:'an-bp',      key:'BP',                             type:'text'                   },
+      { id:'an-wt',      key:'Weight',                         type:'number', min:20,max:200 },
+      { id:'an-ht',      key:'height',                         type:'number', min:100,max:220},
+      { id:'an-bmi',     key:'BMI',                            type:'text',   readonly:true  },
+      { id:'an-muac',    key:'MUAC',                           type:'number', min:100,max:350},
+      { id:'an-oedema',  key:'Oedema',                         type:'select'                 },
+      { id:'an-urine',   key:'Urine Albumin / Sugar',          type:'text'                   },
+      { id:'an-supp',    key:'Supplements',                    type:'text'                   },
+      { id:'an-lab',     key:'Lab',                            type:'text'                   },
+      { id:'an-lab2',    key:'Lab2',                           type:'text'                   },
+      { id:'an-ghq',     key:'MHPSS ( GHQ Score )',            type:'number', min:0,max:12   },
+      { id:'an-gbv',     key:'GBV',                            type:'select'                 },
+      { id:'an-sti',     key:'STI',                            type:'select'                 },
+      { id:'an-dis',     key:'Disability',                     type:'select'                 },
+      { id:'an-risk',    key:'RISK SCORE',                     type:'text',   readonly:true  },
+      { id:'an-rcurr',   key:'Risk Factor CURRENT PREGNANCY',  type:'multi'                  },
+      { id:'an-rprev',   key:'Risk Factor PREVIOUS PREGNANCIES',type:'multi'                 },
+      { id:'an-riskdetail',key:'Combined Risk Factors',        type:'text',   readonly:true  },
+      { id:'an-ref',     key:'REFERRAL',                       type:'text'                   },
+      { id:'an-rmk',     key:'REMARKS',                        type:'textarea'               },
+      { id:'an-next',    key:'Next App',                       type:'date'                   },
+    ]
+  },
+
+  // ── PN SHEET ──────────────────────────────────────────────────────────────
+  PN: {
+    sheet:    'PN',
+    idField:  'ID client',
+    dateField:'Date Of Registration',
+    mwField:  'MW Name',
+    hcField:  'Served HC',
+    nameField:'Name',
+    nextAppt: 'Next app.',
+    fields: [
+      { id:'pn-date',    key:'Date Of Registration',           type:'date',   required:true  },
+      { id:'pn-name',    key:'Name',                           type:'text',   required:true  },
+      { id:'pn-idcl',    key:'ID client',                      type:'text',   required:true  },
+      { id:'pn-shc',     key:'Served HC',                      type:'select', required:true  },
+      { id:'pn-ohc',     key:'Original HC',                    type:'select'                 },
+      { id:'pn-mw',      key:'MW Name',                        type:'text',   required:true  },
+      { id:'pn-case',    key:'NEW Case/',                      type:'select'                 },
+      { id:'pn-refugee', key:'Refugee/NotRefugee',             type:'select'                 },
+      { id:'pn-status',  key:'Status',                         type:'select'                 },
+      { id:'pn-phone',   key:'Contact No',                     type:'tel'                    },
+      { id:'pn-dob',     key:'DOB',                            type:'date'                   },
+      { id:'pn-rris',    key:'RRIS',                           type:'text'                   },
+      { id:'pn-mhr',     key:'MHR NO',                         type:'text'                   },
+      { id:'pn-deliv',   key:'Date Od Delivery',               type:'date'                   },
+      { id:'pn-place',   key:'Place Delivery',                 type:'select'                 },
+      { id:'pn-type',    key:'Type Delivery',                  type:'select'                 },
+      { id:'pn-twin',    key:'Twin pregnancy Y/N',             type:'select'                 },
+      { id:'pn-sex1',    key:'Sex 1st baby',                   type:'select'                 },
+      { id:'pn-wt1',     key:'wt 1st baby',                    type:'number'                 },
+      { id:'pn-sex2',    key:'sexy 2nd baby',                  type:'select'                 },
+      { id:'pn-wt2',     key:'wt 2nd baby',                    type:'number'                 },
+      { id:'pn-comp',    key:'complications',                  type:'text'                   },
+      { id:'pn-by',      key:'delivered by whom',              type:'select'                 },
+      { id:'pn-stis',    key:'STIs',                           type:'select'                 },
+      { id:'pn-dis',     key:'Disability',                     type:'select'                 },
+      { id:'pn-gbv',     key:'GBV',                            type:'select'                 },
+      { id:'pn-muac',    key:'MUAC',                           type:'number', min:100,max:350},
+      { id:'pn-nbrm',    key:'newborn remarks',                type:'textarea'               },
+      { id:'pn-bffp',    key:'(BF & FP )notes & reommendation',type:'textarea'              },
+      { id:'pn-next',    key:'Next app.',                      type:'date'                   },
+      { id:'pn-rmk',     key:'REMARKS',                        type:'textarea'               },
+    ]
+  },
+
+  // ── FP SHEET ──────────────────────────────────────────────────────────────
+  FP: {
+    sheet:    'FP',
+    idField:  'National ID',
+    dateField:'Date Of Registration',
+    mwField:  'MW Name',
+    hcField:  'Served HC',
+    nameField:'Client name',
+    nextAppt: 'Next app',
+    fields: [
+      { id:'fp-date',    key:'Date Of Registration',           type:'date',   required:true  },
+      { id:'fp-name',    key:'Client name',                    type:'text',   required:true  },
+      { id:'fp-natid',   key:'National ID',                    type:'text',   required:true  },
+      { id:'fp-shc',     key:'Served HC',                      type:'select', required:true  },
+      { id:'fp-ohc',     key:'Original HC',                    type:'select'                 },
+      { id:'fp-mw',      key:'MW Name',                        type:'text',   required:true  },
+      { id:'fp-case',    key:'New Case/Follow Up',             type:'select'                 },
+      { id:'fp-refugee', key:'Refguee / NonRefguee',           type:'select'                 },
+      { id:'fp-status',  key:'Status',                         type:'select'                 },
+      { id:'fp-phone',   key:'Contact Number',                 type:'tel'                    },
+      { id:'fp-dob',     key:'DOB',                            type:'date'                   },
+      { id:'fp-rris',    key:'RRIS family number',             type:'text'                   },
+      { id:'fp-mhr',     key:'MHR ID رقم الامومة',            type:'text'                   },
+      { id:'fp-method',  key:'Family planning method',         type:'select'                 },
+      { id:'fp-lam',     key:'Lactation Amenorrhea',           type:'select'                 },
+      { id:'fp-lmp',     key:'LMP',                            type:'date'                   },
+      { id:'fp-qty',     key:'Quantity provided',              type:'text'                   },
+      { id:'fp-dis',     key:'Disability',                     type:'select'                 },
+      { id:'fp-muac',    key:'MUAC',                           type:'number', min:100,max:350},
+      { id:'fp-sti',     key:'STI s',                          type:'select'                 },
+      { id:'fp-mhpss',   key:'Mhps. Sup.',                    type:'select'                 },
+      { id:'fp-gbv',     key:'GBV',                            type:'select'                 },
+      { id:'fp-bpwt',    key:'BP /wt /breast exam / if done  &notes', type:'textarea'       },
+      { id:'fp-next',    key:'Next app',                       type:'date'                   },
+      { id:'fp-fu',      key:'F/U Notes',                      type:'textarea'               },
+      { id:'fp-rmk',     key:'remarks',                        type:'textarea'               },
+    ]
+  },
+
+  // ── REPORTING SHEET ───────────────────────────────────────────────────────
+  RPT: {
+    sheet:    'REPORTING',
+    idField:  'National ID',
+    dateField:'Date Of Registration',
+    mwField:  'Name Of midwife',
+    hcField:  'Served HC',
+    nameField:'Client Name',
+    nextAppt: null,
+    fields: [
+      { id:'rpt-date',   key:'Date Of Registration',           type:'date',   required:true  },
+      { id:'rpt-name',   key:'Client Name',                    type:'text'                   },
+      { id:'rpt-natid',  key:'National ID',                    type:'text'                   },
+      { id:'rpt-shc',    key:'Served HC',                      type:'select', required:true  },
+      { id:'rpt-mw',     key:'Name Of midwife',                type:'text',   required:true  },
+      { id:'rpt-org',    key:'Organization',                   type:'select'                 },
+      { id:'rpt-month',  key:'Month',                          type:'select'                 },
+      { id:'rpt-gov',    key:'Governorates',                   type:'select'                 },
+      { id:'rpt-phone',  key:'Contact Number',                 type:'tel'                    },
+      { id:'rpt-dob',    key:'DATE OF BIRTH',                  type:'date'                   },
+      { id:'rpt-rris',   key:'RRIS family number',             type:'text'                   },
+      { id:'rpt-mhr',    key:'MHR ID رقم الامومة',            type:'text'                   },
+      { id:'rpt-age',    key:'Age',                            type:'number'                 },
+      { id:'rpt-gender', key:'Gender',                         type:'select'                 },
+      { id:'rpt-rn',     key:'R/N',                            type:'select'                 },
+      { id:'rpt-muac',   key:'MUAC',                           type:'number', min:100,max:350},
+      { id:'rpt-pwd',    key:'PWD',                            type:'select'                 },
+      { id:'rpt-svc',    key:'Services',                       type:'multi'                  },
+      { id:'rpt-case',   key:'Case Description / Action Taken',type:'textarea'               },
+      { id:'rpt-rmk',    key:'REMARKS',                        type:'textarea'               },
+    ]
+  },
+
+  // ── HEALTH CENTRES ────────────────────────────────────────────────────────
+  HC_LIST: [
+    'Mawasi','Zourob','Japanese','Hamad','Mawiya','Maghazi','Nuseirat',
+    'West Nuseirat','Burij','Dair AlBalah HC','Gaza Town HC','Rafah HC',
+    'KHY HC','Tal Sultan HC','Shaboura HC','Shouka HC','AlNasser HC',
+    'Beit Hanoun HC','Sheikh Radwan HC','Jabalia HC','Maan HC'
+  ],
+
+  MP_LIST: [
+    'Attar','Honain','Laham','KHY Prep. Boys A/C','A.A.AZIZ Prep. Boys',
+    'KHY Prep. Girls C/B','KHY Elem. Boys A&C/B','KHY Prep. Coed C',
+    'KHY Elem. Coed A/E','Al-Shaaer','Water well #19','El Mofte Elem. Coed',
+    'Nuseirat Prep. Girls D&F/C','Nuseirat Prep. Coed A','Nuseirat Prep. Boys D',
+    'Bureij Prep. Boys B&C','D/Balah Prep. Girls A/Boys C','Asma Prep. Girls A&B',
+    'Salah Eddin Prep. Boys B&A','Rimal Elem. Co-ed A&B','Daraj Elem. Co-ed A&B&D&E',
+    'North Gaza Health Center MP'
+  ],
+
+  // ── DROPDOWN OPTIONS ──────────────────────────────────────────────────────
+  OPTIONS: {
+    caseType:    ['New Case','Follow Up'],
+    refugee:     ['Refugee','Non-refugee','IDP'],
+    status:      ['Active','Inactive','Transferred out','Delivered','Discontinued'],
+    presentation:['Cephalic','Breech','Transverse','Oblique'],
+    oedema:      ['None','Mild (+)','Moderate (++)','Severe (+++)'],
+    gbv:         ['No','Yes - referred','Yes - not referred'],
+    sti:         ['No','Yes - treated','Yes - referred'],
+    disability:  ['No','Visual','Hearing','Physical','Cognitive','Multiple'],
+    delivPlace:  ['Health facility','Home','Other'],
+    delivType:   ['NVD','C-section','Instrumental','Other'],
+    delivBy:     ['Midwife','Doctor','TBA','Other'],
+    fpMethod:    ['IUD','Implant','Pills','Injectable','Condom','LAM','NFP','Other'],
+    lam:         ['Yes','No'],
+    risk_current:['Anemia','Hypertension','Diabetes','Heart disease','Renal disease',
+                  'Previous C-section','Multiple pregnancy','Malposition','Polyhydramnios',
+                  'Oligohydramnios','PROM','APH','Pre-eclampsia','Eclampsia','Other'],
+    risk_prev:   ['Previous stillbirth','Previous neonatal death','Previous PPH',
+                  'Previous CS','Previous shoulder dystocia','Other'],
+    services:    ['ANC','PNC','FP','MHPSS','GBV','Health Education','Screening','PCC',
+                  'Referral','STI','Lab','Immunization','Other'],
+    org:         ['UNRWA','MSF','WHO','UNICEF','MoH','Other NGO'],
+    gov:         ['Khan Younis','Rafah','Middle Area','North Gaza','Gaza'],
+    month:       ['January','February','March','April','May','June',
+                  'July','August','September','October','November','December'],
+    gender:      ['Female','Male'],
+    yn:          ['Yes','No'],
+    rn:          ['Refugee','Non-refugee'],
+  }
+};
+
+// Helper: get schema config for a sheet key ('an','pn','fp','rpt')
+SCHEMA.forSheet = function(s) {
+  return { an: SCHEMA.AN, pn: SCHEMA.PN, fp: SCHEMA.FP, rpt: SCHEMA.RPT }[s];
+};
+
+// Helper: get the field key for a given form field ID
+SCHEMA.keyFor = function(fieldId) {
+  for (const sheet of [SCHEMA.AN, SCHEMA.PN, SCHEMA.FP, SCHEMA.RPT]) {
+    const f = sheet.fields.find(f => f.id === fieldId);
+    if (f) return f.key;
+  }
+  return null;
+};
+
+
+// ── js/db.js ──────────────────────────
+/**
+ * GOAT MCH v2 — Database Module
+ * Manages all local storage: localStorage (fast) + IndexedDB (persistent mirror)
+ * Guaranteed initialization — SQ and DB arrays are NEVER undefined
+ */
+
+const DB = (() => {
+
+  // ── Safe parse ─────────────────────────────────────────────────────────────
+  function parse(key, fallback) {
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) return fallback;
+      const val = JSON.parse(raw);
+      // Type-safety: if caller expects array, ensure array
+      if (Array.isArray(fallback) && !Array.isArray(val)) return fallback;
+      if (!Array.isArray(fallback) && typeof fallback === 'object' && Array.isArray(val)) return fallback;
+      return val;
+    } catch (e) {
+      return fallback;
+    }
+  }
+
+  // ── State ──────────────────────────────────────────────────────────────────
+  const state = {
+    patients: parse('mch_pts',  {}),
+    an:       parse('mch_an',   []),
+    pn:       parse('mch_pn',   []),
+    fp:       parse('mch_fp',   []),
+    rpt:      parse('mch_rpt',  []),
+    sq:       parse('mch_sq',   []),   // sync queue — NEVER undefined
+    log:      parse('mch_log',  []),
+  };
+
+  // ── IndexedDB ──────────────────────────────────────────────────────────────
+  let _idb = null;
+
+  function openIDB() {
+    if (_idb) return Promise.resolve(_idb);
+    return new Promise((resolve) => {
+      const req = indexedDB.open('goat-mch-data', 2);
+      req.onupgradeneeded = e => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains('store'))   db.createObjectStore('store');
+        if (!db.objectStoreNames.contains('config'))  db.createObjectStore('config');
+      };
+      req.onsuccess = e => { _idb = e.target.result; resolve(_idb); };
+      req.onerror   = ()  => resolve(null);
+    });
+  }
+
+  function idbSet(key, value) {
+    return openIDB().then(db => {
+      if (!db) return;
+      return new Promise(res => {
+        const tx = db.transaction('store', 'readwrite');
+        tx.objectStore('store').put(value, key);
+        tx.oncomplete = res;
+        tx.onerror    = res;
+      });
+    }).catch(() => {});
+  }
+
+  function idbGet(key) {
+    return openIDB().then(db => {
+      if (!db) return null;
+      return new Promise(res => {
+        const tx  = db.transaction('store', 'readonly');
+        const req = tx.objectStore('store').get(key);
+        req.onsuccess = () => res(req.result ?? null);
+        req.onerror   = () => res(null);
+      });
+    }).catch(() => null);
+  }
+
+  // ── Persist ────────────────────────────────────────────────────────────────
+  // Always writes to localStorage AND mirrors to IndexedDB
+  // Never throws — storage failures are logged but don't crash the app
+  function persist(key) {
+    const lsKey  = key === 'patients' ? 'mch_pts' : `mch_${key}`;
+    const value  = key === 'patients' ? state.patients : state[key];
+    const serial = JSON.stringify(value ?? (Array.isArray(value) ? [] : {}));
+    try {
+      localStorage.setItem(lsKey, serial);
+    } catch (e) {
+      console.warn('[DB] localStorage write failed:', key, e.message);
+    }
+    // Mirror to IndexedDB (async, non-blocking)
+    idbSet(lsKey, value).catch(() => {});
+  }
+
+  // Persist everything at once (used after bulk import)
+  function persistAll() {
+    ['patients','an','pn','fp','rpt','sq'].forEach(persist);
+  }
+
+  // ── Recovery ───────────────────────────────────────────────────────────────
+  // If localStorage was cleared (cache wipe), restore from IndexedDB
+  async function recover() {
+    const keys = ['mch_pts','mch_an','mch_pn','mch_fp','mch_rpt','mch_sq'];
+    const missing = keys.filter(k => !localStorage.getItem(k));
+    if (!missing.length) return false; // nothing to recover
+
+    let recovered = 0;
+    for (const k of missing) {
+      const val = await idbGet(k);
+      if (val !== null) {
+        try {
+          localStorage.setItem(k, JSON.stringify(val));
+          recovered++;
+        } catch (e) {}
+      }
+    }
+
+    if (recovered > 0) {
+      // Reload state from restored localStorage
+      Object.assign(state.patients, parse('mch_pts', {}));
+      // Reload arrays IN PLACE (don't reassign — would break references)
+      ['an','pn','fp','rpt'].forEach(s => {
+        const fresh = parse(`mch_${s}`, []);
+        state[s].length = 0;
+        fresh.forEach(r => state[s].push(r));
+      });
+      const freshSQ = parse('mch_sq', []);
+      state.sq.length = 0;
+      freshSQ.forEach(r => state.sq.push(r));
+      console.log(`[DB] Recovered ${recovered} stores from IndexedDB`);
+      return true;
+    }
+    return false;
+  }
+
+  // ── Visit ID generator ─────────────────────────────────────────────────────
+  function makeVID(sheet) {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let rand = '';
+    for (let i = 0; i < 8; i++) rand += chars[Math.floor(Math.random() * chars.length)];
+    return `${sheet.toUpperCase()}-${rand}`;
+  }
+
+  // ── Save a new record ──────────────────────────────────────────────────────
+  function saveRecord(sheet, row, options = {}) {
+    const s = sheet.toLowerCase();
+    if (!Array.isArray(state[s])) state[s] = [];
+
+    const vid = row.visit_id || makeVID(sheet);
+    const pid = (row[SCHEMA.forSheet(s)?.idField] || '').trim();
+    const date = (row[SCHEMA.forSheet(s)?.dateField] || '').slice(0, 10);
+
+    const record = Object.assign({}, row, {
+      visit_id: vid,
+      lady_id:  pid,
+      sheet:    sheet.toUpperCase(),
+      ts:       Date.now(),
+      _synced:  false,
+      _edit_count: 0,
+    });
+
+    state[s].unshift(record);
+    persist(s);
+
+    // Update patient registry
+    upsertPatient(pid, record, s);
+
+    // Add to sync queue
+    if (!options.skipSync) {
+      state.sq.push({
+        visit_id: vid,
+        sheet:    sheet.toUpperCase(),
+        row:      record,
+        attempts: 0,
+        synced:   false,
+        queued_at: Date.now(),
+      });
+      persist('sq');
+    }
+
+    // Auto-mirror to IDB every 10 saves
+    _saveCount++;
+    if (_saveCount % 10 === 0) mirrorToIDB();
+
+    return vid;
+  }
+
+  // ── Update an existing record ──────────────────────────────────────────────
+  function updateRecord(sheet, vid, changes) {
+    const s = sheet.toLowerCase();
+    const idx = (state[s] || []).findIndex(r => r.visit_id === vid);
+    if (idx < 0) return false;
+
+    const updated = Object.assign({}, state[s][idx], changes, {
+      visit_id:    vid,
+      _edit_count: (state[s][idx]._edit_count || 0) + 1,
+      _edited_at:  Date.now(),
+      _synced:     false,
+    });
+    state[s][idx] = updated;
+    persist(s);
+
+    // Re-queue for sync
+    const sqIdx = state.sq.findIndex(r => r.visit_id === vid);
+    if (sqIdx >= 0) {
+      state.sq[sqIdx] = Object.assign({}, state.sq[sqIdx], { row: updated, synced: false, attempts: 0 });
+    } else {
+      state.sq.push({ visit_id: vid, sheet: sheet.toUpperCase(), row: updated, attempts: 0, synced: false, queued_at: Date.now() });
+    }
+    persist('sq');
+    return true;
+  }
+
+  // ── Upsert patient registry ────────────────────────────────────────────────
+  function upsertPatient(pid, record, sheet) {
+    if (!pid) return;
+    const existing = state.patients[pid] || {};
+    function mf(k, v) { if (v && !existing[k]) existing[k] = v; }
+
+    mf('name',       record['Pregnant Name'] || record['Name'] || record['Client name'] || record['Client Name']);
+    mf('phone',      record['Contact Number'] || record['Contact No']);
+    mf('dob',        record['DOB'] || record['DATE OF BIRTH']);
+    mf('rris',       record['RRIS family number'] || record['RRIS']);
+    mf('mhr',        record['MHR ID رقم الامومة'] || record['MHR NO']);
+    mf('refugee',    record['Refugee Status'] || record['Refugee/NotRefugee'] || record['Refguee / NonRefguee']);
+    mf('husband',    record['Husband name']);
+    mf('hid2',       record['National ID - Husband']);
+    mf('status',     record['Status']);
+    if (sheet === 'an') {
+      mf('lmp',      record['LMP']);
+      existing.last_an_shc  = record['Served HC'] || existing.last_an_shc;
+      existing.last_rcurr   = record['Risk Factor CURRENT PREGNANCY'] || record['Combined Risk Factors'] || existing.last_rcurr;
+      existing.last_rprev   = record['Risk Factor PREVIOUS PREGNANCIES'] || existing.last_rprev;
+    }
+    if (sheet === 'pn') existing.last_pn_shc = record['Served HC'] || existing.last_pn_shc;
+    if (sheet === 'fp') {
+      existing.last_fp_shc  = record['Served HC'] || existing.last_fp_shc;
+      existing.last_fp      = record['Family planning method'] || existing.last_fp;
+    }
+    if (sheet === 'rpt') {
+      existing.last_rpt_shc = record['Served HC'] || existing.last_rpt_shc;
+      existing.last_rpt_org = record['Organization'] || existing.last_rpt_org;
+    }
+
+    state.patients[pid] = existing;
+    persist('patients');
+  }
+
+  // ── Bulk upsert (for pull / import) ───────────────────────────────────────
+  function upsertRow(row, sheetCfg) {
+    const s = sheetCfg.local || sheetCfg.sheet.toLowerCase();
+    const realS = s === 'reporting' ? 'rpt' : s;
+    if (!Array.isArray(state[realS])) state[realS] = [];
+
+    const pid      = (row[sheetCfg.idField] || '').trim();
+    const rawDate  = (row[sheetCfg.dateField] || '').trim();
+    const normDate = rawDate.slice(0, 10);
+    if (normDate) row[sheetCfg.dateField] = normDate;
+
+    const vid = row.visit_id || `${sheetCfg.sheet}-${pid}-${normDate}`;
+
+    // Skip if already exists
+    if (state[realS].find(r => r.visit_id === vid)) return false;
+
+    const record = Object.assign({}, row, {
+      visit_id: vid, lady_id: pid, sheet: sheetCfg.sheet,
+      ts: normDate ? new Date(normDate).getTime() : Date.now(),
+      _synced: true, _pulled: true, _facility_pull: true,
+    });
+
+    state[realS].unshift(record);
+    upsertPatient(pid, record, realS);
+    return true;
+  }
+
+  // ── Sync queue helpers ─────────────────────────────────────────────────────
+  function getPending() {
+    return (state.sq || []).filter(r => !r.synced);
+  }
+
+  function markSynced(vid) {
+    const idx = (state.sq || []).findIndex(r => r.visit_id === vid);
+    if (idx >= 0) {
+      state.sq[idx].synced   = true;
+      state.sq[idx].synced_at = Date.now();
+      // Update _synced on the actual record too
+      for (const s of ['an','pn','fp','rpt']) {
+        const rIdx = (state[s] || []).findIndex(r => r.visit_id === vid);
+        if (rIdx >= 0) { state[s][rIdx]._synced = true; persist(s); break; }
+      }
+    }
+    persist('sq');
+  }
+
+  function markFailed(vid) {
+    const idx = (state.sq || []).findIndex(r => r.visit_id === vid);
+    if (idx >= 0) {
+      state.sq[idx].attempts = (state.sq[idx].attempts || 0) + 1;
+      state.sq[idx].last_attempt = Date.now();
+    }
+    persist('sq');
+  }
+
+  // ── Log helpers ────────────────────────────────────────────────────────────
+  function addLog(msg) {
+    const ts = new Date().toLocaleTimeString();
+    state.log.unshift(`[${ts}] ${msg}`);
+    if (state.log.length > 200) state.log.length = 200;
+    try { localStorage.setItem('mch_log', JSON.stringify(state.log)); } catch (e) {}
+  }
+
+  // ── IDB mirror ─────────────────────────────────────────────────────────────
+  let _saveCount = 0;
+  function mirrorToIDB() {
+    // Mirror clinical data only — never mirror user/ep (prevent stale restore)
+    idbSet('mch_pts', state.patients);
+    idbSet('mch_an',  state.an);
+    idbSet('mch_pn',  state.pn);
+    idbSet('mch_fp',  state.fp);
+    idbSet('mch_rpt', state.rpt);
+    idbSet('mch_sq',  state.sq);
+  }
+
+  // ── Config (EP + user) stored separately from clinical data ───────────────
+  function getEP()   { return (localStorage.getItem('mch_ep') || '').trim(); }
+  function setEP(ep) { localStorage.setItem('mch_ep', ep.trim()); writeSWConfig(); }
+
+  function getUser()   { try { return JSON.parse(localStorage.getItem('mch_user') || 'null'); } catch (e) { return null; } }
+  function setUser(u)  { localStorage.setItem('mch_user', JSON.stringify(u)); writeSWConfig(); }
+
+  function writeSWConfig() {
+    const user = getUser();
+    openIDB().then(db => {
+      if (!db) return;
+      const tx = db.transaction('config', 'readwrite');
+      tx.objectStore('config').put({
+        ep:       getEP(),
+        facility: user?.facility || '',
+        name:     user?.name     || '',
+        ts:       Date.now(),
+      }, 'sw_config');
+    }).catch(() => {});
+  }
+
+  // ── Public API ─────────────────────────────────────────────────────────────
+  return {
+    // State accessors (read-only references — mutate via methods)
+    get patients() { return state.patients; },
+    get an()       { return state.an; },
+    get pn()       { return state.pn; },
+    get fp()       { return state.fp; },
+    get rpt()      { return state.rpt; },
+    get sq()       { return state.sq; },
+    get log()      { return state.log; },
+    sheet(s)       { return state[s === 'rpt' ? 'rpt' : s.toLowerCase()] || []; },
+
+    // Operations
+    saveRecord,
+    updateRecord,
+    upsertPatient,
+    upsertRow,
+    getPending,
+    markSynced,
+    markFailed,
+    persistAll,
+    persist,
+    recover,
+    mirrorToIDB,
+    addLog,
+    makeVID,
+
+    // Config
+    getEP, setEP,
+    getUser, setUser,
+    writeSWConfig,
+
+    // IDB direct access (for crypto restore)
+    idbSet,
+    idbGet,
+  };
+})();
+
+
+// ── js/sync.js ──────────────────────────
+/**
+ * GOAT MCH v2 — Sync Module
+ * Handles all communication with Google Apps Script.
+ * Push: save records to Sheets
+ * Pull: fetch facility records from Sheets (ID-by-ID strategy)
+ * Auto-sync: runs every 5 minutes when online
+ */
+
+const SYNC = (() => {
+
+  const TIMEOUT_MS   = 25000;  // 25s per request
+  const INTER_RECORD = 400;    // ms between records on 2G
+  const INTER_SHEET  = 300;    // ms between sheet requests
+
+  let _online    = false;
+  let _syncing   = false;
+  let _probeOk   = false;
+  let _autoTimer = null;
+  let _onStatusChange = null;  // callback when status changes
+
+  // ── Fetch helper with XHR fallback ─────────────────────────────────────────
+  async function fetchJSON(url, options = {}) {
+    // Try fetch first
+    try {
+      const ctrl = new AbortController();
+      const tid  = setTimeout(() => ctrl.abort(), options.timeout || TIMEOUT_MS);
+      const resp = await fetch(url, {
+        method: 'GET', mode: 'cors', cache: 'no-store',
+        redirect: 'follow', signal: ctrl.signal,
+      });
+      clearTimeout(tid);
+      const text = await resp.text();
+      return { ok: resp.ok, status: resp.status, data: JSON.parse(text), via: 'fetch' };
+    } catch (fe) {
+      // XHR fallback (important for iOS Safari background)
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.timeout = options.timeout || TIMEOUT_MS;
+        xhr.onload = () => {
+          try { resolve({ ok: xhr.status < 400, status: xhr.status, data: JSON.parse(xhr.responseText), via: 'xhr' }); }
+          catch (e) { reject(new Error('Invalid JSON from XHR')); }
+        };
+        xhr.onerror   = () => reject(new Error('XHR network error'));
+        xhr.ontimeout = () => reject(new Error(`XHR timeout after ${(options.timeout || TIMEOUT_MS) / 1000}s`));
+        xhr.send();
+      });
+    }
+  }
+
+  // ── POST a record ──────────────────────────────────────────────────────────
+  async function postRecord(ep, sheet, row) {
+    const ctrl = new AbortController();
+    const tid  = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
+    try {
+      const resp = await fetch(ep, {
+        method: 'POST', mode: 'cors', redirect: 'follow',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sheet, row }),
+        signal: ctrl.signal,
+      });
+      clearTimeout(tid);
+      const data = await resp.json();
+      return data;
+    } catch (fe) {
+      clearTimeout(tid);
+      // XHR POST fallback
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', ep, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.timeout = TIMEOUT_MS;
+        xhr.onload = () => {
+          try { resolve(JSON.parse(xhr.responseText)); }
+          catch (e) { reject(new Error('Invalid JSON')); }
+        };
+        xhr.onerror   = () => reject(new Error('XHR POST error'));
+        xhr.ontimeout = () => reject(new Error('XHR POST timeout'));
+        xhr.send(JSON.stringify({ sheet, row }));
+      });
+    }
+  }
+
+  // ── Build URL with params ──────────────────────────────────────────────────
+  function buildURL(ep, params) {
+    const sep = ep.includes('?') ? '&' : '?';
+    const qs  = Object.entries(params)
+      .filter(([, v]) => v !== undefined && v !== '')
+      .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
+      .join('&');
+    return `${ep}${sep}${qs}&_t=${Date.now()}`;
+  }
+
+  // ── Connectivity probe ─────────────────────────────────────────────────────
+  async function probe(ep) {
+    if (!ep) { _probeOk = true; notifyStatus(); return false; }
+    try {
+      const url    = buildURL(ep, { action: 'health' });
+      const result = await fetchJSON(url, { timeout: 8000 });
+      _online  = result.ok;
+      _probeOk = true;
+      notifyStatus();
+      return _online;
+    } catch (e) {
+      _online  = false;
+      _probeOk = true;
+      notifyStatus();
+      return false;
+    }
+  }
+
+  // ── Push pending records to Sheets ────────────────────────────────────────
+  async function push(ep, onProgress) {
+    if (_syncing) return;
+    const pending = DB.getPending();
+    if (!pending.length) return;
+
+    _syncing = true;
+    notifyStatus();
+    DB.addLog(`Syncing ${pending.length} record(s)...`);
+
+    let ok = 0, fail = 0;
+
+    for (let i = 0; i < pending.length; i++) {
+      const item = pending[i];
+      if (onProgress) onProgress(i + 1, pending.length);
+
+      try {
+        const result = await postRecord(ep, item.sheet, item.row);
+        if (result && result.status === 'ok') {
+          DB.markSynced(item.visit_id);
+          ok++;
+          DB.addLog(`✓ Synced: ${item.visit_id}`);
+        } else {
+          DB.markFailed(item.visit_id);
+          fail++;
+          DB.addLog(`✗ Failed: ${item.visit_id} — ${result?.message || 'unknown error'}`);
+        }
+      } catch (e) {
+        DB.markFailed(item.visit_id);
+        fail++;
+        DB.addLog(`✗ Error: ${item.visit_id} — ${e.message}`);
+      }
+
+      if (i < pending.length - 1) {
+        await sleep(INTER_RECORD);
+      }
+    }
+
+    _syncing = false;
+    notifyStatus();
+    DB.addLog(`Sync complete: ${ok} synced, ${fail} failed`);
+    return { ok, fail };
+  }
+
+  // ── Pull facility records (ID-by-ID strategy) ─────────────────────────────
+  async function pull(ep, facility, sinceDays, onLog) {
+    const log = onLog || (() => {});
+
+    // Step 1: Get patient ID list for this facility
+    log(`Getting patient list for ${facility}...`);
+    let facilityIDs = [];
+
+    // Try HC_Index sheet first (fast — just IDs)
+    try {
+      const sinceStr = sinceDays > 0 ? daysAgoStr(sinceDays) : '';
+      const url = buildURL(ep, {
+        action: 'getData', sheet: 'HC_Index',
+        hc: facility, ...(sinceStr && { since: sinceStr }),
+      });
+      const result = await fetchJSON(url, { timeout: 20000 });
+      if (result.data?.status === 'ok' && result.data.data?.length > 0) {
+        facilityIDs = [...new Set(
+          result.data.data.map(r => (r['National ID'] || r['ID client'] || '').trim()).filter(Boolean)
+        )];
+        log(`Found ${facilityIDs.length} patients in index`);
+      }
+    } catch (e) {
+      log(`Index not available — falling back to AN scan`);
+    }
+
+    // Fallback: scan AN sheet with &hc= filter
+    if (!facilityIDs.length) {
+      try {
+        const sinceStr = sinceDays > 0 ? daysAgoStr(sinceDays) : '';
+        const url = buildURL(ep, {
+          action: 'getData', sheet: 'AN',
+          hc: facility, ...(sinceStr && { since: sinceStr }),
+        });
+        const result = await fetchJSON(url, { timeout: 25000 });
+        if (result.data?.status === 'ok') {
+          facilityIDs = [...new Set(
+            (result.data.data || []).map(r => (r['National ID'] || '').trim()).filter(Boolean)
+          )];
+          log(`Found ${facilityIDs.length} patient IDs from AN scan`);
+        }
+      } catch (e) {
+        log(`AN scan failed: ${e.message}`);
+        return { added: 0, skipped: 0 };
+      }
+    }
+
+    if (!facilityIDs.length) {
+      log('No patients found for this facility');
+      return { added: 0, skipped: 0 };
+    }
+
+    // Step 2: filter out IDs we already have fully
+    const knownIDs = new Set();
+    for (const s of ['an','pn','fp','rpt']) {
+      DB.sheet(s).forEach(r => { if (r.lady_id && r._pulled) knownIDs.add(r.lady_id); });
+    }
+    const newIDs = facilityIDs.filter(id => !knownIDs.has(id));
+    log(`${newIDs.length} new patient(s) to fetch (${facilityIDs.length - newIDs.length} already on device)`);
+
+    if (!newIDs.length) return { added: 0, skipped: facilityIDs.length };
+
+    // Step 3: fetch each new patient individually
+    const sheetCfgs = [
+      { sheet: 'AN',        idField: 'National ID', dateField: 'Date Of Registration' },
+      { sheet: 'PN',        idField: 'ID client',   dateField: 'Date Of Registration' },
+      { sheet: 'FP',        idField: 'National ID', dateField: 'Date Of Registration' },
+      { sheet: 'REPORTING', idField: 'National ID', dateField: 'Date Of Registration' },
+    ];
+
+    let added = 0, skipped = 0;
+
+    for (let pi = 0; pi < newIDs.length; pi++) {
+      const pid = newIDs[pi];
+      log(`Patient ${pi + 1}/${newIDs.length}: ${pid}`);
+
+      for (const cfg of sheetCfgs) {
+        try {
+          const url    = buildURL(ep, { action: 'getData', sheet: cfg.sheet, id: pid });
+          const result = await fetchJSON(url, { timeout: 20000 });
+          if (result.data?.status === 'ok') {
+            (result.data.data || []).forEach(row => {
+              const wasNew = DB.upsertRow(row, cfg);
+              if (wasNew) added++; else skipped++;
+            });
+          }
+        } catch (e) {
+          log(`  Error for ${pid} in ${cfg.sheet}: ${e.message}`);
+        }
+        await sleep(INTER_SHEET);
+      }
+
+      DB.persist('an'); DB.persist('pn'); DB.persist('fp'); DB.persist('rpt'); DB.persist('patients');
+      await sleep(INTER_RECORD);
+    }
+
+    DB.addLog(`Pull complete: +${added} new records for ${newIDs.length} patient(s)`);
+    return { added, skipped };
+  }
+
+  // ── Facility auto-sync (last 90 days, silent) ─────────────────────────────
+  async function facilityAutoSync(ep, facility) {
+    if (!ep || !facility || _syncing) return;
+
+    const cfgs = [
+      { sheet: 'AN',        idField: 'National ID', dateField: 'Date Of Registration' },
+      { sheet: 'PN',        idField: 'ID client',   dateField: 'Date Of Registration' },
+      { sheet: 'FP',        idField: 'National ID', dateField: 'Date Of Registration' },
+      { sheet: 'REPORTING', idField: 'National ID', dateField: 'Date Of Registration' },
+    ];
+
+    const since = daysAgoStr(90);
+    let added = 0;
+
+    for (const cfg of cfgs) {
+      try {
+        const url    = buildURL(ep, { action: 'getData', sheet: cfg.sheet, hc: facility, since });
+        const result = await fetchJSON(url, { timeout: 30000 });
+        if (result.data?.status === 'ok') {
+          (result.data.data || []).forEach(row => {
+            if (DB.upsertRow(row, cfg)) added++;
+          });
+          DB.persist(cfg.sheet === 'REPORTING' ? 'rpt' : cfg.sheet.toLowerCase());
+          DB.persist('patients');
+        }
+      } catch (e) {
+        DB.addLog(`[Facility sync] ${cfg.sheet} error: ${e.message}`);
+      }
+      await sleep(200);
+    }
+
+    if (added > 0) DB.addLog(`[Facility sync] +${added} new records`);
+    return added;
+  }
+
+  // ── Auto-sync loop ─────────────────────────────────────────────────────────
+  function startAutoSync(ep, facility) {
+    if (_autoTimer) clearInterval(_autoTimer);
+    _autoTimer = setInterval(async () => {
+      if (!_online || !ep) return;
+      // Push pending first
+      const pending = DB.getPending();
+      if (pending.length > 0) await push(ep);
+      // Then pull facility updates
+      await facilityAutoSync(ep, facility);
+    }, 5 * 60 * 1000); // every 5 minutes
+  }
+
+  // ── Online/offline listeners ───────────────────────────────────────────────
+  function initListeners(ep, facility) {
+    window.addEventListener('online', async () => {
+      const was = _online;
+      _online = true;
+      notifyStatus();
+      if (!was) {
+        await sleep(2000);
+        const ep2 = DB.getEP();
+        if (ep2) {
+          await push(ep2);
+          await sleep(6000);
+          const user = DB.getUser();
+          if (user?.facility) await facilityAutoSync(ep2, user.facility);
+        }
+      }
+      // Register background sync
+      if ('serviceWorker' in navigator && 'SyncManager' in window) {
+        navigator.serviceWorker.ready.then(reg => reg.sync.register('facility-bg-sync').catch(() => {}));
+      }
+    });
+
+    window.addEventListener('offline', () => {
+      _online = false;
+      notifyStatus();
+    });
+  }
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
+  function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+  function daysAgoStr(n) {
+    const d = new Date();
+    d.setDate(d.getDate() - n);
+    return d.toISOString().slice(0, 10);
+  }
+  function notifyStatus() {
+    if (_onStatusChange) _onStatusChange({ online: _online, syncing: _syncing, probeOk: _probeOk });
+  }
+
+  // ── Public API ─────────────────────────────────────────────────────────────
+  return {
+    probe,
+    push,
+    pull,
+    facilityAutoSync,
+    startAutoSync,
+    initListeners,
+    fetchJSON,
+    buildURL,
+    get online()   { return _online;  },
+    set online(v)  { _online = v; notifyStatus(); },
+    get syncing()  { return _syncing; },
+    get probeOk()  { return _probeOk; },
+    onStatusChange(cb) { _onStatusChange = cb; },
+  };
+})();
+
+
+// ── js/crypto.js ──────────────────────────
+/**
+ * GOAT MCH v2 — Crypto Module
+ * AES-GCM 256-bit encryption for .goat backup files.
+ * Two modes:
+ *   GOAT (0x47,0x4F,0x41,0x54) — device-specific key (personal backup)
+ *   GOAS (0x47,0x4F,0x41,0x53) — shared app key (supervisor → midwife restore)
+ */
+
+const CRYPTO = (() => {
+
+  const APP_SECRET    = 'GOAT-MCH-UNRWA-KHY-2026-SECURE';
+  const SHARED_SECRET = 'GOAT-MCH-SHARED-UNRWA-KHY-2026-RESTORE-KEY';
+  const SALT          = new TextEncoder().encode('GOAT-MCH-SALT-V1');
+  const MAGIC_DEVICE  = new Uint8Array([0x47, 0x4F, 0x41, 0x54]); // GOAT
+  const MAGIC_SHARED  = new Uint8Array([0x47, 0x4F, 0x41, 0x53]); // GOAS
+
+  // ── Install ID (unique per device install) ─────────────────────────────────
+  function getInstallId() {
+    let id = localStorage.getItem('_goat_iid');
+    if (!id) {
+      const arr = new Uint8Array(16);
+      crypto.getRandomValues(arr);
+      id = Array.from(arr).map(b => b.toString(16).padStart(2, '0')).join('');
+      localStorage.setItem('_goat_iid', id);
+    }
+    return id;
+  }
+
+  // ── Key derivation ─────────────────────────────────────────────────────────
+  async function deriveKey(seed) {
+    const raw = new TextEncoder().encode(seed);
+    const km  = await crypto.subtle.importKey('raw', raw, { name: 'PBKDF2' }, false, ['deriveKey']);
+    return crypto.subtle.deriveKey(
+      { name: 'PBKDF2', salt: SALT, iterations: 100000, hash: 'SHA-256' },
+      km,
+      { name: 'AES-GCM', length: 256 },
+      false,
+      ['encrypt', 'decrypt']
+    );
+  }
+
+  async function deviceKey()  { return deriveKey(APP_SECRET + getInstallId()); }
+  async function sharedKey()  { return deriveKey(SHARED_SECRET); }
+
+  // ── Encrypt ────────────────────────────────────────────────────────────────
+  async function encrypt(data, useShared = false) {
+    const key    = useShared ? await sharedKey() : await deviceKey();
+    const magic  = useShared ? MAGIC_SHARED : MAGIC_DEVICE;
+    const iv     = crypto.getRandomValues(new Uint8Array(12));
+    const plain  = new TextEncoder().encode(JSON.stringify(data));
+    const cipher = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, plain);
+
+    const result = new Uint8Array(4 + 12 + cipher.byteLength);
+    result.set(magic, 0);
+    result.set(iv,    4);
+    result.set(new Uint8Array(cipher), 16);
+    return result;
+  }
+
+  // ── Decrypt ────────────────────────────────────────────────────────────────
+  async function decrypt(bytes) {
+    const h = bytes.slice(0, 4);
+    let key;
+
+    if (h[0] === 0x47 && h[1] === 0x4F && h[2] === 0x41 && h[3] === 0x54) {
+      key = await deviceKey();  // GOAT — device key
+    } else if (h[0] === 0x47 && h[1] === 0x4F && h[2] === 0x41 && h[3] === 0x53) {
+      key = await sharedKey();  // GOAS — shared key
+    } else {
+      throw new Error('Not a valid GOAT MCH backup file');
+    }
+
+    const iv      = bytes.slice(4, 16);
+    const cipher  = bytes.slice(16);
+    const plain   = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, cipher);
+    return JSON.parse(new TextDecoder().decode(plain));
+  }
+
+  // ── Export backup ──────────────────────────────────────────────────────────
+  async function exportBackup(useShared = false) {
+    const user = DB.getUser();
+    const payload = {
+      version:   2,
+      exported:  new Date().toISOString(),
+      facility:  user?.facility || '',
+      user:      user?.name     || '',
+      patients:  DB.patients,
+      an:        DB.an,
+      pn:        DB.pn,
+      fp:        DB.fp,
+      rpt:       DB.rpt,
+      sq:        DB.sq,
+    };
+
+    const encrypted = await encrypt(payload, useShared);
+    const blob      = new Blob([encrypted], { type: 'application/octet-stream' });
+    const url       = URL.createObjectURL(blob);
+    const a         = document.createElement('a');
+    const date      = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    const fac       = (user?.facility || 'MCH').replace(/[^a-zA-Z0-9]/g, '_').slice(0, 12);
+
+    a.href     = url;
+    a.download = `goat_${fac}_${date}.goat`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    const total = DB.an.length + DB.pn.length + DB.fp.length + DB.rpt.length;
+    DB.addLog(`Exported backup: ${total} records (${useShared ? 'shared' : 'device'} key)`);
+    return total;
+  }
+
+  // ── Import backup ──────────────────────────────────────────────────────────
+  async function importBackup(file) {
+    const bytes = await new Promise((res, rej) => {
+      const reader = new FileReader();
+      reader.onload  = e => res(new Uint8Array(e.target.result));
+      reader.onerror = () => rej(new Error('Could not read file'));
+      reader.readAsArrayBuffer(file);
+    });
+
+    const payload = await decrypt(bytes);
+    if (!payload?.version) throw new Error('Invalid or corrupted backup file');
+
+    let newPts = 0, newRecs = 0;
+
+    // Merge patients
+    if (payload.patients) {
+      Object.entries(payload.patients).forEach(([id, p]) => {
+        if (!DB.patients[id]) { DB.patients[id] = p; newPts++; }
+      });
+    }
+
+    // Merge records
+    for (const sheet of ['an','pn','fp','rpt']) {
+      if (!Array.isArray(payload[sheet])) continue;
+      const existing = new Set(DB.sheet(sheet).map(r => r.visit_id).filter(Boolean));
+      payload[sheet].forEach(r => {
+        if (!r.visit_id || existing.has(r.visit_id)) return;
+        r._imported = true;
+        r._pulled   = true;
+        DB.sheet(sheet).unshift(r);
+        newRecs++;
+      });
+    }
+
+    DB.persistAll();
+    DB.addLog(`Imported from .goat: +${newRecs} records, +${newPts} patients`);
+    return { records: newRecs, patients: newPts };
+  }
+
+  // ── Public ─────────────────────────────────────────────────────────────────
+  return { encrypt, decrypt, exportBackup, importBackup, getInstallId };
+})();
+
+
+// ── js/ui.js ──────────────────────────
+/**
+ * GOAT MCH v2 — UI Module
+ * All DOM helpers, navigation, notifications, form utilities.
+ * No business logic — only presentation.
+ */
+
+const UI = (() => {
+
+  // ── DOM helpers ────────────────────────────────────────────────────────────
+  const g  = id => document.getElementById(id);
+  const gv = id => { const e = g(id); return e ? (e.type === 'checkbox' ? e.checked : e.value) : ''; };
+  const sv = (id, v) => { const e = g(id); if (e && v !== undefined && v !== null) { if (e.tagName === 'SELECT') setOpt(id, String(v)); else e.value = v; } };
+  const se = (id, v) => { const e = g(id); if (e) e.textContent = v; };
+
+  function setOpt(id, val) {
+    const el = g(id);
+    if (!el) return;
+    for (let i = 0; i < el.options.length; i++) {
+      if (el.options[i].value === val || el.options[i].textContent.trim() === val) {
+        el.selectedIndex = i;
+        return;
+      }
+    }
+  }
+
+  function getMulti(id) {
+    const el = g(id);
+    if (!el) return [];
+    return Array.from(el.selectedOptions).map(o => o.value).filter(Boolean);
+  }
+
+  function setMulti(id, vals) {
+    const el = g(id);
+    if (!el || !Array.isArray(vals)) return;
+    for (let i = 0; i < el.options.length; i++) {
+      el.options[i].selected = vals.includes(el.options[i].value);
+    }
+  }
+
+  // ── Notification toast ────────────────────────────────────────────────────
+  let _notifTimer = null;
+  function notify(msg, type = '') {
+    let el = g('notif');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'notif';
+      el.className = 'notif';
+      document.body.appendChild(el);
+    }
+    el.textContent = msg;
+    el.className   = `notif show${type ? ' ' + type : ''}`;
+    if (_notifTimer) clearTimeout(_notifTimer);
+    _notifTimer = setTimeout(() => el.classList.remove('show'), 3000);
+  }
+
+  // ── Tab navigation ────────────────────────────────────────────────────────
+  const TABS = ['dash','pts','an','pn','fp','rpt','appts','search','sync'];
+  let _currentTab = 'dash';
+
+  function goTab(t) {
+    if (!TABS.includes(t)) return;
+    _currentTab = t;
+
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('act'));
+    document.querySelectorAll('.tb').forEach(b => b.classList.remove('act'));
+
+    const panel = g(`p-${t}`);
+    if (panel) panel.classList.add('act');
+
+    const btns = document.querySelectorAll('.tb');
+    const idx  = TABS.indexOf(t);
+    if (idx >= 0 && btns[idx]) btns[idx].classList.add('act');
+
+    // Tab-specific init
+    if (['an','pn','fp','rpt'].includes(t)) {
+      applyUserDefaults(t);
+    }
+    if (t === 'appts') {
+      APPTS.renderAppts();
+    }
+    if (t === 'dash') {
+      DASH.refresh();
+    }
+    if (t === 'pts') {
+      PATIENTS.render();
+    }
+    if (t === 'sync') {
+      SYNC_UI.refresh();
+    }
+  }
+
+  // ── Status bar ────────────────────────────────────────────────────────────
+  function updateBar({ online, syncing, probeOk }) {
+    const pending = DB.getPending().length;
+    const dot     = g('sdot');
+    const txt     = g('stxt');
+    const cc      = g('cnchip');
+    const qc      = g('qchip');
+    const sb      = g('syncbtn');
+    const prog    = g('sync-progress');
+
+    if (syncing) {
+      if (dot) dot.className = 'sd sy';
+      if (txt) txt.textContent = `Syncing ${pending} record(s)...`;
+    } else if (online) {
+      if (dot) dot.className = 'sd on';
+      if (txt) txt.textContent = DB.getEP() ? 'Online — auto-sync active' : 'Online — no endpoint set';
+    } else {
+      if (dot) dot.className = 'sd off';
+      if (txt) txt.textContent = probeOk ? 'Offline — records saved locally' : 'Checking...';
+    }
+
+    if (cc) { cc.textContent = online ? 'Online' : 'Offline'; cc.className = `chip ${online ? 'on' : 'off'}`; }
+    if (qc) { qc.style.display = pending ? 'inline-block' : 'none'; qc.textContent = `${pending} pending`; }
+    if (sb) { sb.style.display = pending && DB.getEP() ? 'flex' : 'none'; }
+    if (prog) { prog.classList.toggle('show', false); }
+  }
+
+  function updateSyncProgress(done, total) {
+    const el = g('sync-progress');
+    if (!el) return;
+    if (total > 1 && done < total) {
+      el.textContent = `Syncing ${done} of ${total}...`;
+      el.classList.add('show');
+    } else {
+      el.classList.remove('show');
+    }
+  }
+
+  // ── Apply user defaults to a form ─────────────────────────────────────────
+  function applyUserDefaults(s) {
+    const user    = DB.getUser();
+    const today   = new Date().toISOString().slice(0, 10);
+    const dateId  = `${s}-date`;
+    const mwId    = `${s}-mw`;
+    const shcId   = `${s}-shc`;
+
+    // Auto-fill today's date if empty
+    const dateEl = g(dateId);
+    if (dateEl && !dateEl.value) dateEl.value = today;
+
+    if (!user) return;
+
+    // Auto-fill MW name if empty
+    const mwEl = g(mwId);
+    if (mwEl && !mwEl.value) {
+      mwEl.value = user.name + (user.role ? ` (${user.role})` : '');
+    }
+
+    // Auto-fill facility if empty
+    if (user.facility) {
+      const shcEl = g(shcId);
+      if (shcEl && !shcEl.value) setOpt(shcId, user.facility);
+    }
+
+    // RPT: gender always Female
+    if (s === 'rpt') {
+      const gndEl = g('rpt-gender');
+      if (gndEl && !gndEl.value) gndEl.value = 'Female';
+    }
+  }
+
+  // ── Form clear ───────────────────────────────────────────────────────────
+  function clearForm(s) {
+    const schema = SCHEMA.forSheet(s);
+    if (!schema) return;
+
+    schema.fields.forEach(f => {
+      const el = g(f.id);
+      if (!el || f.readonly) return;
+      if (el.tagName === 'SELECT' && el.multiple) {
+        for (let i = 0; i < el.options.length; i++) el.options[i].selected = false;
+      } else {
+        el.value = '';
+      }
+    });
+
+    // Clear banners
+    ['found','new','edit','hrp-alert','clinsum','timeline','prev-visits'].forEach(cls => {
+      const el = g(`${s}-${cls}`);
+      if (!el) return;
+      if (el.classList) { el.classList.remove('show'); }
+      if (cls === 'clinsum' || cls === 'timeline' || cls === 'hrp-alert') el.innerHTML = '';
+    });
+
+    // Reset VID display
+    const vidEl = g(`${s}-vid`);
+    if (vidEl) vidEl.textContent = '—';
+
+    // Re-apply user defaults (date, MW, facility)
+    applyUserDefaults(s);
+  }
+
+  // ── Dropdown population ───────────────────────────────────────────────────
+  function populateDropdowns() {
+    const allFacs = [...SCHEMA.HC_LIST, ...SCHEMA.MP_LIST];
+
+    // HC/MP selects
+    ['an-shc','an-ohc','pn-shc','pn-ohc','fp-shc','fp-ohc','rpt-shc'].forEach(id => {
+      const el = g(id);
+      if (!el) return;
+      el.innerHTML = '<option value="">Select facility...</option>';
+      allFacs.forEach(f => { el.innerHTML += `<option>${f}</option>`; });
+    });
+
+    // Other dropdowns
+    const opt = SCHEMA.OPTIONS;
+    const map = {
+      'an-case':    opt.caseType,
+      'an-refugee': opt.refugee,
+      'an-status':  opt.status,
+      'an-pres':    opt.presentation,
+      'an-oedema':  opt.oedema,
+      'an-gbv':     opt.gbv,
+      'an-sti':     opt.sti,
+      'an-dis':     opt.disability,
+      'pn-case':    opt.caseType,
+      'pn-refugee': opt.refugee,
+      'pn-status':  opt.status,
+      'pn-place':   opt.delivPlace,
+      'pn-type':    opt.delivType,
+      'pn-by':      opt.delivBy,
+      'pn-twin':    opt.yn,
+      'pn-sex1':    opt.gender,
+      'pn-sex2':    opt.gender,
+      'pn-stis':    opt.sti,
+      'pn-dis':     opt.disability,
+      'pn-gbv':     opt.gbv,
+      'fp-case':    opt.caseType,
+      'fp-refugee': opt.refugee,
+      'fp-status':  opt.status,
+      'fp-method':  opt.fpMethod,
+      'fp-lam':     opt.lam,
+      'fp-dis':     opt.disability,
+      'fp-sti':     opt.sti,
+      'fp-mhpss':   opt.yn,
+      'fp-gbv':     opt.gbv,
+      'rpt-org':    opt.org,
+      'rpt-gov':    opt.gov,
+      'rpt-month':  opt.month,
+      'rpt-gender': opt.gender,
+      'rpt-rn':     opt.rn,
+      'rpt-pwd':    opt.yn,
+    };
+
+    Object.entries(map).forEach(([id, vals]) => {
+      const el = g(id);
+      if (!el) return;
+      const cur = el.value;
+      el.innerHTML = '<option value="">Select...</option>';
+      vals.forEach(v => { el.innerHTML += `<option>${v}</option>`; });
+      if (cur) setOpt(id, cur);
+    });
+
+    // Multi-selects
+    const multiMap = {
+      'an-rcurr': opt.risk_current,
+      'an-rprev': opt.risk_prev,
+      'rpt-svc':  opt.services,
+    };
+    Object.entries(multiMap).forEach(([id, vals]) => {
+      const el = g(id);
+      if (!el) return;
+      el.innerHTML = vals.map(v => `<option value="${v}">${v}</option>`).join('');
+    });
+  }
+
+  // ── Date formatting ────────────────────────────────────────────────────────
+  function fmtDate(raw) {
+    if (!raw) return '—';
+    const s = String(raw).trim();
+    if (s.match(/^\d{4}-\d{2}-\d{2}/)) return s.slice(0, 10);
+    const d = new Date(s);
+    return isNaN(d) ? s.slice(0, 10) || '—' : d.toISOString().slice(0, 10);
+  }
+
+  function fmtShort(raw) {
+    const s = fmtDate(raw);
+    if (s === '—') return '—';
+    const mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const p  = s.split('-');
+    return p.length >= 3 ? `${p[2]} ${mo[+p[1]-1]} ${p[0]}` : s;
+  }
+
+  // ── EDD / GA calculation ──────────────────────────────────────────────────
+  function calcEDD() {
+    const lmpEl = g('an-lmp');
+    if (!lmpEl?.value) return;
+    const lmp = new Date(lmpEl.value);
+    if (isNaN(lmp)) return;
+    const edd = new Date(lmp);
+    edd.setDate(edd.getDate() + 280);
+    const eddEl = g('an-edd');
+    if (eddEl) eddEl.value = edd.toISOString().slice(0, 10);
+    calcGA();
+  }
+
+  function calcGA() {
+    const lmpEl = g('an-lmp');
+    if (!lmpEl?.value) return;
+    const p    = lmpEl.value.split('-');
+    const lmp  = new Date(+p[0], +p[1]-1, +p[2]);
+    if (isNaN(lmp)) return;
+    const diff = Math.floor((new Date() - lmp) / 86400000);
+    if (diff < 0) return;
+    const weeks = Math.floor(diff / 7);
+    const days  = diff % 7;
+    const gaEl  = g('an-ga');
+    if (gaEl) gaEl.value = `${weeks}+${days}`;
+    const trimEl = g('an-trim');
+    if (trimEl) trimEl.textContent = weeks < 14 ? '1st trimester' : weeks < 28 ? '2nd trimester' : '3rd trimester';
+  }
+
+  function calcBMI() {
+    const wt  = parseFloat(gv('an-wt'));
+    const ht  = parseFloat(gv('an-ht'));
+    const el  = g('an-bmi');
+    if (!el || !wt || !ht) return;
+    el.value = (wt / ((ht / 100) ** 2)).toFixed(1);
+  }
+
+  function calcAge(dob, suffix = '') {
+    if (!dob) return '';
+    const d = new Date(fmtDate(dob));
+    if (isNaN(d)) return '';
+    return Math.floor((new Date() - d) / (365.25 * 86400000)) + (suffix ? suffix : '');
+  }
+
+  // ── Risk calculation ──────────────────────────────────────────────────────
+  function calcRisk() {
+    const curr = getMulti('an-rcurr');
+    const prev = getMulti('an-rprev');
+    const all  = [...curr, ...prev];
+    const riskEl  = g('an-risk');
+    const detailEl = g('an-riskdetail');
+
+    let score = '';
+    if (all.length === 0)     score = 'NP — Normal';
+    else if (all.length <= 2) score = 'AP — At Risk';
+    else                      score = 'HRP — High Risk';
+
+    if (riskEl)   riskEl.value   = score;
+    if (detailEl) detailEl.value = all.join(' | ');
+  }
+
+  function showMUAC(inputId, barId) {
+    const val = parseFloat(gv(inputId));
+    const bar = g(barId);
+    if (!bar || isNaN(val)) return;
+    if (val >= 230)      { bar.style.background = '#4caf50'; bar.style.width = '100%'; }
+    else if (val >= 210) { bar.style.background = '#ff9800'; bar.style.width = `${((val-210)/20)*50+50}%`; }
+    else                 { bar.style.background = '#f44336'; bar.style.width = `${Math.max(10,(val-150)/60*50)}%`; }
+  }
+
+  // ── Export helpers ────────────────────────────────────────────────────────
+  function addLog(msg) { DB.addLog(msg); }
+
+  // ── Public API ─────────────────────────────────────────────────────────────
+  return {
+    g, gv, sv, se, setOpt, getMulti, setMulti,
+    notify,
+    goTab,
+    updateBar,
+    updateSyncProgress,
+    applyUserDefaults,
+    clearForm,
+    populateDropdowns,
+    fmtDate, fmtShort,
+    calcEDD, calcGA, calcBMI, calcAge, calcRisk, showMUAC,
+    addLog,
+    get currentTab() { return _currentTab; },
+  };
+})();
+
+// ── Global aliases (backward compat with inline HTML handlers) ──────────────
+const g        = UI.g;
+const gv       = UI.gv;
+const sv       = UI.sv;
+const notify   = UI.notify;
+const goTab    = UI.goTab;
+const calcEDD  = UI.calcEDD;
+const calcGA   = UI.calcGA;
+const calcBMI  = UI.calcBMI;
+const calcRisk = UI.calcRisk;
+const setOpt   = UI.setOpt;
+const fmtDate  = UI.fmtDate;
+const fmtShort = UI.fmtShort;
+
+
+// ── forms/an.js ──────────────────────────
+/**
+ * GOAT MCH v2 — AN Form
+ * Antenatal care form logic: lookup, autofill, save, edit.
+ */
+
+const FORM_AN = (() => {
+
+  const S = 'an';
+  let _debounceTimer = null;
+  let _editVID = null;
+
+  // ── Debounced lookup ───────────────────────────────────────────────────────
+  function onIdInput() {
+    clearTimeout(_debounceTimer);
+    _debounceTimer = setTimeout(() => {
+      const id = (UI.gv('an-id') || '').trim();
+      if (id.length >= 6) lookup(id);
+    }, 600);
+  }
+
+  // ── Lookup ─────────────────────────────────────────────────────────────────
+  async function lookup(id) {
+    if (!id) return;
+    UI.g('an-natid') && (UI.g('an-natid').value = id);
+
+    // Check local DB first
+    const pt = DB.patients[id];
+    const localRecs = DB.an.filter(r => r.lady_id === id);
+
+    if (pt) {
+      _applyAutofill(id, pt, localRecs);
+      return;
+    }
+
+    // Not found locally — try Sheets if online
+    if (SYNC.online && DB.getEP()) {
+      const fm = UI.g('an-fm');
+      if (fm) fm.innerHTML = '<i class="ti ti-loader spinner"></i> Searching Sheets...';
+      UI.g('an-found')?.classList.add('show');
+      await _lookupFromSheets(id);
+    } else {
+      _showNew();
+    }
+  }
+
+  async function _lookupFromSheets(id) {
+    const ep = DB.getEP();
+    const sheetCfgs = [
+      { sheet:'AN',        idField:'National ID',  dateField:'Date Of Registration' },
+      { sheet:'PN',        idField:'ID client',    dateField:'Date Of Registration' },
+      { sheet:'FP',        idField:'National ID',  dateField:'Date Of Registration' },
+      { sheet:'REPORTING', idField:'National ID',  dateField:'Date Of Registration' },
+    ];
+
+    try {
+      for (const cfg of sheetCfgs) {
+        const url    = SYNC.buildURL(ep, { action: 'getData', sheet: cfg.sheet, id });
+        const result = await SYNC.fetchJSON(url, { timeout: 15000 });
+        if (result.data?.status === 'ok') {
+          (result.data.data || [])
+            .filter(r => (r[cfg.idField] || '').trim() === id)
+            .forEach(row => DB.upsertRow(row, cfg));
+        }
+      }
+      DB.persistAll();
+
+      const pt = DB.patients[id];
+      if (pt) {
+        const recs = DB.an.filter(r => r.lady_id === id);
+        _applyAutofill(id, pt, recs, true);
+      } else {
+        _showNew();
+        UI.notify('Patient not found in Sheets — new patient');
+      }
+    } catch (e) {
+      _showNew();
+      DB.addLog(`AN lookup error: ${e.message}`);
+    }
+  }
+
+  function _applyAutofill(id, pt, recs, fromSheets = false) {
+    // Patient fields
+    UI.sv('an-name',    pt.name);
+    UI.sv('an-phone',   pt.phone);
+    UI.sv('an-dob',     pt.dob);
+    UI.sv('an-rris',    pt.rris);
+    UI.sv('an-mhr',     pt.mhr);
+    UI.sv('an-husband', pt.husband);
+    UI.sv('an-hid2',    pt.hid2);
+    UI.sv('an-status',  pt.status);
+    UI.setOpt('an-refugee', pt.refugee);
+
+    // LMP → EDD + GA
+    if (pt.lmp) {
+      const lmpNorm = UI.fmtDate(pt.lmp);
+      const lmpEl   = UI.g('an-lmp');
+      if (lmpEl && lmpNorm !== '—') {
+        lmpEl.value = lmpNorm;
+        lmpEl.classList.add('af');
+        UI.calcEDD();
+      }
+    }
+
+    // Risk factors from last AN
+    if (pt.last_rcurr) UI.setMulti('an-rcurr', pt.last_rcurr.split(' | '));
+    if (pt.last_rprev) UI.setMulti('an-rprev', pt.last_rprev.split(' | '));
+    UI.calcRisk();
+
+    // HC from last visit
+    const lastAN = recs.sort((a, b) => b.ts - a.ts)[0];
+    if (lastAN) {
+      UI.setOpt('an-ohc', lastAN['Original HC'] || '');
+      UI.setOpt('an-shc', lastAN['Served HC']   || '');
+    } else if (pt.last_an_shc) {
+      UI.setOpt('an-shc', pt.last_an_shc);
+    }
+
+    // Follow up if has previous visits
+    if (recs.length > 0) UI.setOpt('an-case', 'Follow Up');
+
+    // HRP alert
+    LOOKUP.showHRPAlert(S, id);
+
+    // Visit history
+    LOOKUP.renderTimeline(S, id);
+    LOOKUP.renderClinSummary(S, id);
+
+    // Banner
+    const total = DB.an.filter(r => r.lady_id === id).length +
+                  DB.pn.filter(r => r.lady_id === id).length +
+                  DB.fp.filter(r => r.lady_id === id).length;
+    const fm = UI.g('an-fm');
+    if (fm) {
+      fm.innerHTML = `<strong>${pt.name || id}</strong> &mdash; `
+        + `<span class="pill pok">${total} visit${total !== 1 ? 's' : ''}${fromSheets ? ' (from Sheets)' : ''}</span>`
+        + ` &middot; ${pt.phone || 'no phone'}`;
+    }
+    UI.g('an-found')?.classList.add('show');
+    UI.g('an-new')?.classList.remove('show');
+
+    // Update appointment badge
+    APPTS.updateBadge();
+  }
+
+  function _showNew() {
+    UI.g('an-found')?.classList.remove('show');
+    UI.g('an-new')?.classList.add('show');
+    UI.g('an-clinsum') && (UI.g('an-clinsum').innerHTML = '');
+    UI.g('an-timeline') && (UI.g('an-timeline').innerHTML = '');
+  }
+
+  // ── Save ───────────────────────────────────────────────────────────────────
+  function save() {
+    const id   = (UI.gv('an-id') || '').trim();
+    const date = UI.gv('an-date');
+    const hc   = UI.gv('an-shc');
+
+    if (!id)   { UI.notify('Please enter the patient ID', 'err'); return; }
+    if (!date) { UI.notify('Please select the visit date', 'err'); return; }
+    if (!hc)   { UI.notify('Please select the served facility', 'err'); return; }
+
+    // Edit mode
+    if (_editVID) {
+      _applyEdit();
+      return;
+    }
+
+    // Duplicate check
+    const dup = DB.an.find(r =>
+      r.lady_id === id &&
+      (r['Date Of Registration'] || '').slice(0, 10) === date.slice(0, 10) &&
+      (r['Served HC'] || '').trim().toLowerCase() === hc.trim().toLowerCase()
+    );
+    if (dup) {
+      UI.notify('Duplicate: this patient already has an AN record for this date and facility', 'err');
+      return;
+    }
+
+    // Build row from schema
+    const row = _buildRow(id);
+
+    const vid = DB.saveRecord('AN', row);
+    DB.addLog(`Saved AN: ${vid} — ${row['Pregnant Name'] || id}`);
+
+    const name = row['Pregnant Name'] || id;
+    UI.notify(`Saved — ${name} · AN`);
+    UI.clearForm(S);
+
+    // Refresh dashboard
+    DASH.refresh();
+    APPTS.updateBadge();
+  }
+
+  function _buildRow(id) {
+    const schema = SCHEMA.AN;
+    const row    = { 'National ID': id };
+
+    schema.fields.forEach(f => {
+      if (f.type === 'multi') {
+        row[f.key] = UI.getMulti(f.id).join(' | ');
+      } else {
+        const v = UI.gv(f.id);
+        if (v) row[f.key] = v;
+      }
+    });
+
+    return row;
+  }
+
+  // ── Edit ───────────────────────────────────────────────────────────────────
+  function startEdit(vid) {
+    const record = DB.an.find(r => r.visit_id === vid);
+    if (!record) { UI.notify('Record not found', 'err'); return; }
+
+    const EDIT_WINDOW = 24 * 60 * 60 * 1000;
+    const age         = Date.now() - (record.ts || 0);
+
+    if (record._facility_pull || record._live_search || record._pulled || record._imported) {
+      UI.notify('This record was pulled from Sheets — view only', 'err'); return;
+    }
+    if (age > EDIT_WINDOW) {
+      UI.notify('Edit window expired — only editable within 24 hours', 'err'); return;
+    }
+
+    _editVID = vid;
+
+    // Fill form from record
+    SCHEMA.AN.fields.forEach(f => {
+      if (f.type === 'multi') {
+        UI.setMulti(f.id, (record[f.key] || '').split(' | ').filter(Boolean));
+      } else {
+        UI.sv(f.id, record[f.key] || '');
+      }
+    });
+    UI.g('an-id') && (UI.g('an-id').value = record.lady_id || '');
+    UI.calcRisk();
+    UI.calcEDD();
+
+    // Show edit banner
+    UI.g('an-edit')?.classList.add('show');
+    const lbl = UI.g('an-edit-vid-label');
+    if (lbl) lbl.textContent = vid;
+
+    const h = Math.max(0, Math.ceil((EDIT_WINDOW - age) / 3600000));
+    UI.notify(`Edit mode — ${h}h remaining`);
+  }
+
+  function _applyEdit() {
+    const record = DB.an.find(r => r.visit_id === _editVID);
+    if (!record) { UI.notify('Record not found', 'err'); _cancelEdit(); return; }
+
+    const changes = _buildRow(record.lady_id);
+    const success = DB.updateRecord('AN', _editVID, changes);
+
+    if (success) {
+      UI.notify(`Updated — ${changes['Pregnant Name'] || _editVID}`);
+    } else {
+      UI.notify('Update failed', 'err');
+    }
+
+    _cancelEdit();
+    DASH.refresh();
+  }
+
+  function cancelEdit() { _cancelEdit(); }
+  function _cancelEdit() {
+    _editVID = null;
+    UI.g('an-edit')?.classList.remove('show');
+    UI.clearForm(S);
+  }
+
+  // ── Public ─────────────────────────────────────────────────────────────────
+  return { lookup, onIdInput, save, startEdit, cancelEdit };
+})();
+
+
+// ── forms/pn.js ──────────────────────────
+/**
+ * GOAT MCH v2 — PN Form (mirrors AN pattern, PN-specific fields)
+ */
+const FORM_PN = (() => {
+  const S = 'pn';
+  let _debounceTimer = null;
+  let _editVID = null;
+
+  function onIdInput(){
+    clearTimeout(_debounceTimer);
+    _debounceTimer = setTimeout(() => {
+      const id = (UI.gv('pn-id')||'').trim();
+      if(id.length >= 6) lookup(id);
+    }, 600);
+  }
+
+  async function lookup(id){
+    if(!id) return;
+    UI.g('pn-idcl') && (UI.g('pn-idcl').value = id);
+    const pt = DB.patients[id];
+    const recs = DB.pn.filter(r => r.lady_id === id);
+    if(pt){ _applyAutofill(id, pt, recs); return; }
+    if(SYNC.online && DB.getEP()){
+      const fm = UI.g('pn-fm');
+      if(fm) fm.innerHTML = '<i class="ti ti-loader spinner"></i> Searching Sheets...';
+      UI.g('pn-found')?.classList.add('show');
+      await _lookupFromSheets(id);
+    } else { _showNew(); }
+  }
+
+  async function _lookupFromSheets(id){
+    const ep = DB.getEP();
+    const cfgs = [
+      {sheet:'AN',idField:'National ID',dateField:'Date Of Registration'},
+      {sheet:'PN',idField:'ID client',dateField:'Date Of Registration'},
+      {sheet:'FP',idField:'National ID',dateField:'Date Of Registration'},
+    ];
+    try{
+      for(const cfg of cfgs){
+        const url = SYNC.buildURL(ep,{action:'getData',sheet:cfg.sheet,id});
+        const res = await SYNC.fetchJSON(url,{timeout:15000});
+        if(res.data?.status==='ok') (res.data.data||[]).filter(r=>(r[cfg.idField]||'').trim()===id).forEach(row=>DB.upsertRow(row,cfg));
+      }
+      DB.persistAll();
+      const pt = DB.patients[id];
+      if(pt) _applyAutofill(id,pt,DB.pn.filter(r=>r.lady_id===id),true);
+      else { _showNew(); UI.notify('Patient not found — new patient'); }
+    }catch(e){ _showNew(); }
+  }
+
+  function _applyAutofill(id, pt, recs, fromSheets=false){
+    UI.sv('pn-name',    pt.name);   UI.sv('pn-phone', pt.phone);
+    UI.sv('pn-dob',     pt.dob);    UI.sv('pn-rris',  pt.rris);
+    UI.sv('pn-mhr',     pt.mhr);    UI.sv('pn-status',pt.status);
+    UI.setOpt('pn-refugee', pt.refugee);
+    const lastPN = recs.sort((a,b)=>b.ts-a.ts)[0];
+    if(lastPN){ UI.setOpt('pn-shc',lastPN['Served HC']||''); UI.setOpt('pn-ohc',lastPN['Original HC']||''); }
+    else if(pt.last_pn_shc) UI.setOpt('pn-shc', pt.last_pn_shc);
+    if(recs.length > 0) UI.setOpt('pn-case','Follow Up');
+    LOOKUP.showHRPAlert(S,id); LOOKUP.renderTimeline(S,id); LOOKUP.renderClinSummary(S,id);
+    const total = DB.an.filter(r=>r.lady_id===id).length + recs.length + DB.fp.filter(r=>r.lady_id===id).length;
+    const fm = UI.g('pn-fm');
+    if(fm) fm.innerHTML = `<strong>${pt.name||id}</strong> &mdash; <span class="pill pok">${total} visit${total!==1?'s':''}${fromSheets?' (from Sheets)':''}</span> &middot; ${pt.phone||'no phone'}`;
+    UI.g('pn-found')?.classList.add('show'); UI.g('pn-new')?.classList.remove('show');
+  }
+
+  function _showNew(){ UI.g('pn-found')?.classList.remove('show'); UI.g('pn-new')?.classList.add('show'); }
+
+  function save(){
+    const id = (UI.gv('pn-id')||'').trim();
+    const date = UI.gv('pn-date'); const hc = UI.gv('pn-shc');
+    if(!id)  { UI.notify('Please enter the patient ID','err'); return; }
+    if(!date){ UI.notify('Please select the visit date','err'); return; }
+    if(!hc)  { UI.notify('Please select the served facility','err'); return; }
+    if(_editVID){ _applyEdit(); return; }
+    const dup = DB.pn.find(r=>r.lady_id===id&&(r['Date Of Registration']||'').slice(0,10)===date.slice(0,10)&&(r['Served HC']||'').trim().toLowerCase()===hc.trim().toLowerCase());
+    if(dup){ UI.notify('Duplicate PN record for this date and facility','err'); return; }
+    const row = {}; row['ID client'] = id;
+    SCHEMA.PN.fields.forEach(f=>{ const v=UI.gv(f.id); if(v) row[f.key]=v; });
+    const vid = DB.saveRecord('PN', row);
+    UI.notify(`Saved — ${row['Name']||id} · PN`);
+    UI.clearForm(S); DASH.refresh(); APPTS.updateBadge();
+  }
+
+  function startEdit(vid){
+    const record = DB.pn.find(r=>r.visit_id===vid);
+    if(!record){ UI.notify('Record not found','err'); return; }
+    const EDIT_WINDOW = 24*60*60*1000;
+    const age = Date.now()-(record.ts||0);
+    if(record._pulled||record._imported){ UI.notify('View only','err'); return; }
+    if(age>EDIT_WINDOW){ UI.notify('Edit window expired','err'); return; }
+    _editVID = vid;
+    SCHEMA.PN.fields.forEach(f=>UI.sv(f.id, record[f.key]||''));
+    UI.g('pn-id') && (UI.g('pn-id').value = record.lady_id||'');
+    UI.g('pn-edit')?.classList.add('show');
+    const lbl = UI.g('pn-edit-vid-label'); if(lbl) lbl.textContent=vid;
+    UI.notify(`Edit mode — ${Math.max(0,Math.ceil((EDIT_WINDOW-age)/3600000))}h remaining`);
+  }
+
+  function _applyEdit(){
+    const record = DB.pn.find(r=>r.visit_id===_editVID);
+    if(!record){ _cancelEdit(); return; }
+    const changes = {}; SCHEMA.PN.fields.forEach(f=>{ const v=UI.gv(f.id); if(v) changes[f.key]=v; });
+    DB.updateRecord('PN',_editVID,changes);
+    UI.notify(`Updated · PN`); _cancelEdit(); DASH.refresh();
+  }
+
+  function cancelEdit(){ _cancelEdit(); }
+  function _cancelEdit(){ _editVID=null; UI.g('pn-edit')?.classList.remove('show'); UI.clearForm(S); }
+
+  return { lookup, onIdInput, save, startEdit, cancelEdit };
+})();
+
+
+// ── forms/fp.js ──────────────────────────
+/**
+ * GOAT MCH v2 — FP Form
+ */
+const FORM_FP = (() => {
+  const S = 'fp';
+  let _debounceTimer = null, _editVID = null;
+
+  function onIdInput(){
+    clearTimeout(_debounceTimer);
+    _debounceTimer = setTimeout(() => { const id=(UI.gv('fp-id')||'').trim(); if(id.length>=6) lookup(id); }, 600);
+  }
+
+  async function lookup(id){
+    if(!id) return;
+    UI.g('fp-natid') && (UI.g('fp-natid').value=id);
+    const pt=DB.patients[id]; const recs=DB.fp.filter(r=>r.lady_id===id);
+    if(pt){ _applyAutofill(id,pt,recs); return; }
+    if(SYNC.online&&DB.getEP()){
+      const fm=UI.g('fp-fm'); if(fm) fm.innerHTML='<i class="ti ti-loader spinner"></i> Searching...';
+      UI.g('fp-found')?.classList.add('show');
+      await _lookupFromSheets(id);
+    } else _showNew();
+  }
+
+  async function _lookupFromSheets(id){
+    const ep=DB.getEP();
+    const cfgs=[{sheet:'AN',idField:'National ID',dateField:'Date Of Registration'},{sheet:'FP',idField:'National ID',dateField:'Date Of Registration'}];
+    try{
+      for(const cfg of cfgs){ const url=SYNC.buildURL(ep,{action:'getData',sheet:cfg.sheet,id}); const res=await SYNC.fetchJSON(url,{timeout:15000}); if(res.data?.status==='ok') (res.data.data||[]).filter(r=>(r[cfg.idField]||'').trim()===id).forEach(row=>DB.upsertRow(row,cfg)); }
+      DB.persistAll(); const pt=DB.patients[id];
+      if(pt) _applyAutofill(id,pt,DB.fp.filter(r=>r.lady_id===id),true); else { _showNew(); UI.notify('Patient not found'); }
+    }catch(e){ _showNew(); }
+  }
+
+  function _applyAutofill(id,pt,recs,fromSheets=false){
+    UI.sv('fp-name',pt.name); UI.sv('fp-phone',pt.phone); UI.sv('fp-dob',pt.dob);
+    UI.sv('fp-rris',pt.rris); UI.sv('fp-mhr',pt.mhr); UI.sv('fp-status',pt.status);
+    UI.setOpt('fp-refugee',pt.refugee);
+    if(pt.last_fp) UI.setOpt('fp-method',pt.last_fp);
+    const lastFP=recs.sort((a,b)=>b.ts-a.ts)[0];
+    if(lastFP){ UI.setOpt('fp-shc',lastFP['Served HC']||''); UI.setOpt('fp-ohc',lastFP['Original HC']||''); }
+    if(recs.length>0) UI.setOpt('fp-case','Follow Up');
+    LOOKUP.showHRPAlert(S,id); LOOKUP.renderTimeline(S,id); LOOKUP.renderClinSummary(S,id);
+    const total=DB.an.filter(r=>r.lady_id===id).length+recs.length+DB.pn.filter(r=>r.lady_id===id).length;
+    const fm=UI.g('fp-fm'); if(fm) fm.innerHTML=`<strong>${pt.name||id}</strong> &mdash; <span class="pill pok">${total} visit${total!==1?'s':''}${fromSheets?' (from Sheets)':''}</span> &middot; ${pt.phone||''}`;
+    UI.g('fp-found')?.classList.add('show'); UI.g('fp-new')?.classList.remove('show');
+  }
+
+  function _showNew(){ UI.g('fp-found')?.classList.remove('show'); UI.g('fp-new')?.classList.add('show'); }
+
+  function save(){
+    const id=(UI.gv('fp-id')||'').trim(); const date=UI.gv('fp-date'); const hc=UI.gv('fp-shc');
+    if(!id){UI.notify('Please enter the patient ID','err');return;} if(!date){UI.notify('Please select the visit date','err');return;} if(!hc){UI.notify('Please select the served facility','err');return;}
+    if(_editVID){_applyEdit();return;}
+    const dup=DB.fp.find(r=>r.lady_id===id&&(r['Date Of Registration']||'').slice(0,10)===date.slice(0,10)&&(r['Served HC']||'').trim().toLowerCase()===hc.trim().toLowerCase());
+    if(dup){UI.notify('Duplicate FP record','err');return;}
+    const row={'National ID':id};
+    SCHEMA.FP.fields.forEach(f=>{const v=UI.gv(f.id);if(v)row[f.key]=v;});
+    DB.saveRecord('FP',row); UI.notify(`Saved — ${row['Client name']||id} · FP`); UI.clearForm(S); DASH.refresh(); APPTS.updateBadge();
+  }
+
+  function startEdit(vid){
+    const record=DB.fp.find(r=>r.visit_id===vid); if(!record){UI.notify('Not found','err');return;}
+    const EDIT_WINDOW=24*60*60*1000; const age=Date.now()-(record.ts||0);
+    if(record._pulled||record._imported){UI.notify('View only','err');return;}
+    if(age>EDIT_WINDOW){UI.notify('Edit window expired','err');return;}
+    _editVID=vid; SCHEMA.FP.fields.forEach(f=>UI.sv(f.id,record[f.key]||''));
+    UI.g('fp-id')&&(UI.g('fp-id').value=record.lady_id||'');
+    UI.g('fp-edit')?.classList.add('show');
+    const lbl=UI.g('fp-edit-vid-label');if(lbl)lbl.textContent=vid;
+  }
+  function _applyEdit(){ const changes={}; SCHEMA.FP.fields.forEach(f=>{const v=UI.gv(f.id);if(v)changes[f.key]=v;}); DB.updateRecord('FP',_editVID,changes); UI.notify('Updated · FP'); _cancelEdit(); DASH.refresh(); }
+  function cancelEdit(){ _cancelEdit(); }
+  function _cancelEdit(){ _editVID=null; UI.g('fp-edit')?.classList.remove('show'); UI.clearForm(S); }
+  return { lookup, onIdInput, save, startEdit, cancelEdit };
+})();
+
+
+// ── forms/rpt.js ──────────────────────────
+/**
+ * GOAT MCH v2 — Reporting Form
+ */
+const FORM_RPT = (() => {
+  const S = 'rpt';
+  let _debounceTimer=null, _editVID=null;
+
+  function onIdInput(){
+    clearTimeout(_debounceTimer);
+    _debounceTimer=setTimeout(()=>{const id=(UI.gv('rpt-id')||'').trim();if(id.length>=6)lookup(id);},600);
+  }
+
+  async function lookup(id){
+    if(!id) return;
+    UI.g('rpt-natid')&&(UI.g('rpt-natid').value=id);
+    const pt=DB.patients[id];
+    if(pt){ _applyAutofill(id,pt); return; }
+    if(SYNC.online&&DB.getEP()){ await _lookupFromSheets(id); } else _showNew();
+  }
+
+  async function _lookupFromSheets(id){
+    const ep=DB.getEP();
+    try{
+      const url=SYNC.buildURL(ep,{action:'getData',sheet:'AN',id});
+      const res=await SYNC.fetchJSON(url,{timeout:15000});
+      if(res.data?.status==='ok') (res.data.data||[]).filter(r=>(r['National ID']||'').trim()===id).forEach(row=>DB.upsertRow(row,{sheet:'AN',idField:'National ID',dateField:'Date Of Registration'}));
+      DB.persistAll();
+      const pt=DB.patients[id];
+      if(pt) _applyAutofill(id,pt,true); else _showNew();
+    }catch(e){ _showNew(); }
+  }
+
+  function _applyAutofill(id,pt,fromSheets=false){
+    UI.sv('rpt-name',pt.name); UI.sv('rpt-phone',pt.phone); UI.sv('rpt-dob',pt.dob);
+    UI.sv('rpt-rris',pt.rris); UI.sv('rpt-mhr',pt.mhr);
+    if(pt.dob){ const age=UI.calcAge(pt.dob); const ageEl=UI.g('rpt-age'); if(ageEl) ageEl.value=age; }
+    if(pt.last_an_shc) UI.setOpt('rpt-shc',pt.last_an_shc);
+    if(pt.last_rpt_org) UI.setOpt('rpt-org',pt.last_rpt_org);
+    const gndr=UI.g('rpt-gender'); if(gndr) gndr.value='Female';
+    // AN/PN/FP summaries
+    const anR=DB.an.filter(r=>r.lady_id===id).sort((a,b)=>b.ts-a.ts);
+    const pnR=DB.pn.filter(r=>r.lady_id===id).sort((a,b)=>b.ts-a.ts);
+    const fpR=DB.fp.filter(r=>r.lady_id===id).sort((a,b)=>b.ts-a.ts);
+    UI.g('rpt-anst')&&(UI.g('rpt-anst').value=anR.length?`${anR.length} visit(s) · Last: ${anR[0]['Date Of Registration']||'—'}`:'No ANC record');
+    UI.g('rpt-pnst')&&(UI.g('rpt-pnst').value=pnR.length?`${pnR.length} visit(s) · Last: ${pnR[0]['Date Of Registration']||'—'}`:'No PN record');
+    UI.g('rpt-fpst')&&(UI.g('rpt-fpst').value=fpR.length?`${fpR.length} visit(s) · Method: ${fpR[0]['Family planning method']||'—'}`:'No FP record');
+    LOOKUP.renderTimeline(S,id);
+    UI.g('rpt-found')?.classList.add('show'); UI.g('rpt-new')?.classList.remove('show');
+  }
+
+  function _showNew(){ UI.g('rpt-found')?.classList.remove('show'); UI.g('rpt-new')?.classList.add('show'); }
+
+  function save(){
+    const id=(UI.gv('rpt-id')||'').trim(); const date=UI.gv('rpt-date'); const hc=UI.gv('rpt-shc');
+    if(!date){UI.notify('Please select the visit date','err');return;} if(!hc){UI.notify('Please select the served facility','err');return;}
+    if(_editVID){_applyEdit();return;}
+    const row={'National ID':id||'N/A'};
+    SCHEMA.RPT.fields.forEach(f=>{
+      if(f.type==='multi') row[f.key]=UI.getMulti(f.id).join(', ');
+      else { const v=UI.gv(f.id); if(v) row[f.key]=v; }
+    });
+    DB.saveRecord('REPORTING',row); UI.notify(`Saved · RPT`); UI.clearForm(S); DASH.refresh();
+  }
+
+  function startEdit(vid){
+    const record=DB.rpt.find(r=>r.visit_id===vid); if(!record){UI.notify('Not found','err');return;}
+    const EDIT_WINDOW=24*60*60*1000; const age=Date.now()-(record.ts||0);
+    if(record._pulled||record._imported){UI.notify('View only','err');return;}
+    if(age>EDIT_WINDOW){UI.notify('Edit window expired','err');return;}
+    _editVID=vid;
+    SCHEMA.RPT.fields.forEach(f=>{
+      if(f.type==='multi') UI.setMulti(f.id,(record[f.key]||'').split(', ').filter(Boolean));
+      else UI.sv(f.id,record[f.key]||'');
+    });
+    UI.g('rpt-id')&&(UI.g('rpt-id').value=record.lady_id||'');
+    UI.g('rpt-edit')?.classList.add('show');
+    const lbl=UI.g('rpt-edit-vid-label');if(lbl)lbl.textContent=vid;
+  }
+  function _applyEdit(){ const changes={}; SCHEMA.RPT.fields.forEach(f=>{ if(f.type==='multi') changes[f.key]=UI.getMulti(f.id).join(', '); else {const v=UI.gv(f.id);if(v)changes[f.key]=v;} }); DB.updateRecord('REPORTING',_editVID,changes); UI.notify('Updated · RPT'); _cancelEdit(); DASH.refresh(); }
+  function cancelEdit(){ _cancelEdit(); }
+  function _cancelEdit(){ _editVID=null; UI.g('rpt-edit')?.classList.remove('show'); UI.clearForm(S); }
+  return { lookup, onIdInput, save, startEdit, cancelEdit };
+})();
+
+
+// ── views/lookup.js ──────────────────────────
+/**
+ * GOAT MCH v2 — Lookup helpers (HRP alert, timeline, clinical summary)
+ * Shared by all 4 forms.
+ */
+const LOOKUP = (() => {
+
+  function showHRPAlert(s, id) {
+    const el = UI.g(`${s}-hrp-alert`);
+    if (!el) return;
+    const lastAN = DB.an.filter(r => r.lady_id === id).sort((a,b) => b.ts - a.ts)[0];
+    const risk   = lastAN?.['RISK SCORE'] || '';
+    if (risk.includes('HRP')) {
+      const risks = lastAN?.['Combined Risk Factors'] || lastAN?.['Risk Factor CURRENT PREGNANCY'] || '';
+      el.innerHTML = `<div class="bhrp show"><i class="ti ti-alert-triangle" style="font-size:22px;flex-shrink:0"></i><div><div style="font-weight:800;font-size:13px">HIGH RISK PREGNANCY</div>${risks ? `<div style="font-size:11px;opacity:.9;margin-top:2px">${risks.slice(0,120)}</div>` : ''}</div></div>`;
+    } else {
+      el.innerHTML = '';
+    }
+  }
+
+  function renderTimeline(s, id) {
+    const el = UI.g(`${s}-timeline`);
+    if (!el) return;
+    const all = [];
+    DB.an.filter(r=>r.lady_id===id).forEach(r=>all.push({s:'AN',date:r['Date Of Registration']||'',ts:r.ts||0,hc:r['Served HC']||'',mw:r['MW Name']||'',risk:r['RISK SCORE']||'',edd:r['EDD']||'',muac:r['MUAC']||'',bp:r['BP']||'',ref:r['REFERRAL']||'',col:'#1565c0',bg:'#e3f2fd'}));
+    DB.pn.filter(r=>r.lady_id===id).forEach(r=>all.push({s:'PN',date:r['Date Of Registration']||'',ts:r.ts||0,hc:r['Served HC']||'',mw:r['MW Name']||'',type:r['Type Delivery']||'',muac:r['MUAC']||'',col:'#880e4f',bg:'#fce4ec'}));
+    DB.fp.filter(r=>r.lady_id===id).forEach(r=>all.push({s:'FP',date:r['Date Of Registration']||'',ts:r.ts||0,hc:r['Served HC']||'',mw:r['MW Name']||'',method:r['Family planning method']||'',muac:r['MUAC']||'',col:'#e65100',bg:'#fff3e0'}));
+    DB.rpt.filter(r=>r.lady_id===id).forEach(r=>all.push({s:'RPT',date:r['Date Of Registration']||'',ts:r.ts||0,hc:r['Served HC']||'',mw:r['MW Name']||r['Name Of midwife']||'',svc:r['Services']||'',col:'#6a1b9a',bg:'#f3e5f5'}));
+    if (!all.length) { el.innerHTML=''; return; }
+    all.sort((a,b) => b.ts - a.ts);
+    el.innerHTML = `<div style="font-size:10px;font-weight:800;color:var(--tx2);text-transform:uppercase;letter-spacing:.08em;margin:10px 0 8px">Visit history (${all.length})</div><div class="timeline">`
+      + all.slice(0,10).map(v => {
+          const parts=[];
+          if(v.s==='AN'){if(v.risk)parts.push(`<span style="color:${v.col};font-weight:700">${v.risk}</span>`);if(v.edd)parts.push('EDD:'+v.edd);if(v.bp)parts.push('BP:'+v.bp);if(v.muac)parts.push('MUAC:'+v.muac+'mm');if(v.ref)parts.push(`<span style="color:#c62828">REF:${v.ref}</span>`);}
+          if(v.s==='PN'&&v.type)parts.push(v.type);
+          if(v.s==='FP'&&v.method)parts.push(v.method);
+          if(v.s==='RPT'&&v.svc)parts.push(v.svc);
+          return `<div class="tl-item"><div class="tl-dot" style="background:${v.col}"></div><div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap"><span class="pill" style="background:${v.col};color:#fff;font-size:9px;padding:1px 6px">${v.s}</span><strong style="font-size:11px">${v.date}</strong><span style="font-size:10px;color:var(--tx2)">${v.hc}</span><span style="font-size:10px;color:var(--tx3)">${v.mw}</span></div>${parts.length?`<div style="font-size:10px;color:var(--tx2);margin-top:2px">${parts.join(' · ')}</div>`:''}</div>`;
+        }).join('')
+      + (all.length>10?`<div style="font-size:10px;color:var(--tx3);margin-top:4px">+ ${all.length-10} earlier visits</div>`:'')
+      + '</div>';
+  }
+
+  function renderClinSummary(s, id) {
+    const el = UI.g(`${s}-clinsum`);
+    if (!el) return;
+    const lastAN  = DB.an.filter(r=>r.lady_id===id).sort((a,b)=>b.ts-a.ts)[0];
+    const lastPN  = DB.pn.filter(r=>r.lady_id===id).sort((a,b)=>b.ts-a.ts)[0];
+    const lastFP  = DB.fp.filter(r=>r.lady_id===id).sort((a,b)=>b.ts-a.ts)[0];
+    if (!lastAN && !lastPN && !lastFP) { el.innerHTML=''; return; }
+    let html = '<div class="clinsum">';
+    if (lastAN) {
+      const risk = lastAN['RISK SCORE']||'';
+      const rc   = risk.includes('HRP')?'#c62828':risk.includes('AP')?'#f39c12':'var(--g)';
+      html += `<div class="sh">Last ANC — ${lastAN['Date Of Registration']||'—'}</div><div class="clinsum-row"><span>BP: <b>${lastAN['BP']||'—'}</b></span><span>Wt: <b>${lastAN['Weight']||'—'} kg</b></span><span>MUAC: <b>${lastAN['MUAC']||'—'} mm</b></span><span>GA: <b>${lastAN['GA']||'—'}</b></span><span>EDD: <b>${lastAN['EDD']||'—'}</b></span><span>Pres: <b>${lastAN['Presentation']||'—'}</b></span><span style="color:${rc}">Risk: <b>${risk||'—'}</b></span></div>`;
+      if (lastAN['REFERRAL']) html += `<div style="margin-top:6px;font-size:11px;color:#c62828">⚠ Referral: ${lastAN['REFERRAL']}</div>`;
+    }
+    if (lastPN) html += `<div class="sh" style="margin-top:10px">Last PN — ${lastPN['Date Of Registration']||'—'}</div><div class="clinsum-row"><span>Delivery: <b>${lastPN['Type Delivery']||'—'}</b></span><span>Place: <b>${lastPN['Place Delivery']||'—'}</b></span><span>MUAC: <b>${lastPN['MUAC']||'—'} mm</b></span></div>`;
+    if (lastFP)  html += `<div class="sh" style="margin-top:10px">Last FP — ${lastFP['Date Of Registration']||'—'}</div><div class="clinsum-row"><span>Method: <b>${lastFP['Family planning method']||'—'}</b></span><span>MUAC: <b>${lastFP['MUAC']||'—'} mm</b></span></div>`;
+    html += '</div>';
+    el.innerHTML = html;
+  }
+
+  return { showHRPAlert, renderTimeline, renderClinSummary };
+})();
+
+
+// ── views/dashboard.js ──────────────────────────
+/**
+ * GOAT MCH v2 — Dashboard View
+ */
+const DASH = (() => {
+  function normKey(s){ return (s||'').toLowerCase().replace(/\s+/g,' ').trim(); }
+
+  function refresh(){
+    const DBV = getDashboardView();
+    const dAN=DBV.an,dPN=DBV.pn,dFP=DBV.fp,dRPT=DBV.rpt;
+    const pts=new Set([...dAN,...dPN,...dFP].map(r=>r.lady_id).filter(Boolean));
+
+    // KPIs
+    const newAN=dAN.filter(r=>(r['New Case/ Follow Up']||'').toLowerCase().includes('new'));
+    const fuAN =dAN.filter(r=>(r['New Case/ Follow Up']||'').toLowerCase().includes('follow'));
+    UI.se('d-an',  dAN.length);  UI.se('d-an-new',`${newAN.length} new · ${fuAN.length} FU`);
+    UI.se('d-pn',  dPN.length);
+    UI.se('d-fp',  dFP.length);
+    UI.se('d-pt',  pts.size);    UI.se('d-rpt-sub',dRPT.length+' reports');
+    UI.se('d-hrp', dAN.filter(r=>(r['RISK SCORE']||'').includes('HRP')).length);
+    UI.se('d-ap',  dAN.filter(r=>(r['RISK SCORE']||'').includes('AP')).length);
+    UI.se('d-np',  dAN.filter(r=>(r['RISK SCORE']||'').includes('NP')).length);
+
+    // MUAC
+    const muacs=dAN.map(r=>parseFloat(r['MUAC'])).filter(v=>!isNaN(v));
+    UI.se('d-muac-norm', muacs.filter(v=>v>=230).length);
+    UI.se('d-muac-mam',  muacs.filter(v=>v>=210&&v<230).length);
+    UI.se('d-muac-sam',  muacs.filter(v=>v<210).length);
+
+    // Recent visits
+    const all=[].concat(
+      dAN.map(r=>({date:r['Date Of Registration']||'',name:r['Pregnant Name']||'—',id:r.lady_id||'',s:'AN',hc:r['Served HC']||'',mw:r['MW Name']||''})),
+      dPN.map(r=>({date:r['Date Of Registration']||'',name:r['Name']||'—',        id:r.lady_id||'',s:'PN',hc:r['Served HC']||'',mw:r['MW Name']||''})),
+      dFP.map(r=>({date:r['Date Of Registration']||'',name:r['Client name']||'—', id:r.lady_id||'',s:'FP',hc:r['Served HC']||'',mw:r['MW Name']||''}))
+    ).sort((a,b)=>b.date.localeCompare(a.date));
+
+    const sColors={AN:'pan',PN:'ppn',FP:'pfp',RPT:'prpt'};
+    const tb=UI.g('dtb');
+    if(tb){
+      if(!all.length){ tb.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--tx2);padding:20px">No visits yet</td></tr>'; }
+      else { tb.innerHTML=all.slice(0,15).map(r=>`<tr><td>${r.date}</td><td style="font-family:monospace;font-size:10px">${r.id}</td><td><span class="pill ${sColors[r.s]}">${r.s}</span></td><td>${r.name}</td><td style="font-size:11px;color:var(--tx2)">${r.hc}</td></tr>`).join(''); }
+    }
+
+    // Facility table
+    const facCounts={};
+    const facDisplay={};
+    [...dAN,...dPN,...dFP].forEach(r=>{
+      const raw=r['Served HC']||'Unknown'; const k=normKey(raw);
+      if(!facCounts[k]) facCounts[k]={an:0,pn:0,fp:0};
+      if(r['Date Of Registration']?.includes&&true) {
+        if(dAN.includes(r)) facCounts[k].an++; else if(dPN.includes(r)) facCounts[k].pn++; else facCounts[k].fp++;
+      }
+      if(!facDisplay[k]||raw.length>facDisplay[k].length) facDisplay[k]=raw;
+    });
+    // Simpler approach
+    const facC2={};
+    dAN.forEach(r=>{const k=normKey(r['Served HC']||'Unknown');if(!facC2[k])facC2[k]={an:0,pn:0,fp:0,name:r['Served HC']||'Unknown'};facC2[k].an++;});
+    dPN.forEach(r=>{const k=normKey(r['Served HC']||'Unknown');if(!facC2[k])facC2[k]={an:0,pn:0,fp:0,name:r['Served HC']||'Unknown'};facC2[k].pn++;});
+    dFP.forEach(r=>{const k=normKey(r['Served HC']||'Unknown');if(!facC2[k])facC2[k]={an:0,pn:0,fp:0,name:r['Served HC']||'Unknown'};facC2[k].fp++;});
+    const ftb=UI.g('ftb');
+    if(ftb){
+      const rows=Object.values(facC2).sort((a,b)=>(b.an+b.pn+b.fp)-(a.an+a.pn+a.fp));
+      ftb.innerHTML=rows.map(f=>`<tr><td style="font-weight:600">${f.name}</td><td><span class="count-pill cp-an">${f.an}</span></td><td><span class="count-pill cp-pn">${f.pn}</span></td><td><span class="count-pill cp-fp">${f.fp}</span></td><td style="font-weight:700">${f.an+f.pn+f.fp}</td></tr>`).join('')||'<tr><td colspan="5" style="text-align:center;color:var(--tx2);padding:12px">No data</td></tr>';
+    }
+
+    // MW stats
+    const mwC={},mwDisplay={};
+    [...dAN.map(r=>({mw:r['MW Name']||r['Name Of midwife']||'',s:'an'})),
+     ...dPN.map(r=>({mw:r['MW Name']||r['Name Of midwife']||'',s:'pn'})),
+     ...dFP.map(r=>({mw:r['MW Name']||r['Name Of midwife']||'',s:'fp'}))].forEach(({mw,s})=>{
+      const k=normKey(mw)||'unknown';
+      if(!mwC[k])mwC[k]={an:0,pn:0,fp:0};
+      mwC[k][s]++;
+      if(!mwDisplay[k]||mw.length>mwDisplay[k].length)mwDisplay[k]=mw;
+    });
+    const mwtb=UI.g('mwtb');
+    if(mwtb){
+      const rows=Object.entries(mwC).sort((a,b)=>(b[1].an+b[1].pn+b[1].fp)-(a[1].an+a[1].pn+a[1].fp));
+      mwtb.innerHTML=rows.map(([k,c])=>`<tr><td class="mw-name">${mwDisplay[k]||k}</td><td style="text-align:center"><span class="count-pill cp-an">${c.an}</span></td><td style="text-align:center"><span class="count-pill cp-pn">${c.pn}</span></td><td style="text-align:center"><span class="count-pill cp-fp">${c.fp}</span></td><td style="text-align:center"><span class="count-pill cp-tot">${c.an+c.pn+c.fp}</span></td></tr>`).join('')||'<tr><td colspan="5" style="text-align:center;color:var(--tx2);padding:12px">No data</td></tr>';
+    }
+  }
+
+  function getDashboardView(){
+    function dedup(arr,idKey,dateKey,hcKey){
+      const seen={},out=[];
+      arr.forEach(r=>{
+        const pid=(r[idKey]||r.lady_id||'').toString().trim();
+        const date=(r[dateKey]||'').toString().trim().slice(0,10);
+        const hc=(r[hcKey]||'').toString().trim();
+        if(!pid||!date||!hc){out.push(r);return;}
+        const key=pid+'|'+date+'|'+hc;
+        if(seen[key])return; seen[key]=true; out.push(r);
+      });
+      return out;
+    }
+    return {
+      an:  dedup(DB.an,  'National ID','Date Of Registration','Served HC'),
+      pn:  dedup(DB.pn,  'ID client',  'Date Of Registration','Served HC'),
+      fp:  dedup(DB.fp,  'National ID','Date Of Registration','Served HC'),
+      rpt: dedup(DB.rpt, 'National ID','Date Of Registration','Served HC'),
+    };
+  }
+
+  return { refresh, getDashboardView };
+})();
+
+
+// ── views/appointments.js ──────────────────────────
+/**
+ * GOAT MCH v2 — Appointments View
+ */
+const APPTS = (() => {
+  let _filter = 'defaulter';
+
+  function _buildAppts() {
+    const user     = DB.getUser();
+    const myFac    = (user?.facility || '').trim().toLowerCase();
+    const todayStr = new Date().toISOString().slice(0,10);
+    const GRACE    = 14;
+
+    // Latest visit date per patient
+    const latestVisit = {};
+    [{arr:DB.an,idF:'National ID'},{arr:DB.pn,idF:'ID client'},{arr:DB.fp,idF:'National ID'},{arr:DB.rpt,idF:'National ID'}].forEach(vs=>{
+      (vs.arr||[]).forEach(r=>{
+        const pid=(r[vs.idF]||'').trim(); if(!pid) return;
+        const d=(r['Date Of Registration']||'').trim().slice(0,10); if(!d) return;
+        if(!latestVisit[pid]||d>latestVisit[pid]) latestVisit[pid]=d;
+      });
+    });
+
+    // Most recent record per patient per sheet
+    const latestRec = {};
+    [{arr:DB.an,s:'AN',idF:'National ID',nxtF:'Next App',nameF:'Pregnant Name'},
+     {arr:DB.pn,s:'PN',idF:'ID client',  nxtF:'Next app.',nameF:'Name'},
+     {arr:DB.fp,s:'FP',idF:'National ID',nxtF:'Next app', nameF:'Client name'}].forEach(cfg=>{
+      (cfg.arr||[]).forEach(r=>{
+        const pid=(r[cfg.idF]||'').trim(); if(!pid) return;
+        const d=(r['Date Of Registration']||'').trim().slice(0,10);
+        const key=pid+'|'+cfg.s; const ex=latestRec[key];
+        const exD=ex?(ex.r['Date Of Registration']||'').trim().slice(0,10):'';
+        if(!ex||d>exD) latestRec[key]={r,cfg};
+      });
+    });
+
+    const appts=[];
+    Object.values(latestRec).forEach(({r,cfg})=>{
+      const pid=(r[cfg.idF]||'').trim();
+      const hc=(r['Served HC']||'').trim();
+      if(myFac&&hc.toLowerCase()!==myFac) return;
+      const nxt=(r[cfg.nxtF]||'').trim().slice(0,10);
+      if(!nxt||nxt.length<10) return;
+
+      let fulfilled=false;
+      if(latestVisit[pid]&&latestVisit[pid]>=nxt){
+        const apptMs=new Date(nxt).getTime();
+        const visitMs=new Date(latestVisit[pid]).getTime();
+        fulfilled=Math.floor((visitMs-apptMs)/86400000)<=GRACE;
+      }
+
+      const p=nxt.split('-'); const nxtD=new Date(+p[0],+p[1]-1,+p[2]);
+      let status;
+      if(fulfilled) status='fulfilled';
+      else if(nxt<todayStr) status='defaulter';
+      else if(nxt===todayStr) status='today';
+      else status='upcoming';
+
+      appts.push({
+        s:cfg.s, pid, name:r[cfg.nameF]||'—',
+        phone:r['Contact Number']||r['Contact No']||(DB.patients[pid]?.phone)||'',
+        hc, mw:r['MW Name']||r['Name Of midwife']||'—',
+        nxtDate:nxt, lastVisit:(r['Date Of Registration']||'').slice(0,10),
+        risk:r['RISK SCORE']||'', muac:r['MUAC']||'', status, fulfilled
+      });
+    });
+    return appts;
+  }
+
+  function renderAppts() {
+    const el=UI.g('appt-list'), lbl=UI.g('appt-filter-label');
+    if(!el) return;
+    const all=_buildAppts();
+    const todayStr=new Date().toISOString().slice(0,10);
+    UI.se('cnt-defaulter',all.filter(a=>a.status==='defaulter').length);
+    UI.se('cnt-today',     all.filter(a=>a.status==='today').length);
+    UI.se('cnt-upcoming',  all.filter(a=>a.status==='upcoming').length);
+
+    let filtered, label;
+    if(_filter==='defaulter'){ filtered=all.filter(a=>a.status==='defaulter').sort((a,b)=>a.nxtDate.localeCompare(b.nxtDate)); label=`Defaulters — patients who missed their appointment (${filtered.length})`; }
+    else if(_filter==='today'){ filtered=all.filter(a=>a.status==='today'); label=`Today's appointments (${filtered.length})`; }
+    else if(_filter==='upcoming'){ filtered=all.filter(a=>a.status==='upcoming').sort((a,b)=>a.nxtDate.localeCompare(b.nxtDate)); label=`Upcoming appointments (${filtered.length})`; }
+    else if(_filter==='date'){
+      const d=(UI.gv('appt-date-search')||'').trim();
+      filtered=all.filter(a=>a.nxtDate===d); label=`Appointments on ${d} (${filtered.length})`;
+    } else {
+      filtered=all.filter(a=>a.status!=='fulfilled').sort((a,b)=>{const o={defaulter:0,today:1,upcoming:2};if(a.status!==b.status)return(o[a.status]||0)-(o[b.status]||0);return a.nxtDate.localeCompare(b.nxtDate);});
+      label=`All active appointments (${filtered.length})`;
+    }
+
+    if(lbl) lbl.textContent=label;
+    if(!filtered.length){ el.innerHTML='<div style="text-align:center;color:var(--tx2);padding:30px"><i class="ti ti-calendar-check" style="font-size:32px;display:block;margin-bottom:8px;opacity:.3"></i>No appointments found</div>'; return; }
+    el.innerHTML=filtered.map(a=>{
+      const sCol={AN:'#1565c0',PN:'#880e4f',FP:'#e65100'};
+      let badge,sbg,sbd;
+      if(a.status==='defaulter'){ const ago=Math.round((new Date(todayStr)-new Date(a.nxtDate))/86400000); badge=`✗ Defaulter — ${ago} day${ago!==1?'s':''} ago`; sbg='#ffebee'; sbd='#ef9a9a'; }
+      else if(a.status==='today'){ badge='📅 Today'; sbg='#D6EFEF'; sbd='var(--gb)'; }
+      else { const left=Math.round((new Date(a.nxtDate)-new Date(todayStr))/86400000); badge=`🕐 In ${left} day${left!==1?'s':''}`; sbg='#e3f2fd'; sbd='#90caf9'; }
+      const rc=a.risk.includes('HRP')?'#c62828':a.risk.includes('AP')?'#f39c12':'';
+      const riskHtml=rc?` <span style="background:${rc}20;color:${rc};padding:1px 7px;border-radius:20px;font-size:9px;font-weight:700">${a.risk}</span>`:'';
+      const textCol=a.status==='defaulter'?'#c62828':a.status==='today'?'var(--gd)':'#1565c0';
+      return `<div style="background:var(--bg);border:1px solid ${sbd};border-left:4px solid ${sbd};border-radius:var(--r);padding:10px 12px;margin-bottom:8px"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:6px"><div style="font-weight:700;font-size:13px">${a.name} <span style="font-family:monospace;font-size:10px;color:var(--tx3);font-weight:400">${a.pid}</span>${riskHtml}</div><span style="background:${sbg};border:1px solid ${sbd};color:${textCol};padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap">${badge}</span></div><div style="display:flex;gap:10px;flex-wrap:wrap;font-size:11px;color:var(--tx2)"><span class="pill" style="background:${sCol[a.s]||'#546e7a'};color:#fff;font-size:9px;padding:1px 6px">${a.s}</span>${a.phone?`<span><a href="tel:${a.phone}" style="color:var(--g);font-weight:700;text-decoration:none;display:flex;align-items:center;gap:3px"><i class="ti ti-phone"></i>${a.phone}</a></span>`:''}<span>📅 Appt: <strong>${a.nxtDate}</strong></span><span>🏥 ${a.hc}</span><span>👤 ${a.mw}</span><span>Last visit: ${a.lastVisit}</span>${a.muac?`<span>MUAC: ${a.muac}mm</span>`:''}</div></div>`;
+    }).join('');
+  }
+
+  function setFilter(f){ _filter=f; renderAppts(); }
+
+  function searchDate(){ const d=(UI.gv('appt-date-search')||'').trim(); if(!d){renderAppts();return;} _filter='date'; renderAppts(); }
+
+  function updateBadge(){
+    const todayStr=new Date().toISOString().slice(0,10);
+    const all=_buildAppts();
+    const count=all.filter(a=>a.status==='defaulter'||a.status==='today').length;
+    const btn=document.querySelector('.tb[data-tab="appts"]');
+    if(!btn) return;
+    let badge=btn.querySelector('.tab-badge');
+    if(count>0){
+      if(!badge){badge=document.createElement('span');badge.className='tab-badge';btn.appendChild(badge);}
+      badge.textContent=count>99?'99+':String(count);
+    } else if(badge) badge.remove();
+  }
+
+  return { renderAppts, setFilter, searchDate, updateBadge };
+})();
+
+
+// ── views/patients.js ──────────────────────────
+/**
+ * GOAT MCH v2 — Patients View
+ */
+const PATIENTS = (() => {
+  function render(){
+    const q=(UI.gv('ptq')||'').toLowerCase();
+    const user=DB.getUser(); const myFac=(user?.facility||'').trim().toLowerCase();
+    const facIDs={};
+    if(myFac){ ['an','pn','fp','rpt'].forEach(s=>(DB[s]||[]).forEach(r=>{if((r['Served HC']||'').trim().toLowerCase()===myFac&&r.lady_id)facIDs[r.lady_id]=true;})); }
+    const pts=Object.entries(DB.patients).filter(([id,p])=>{
+      if(myFac&&!facIDs[id]) return false;
+      return !q||id.includes(q)||(p.name||'').toLowerCase().includes(q);
+    }).slice(0,60);
+    const el=UI.g('ptlist'); if(!el) return;
+    if(!pts.length){ el.innerHTML='<div style="text-align:center;color:var(--tx2);padding:20px">No patients found</div>'; return; }
+    el.innerHTML=pts.map(([id,p])=>{
+      const anR=DB.an.filter(r=>r.lady_id===id).sort((a,b)=>b.ts-a.ts);
+      const pnR=DB.pn.filter(r=>r.lady_id===id).sort((a,b)=>b.ts-a.ts);
+      const fpR=DB.fp.filter(r=>r.lady_id===id).sort((a,b)=>b.ts-a.ts);
+      const v=anR.length+pnR.length+fpR.length;
+      const allV=[...anR.map(r=>({date:r['Date Of Registration']||'',s:'AN',ts:r.ts||0})),...pnR.map(r=>({date:r['Date Of Registration']||'',s:'PN',ts:r.ts||0})),...fpR.map(r=>({date:r['Date Of Registration']||'',s:'FP',ts:r.ts||0}))].sort((a,b)=>b.ts-a.ts);
+      const lastV=allV[0];
+      const nxtAN=anR[0]?.['Next App']||''; const nxtPN=pnR[0]?.['Next app.']||''; const nxtFP=fpR[0]?.['Next app']||'';
+      const nextApp=nxtAN||nxtPN||nxtFP;
+      const todayStr=new Date().toISOString().slice(0,10); const isOverdue=nextApp&&nextApp.slice(0,10)<todayStr;
+      const risk=anR[0]?.['RISK SCORE']||''; const rc=risk.includes('HRP')?'#c62828':risk.includes('AP')?'#f39c12':'';
+      const lastTab=lastV?lastV.s.toLowerCase():'an';
+      return `<div class="ptitem" onclick="PATIENTS.quickLookup('${id}','${lastTab}')"><div class="ptname">${p.name||'—'} <span class="pill prpt" style="font-size:10px">${id}</span>${rc?` <span class="pill" style="background:${rc}20;color:${rc};font-size:9px">${risk.split(' ')[0]}</span>`:''}</div><div class="ptmeta"><span>📞 ${p.phone||'—'}</span><span>DOB: ${UI.fmtShort(p.dob)}</span>${lastV?`<span>Last: ${UI.fmtShort(lastV.date)} <span class="pill" style="font-size:9px;background:var(--bg3)">${lastV.s}</span></span>`:''} ${nextApp?`<span style="color:${isOverdue?'#c62828':'var(--g)'}">${isOverdue?'⚠ Overdue: ':'Next: '}${UI.fmtShort(nextApp)}</span>`:''}<span>${v} visit${v!==1?'s':''}</span></div></div>`;
+    }).join('');
+  }
+
+  function quickLookup(id, preferTab='an'){
+    const tab=preferTab==='rpt'?'rpt':preferTab;
+    UI.goTab(tab);
+    const idEl=UI.g(`${tab}-id`); if(idEl) idEl.value=id;
+    const formMap={an:FORM_AN,pn:FORM_PN,fp:FORM_FP,rpt:FORM_RPT};
+    formMap[tab]?.lookup(id);
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  return { render, quickLookup };
+})();
+
+
+// ── views/search.js ──────────────────────────
+/**
+ * GOAT MCH v2 — Search View
+ */
+const SEARCH = (() => {
+  async function doSearch(){
+    const id=(UI.g('srch-id')?.value||'').trim();
+    const el=UI.g('srch-results'); if(!el) return;
+    if(!id){ el.innerHTML='<div style="text-align:center;color:var(--tx2);padding:20px">Enter an ID number first</div>'; return; }
+    const pt=DB.patients[id];
+    const anV=DB.an.filter(r=>r.lady_id===id).sort((a,b)=>b.ts-a.ts);
+    const pnV=DB.pn.filter(r=>r.lady_id===id).sort((a,b)=>b.ts-a.ts);
+    const fpV=DB.fp.filter(r=>r.lady_id===id).sort((a,b)=>b.ts-a.ts);
+    const rptV=DB.rpt.filter(r=>r.lady_id===id).sort((a,b)=>b.ts-a.ts);
+    const total=anV.length+pnV.length+fpV.length+rptV.length;
+    if(!pt&&!total){
+      if(SYNC.online&&DB.getEP()){ el.innerHTML='<div style="text-align:center;color:var(--tx2);padding:20px"><i class="ti ti-loader spinner" style="font-size:24px;display:block;margin-bottom:8px;color:var(--g)"></i>Searching Sheets...</div>'; await _searchSheets(id,el); }
+      else el.innerHTML=`<div style="text-align:center;color:var(--tx2);padding:20px">No records found for ID: <strong>${id}</strong></div>`;
+      return;
+    }
+    _render(id,pt,anV,pnV,fpV,rptV,el,false);
+  }
+
+  async function _searchSheets(id,el){
+    const ep=DB.getEP();
+    const cfgs=[{sheet:'AN',idF:'National ID',dateF:'Date Of Registration'},{sheet:'PN',idF:'ID client',dateF:'Date Of Registration'},{sheet:'FP',idF:'National ID',dateF:'Date Of Registration'},{sheet:'REPORTING',idF:'National ID',dateF:'Date Of Registration'}];
+    try{
+      for(const cfg of cfgs){ const url=SYNC.buildURL(ep,{action:'getData',sheet:cfg.sheet,id}); const res=await SYNC.fetchJSON(url,{timeout:15000}); if(res.data?.status==='ok') (res.data.data||[]).filter(r=>(r[cfg.idF]||'').trim()===id).forEach(row=>DB.upsertRow(row,cfg)); }
+      DB.persistAll();
+      const pt=DB.patients[id];
+      const anV=DB.an.filter(r=>r.lady_id===id).sort((a,b)=>b.ts-a.ts);
+      const pnV=DB.pn.filter(r=>r.lady_id===id).sort((a,b)=>b.ts-a.ts);
+      const fpV=DB.fp.filter(r=>r.lady_id===id).sort((a,b)=>b.ts-a.ts);
+      const rptV=DB.rpt.filter(r=>r.lady_id===id).sort((a,b)=>b.ts-a.ts);
+      if(!pt&&!anV.length&&!pnV.length&&!fpV.length&&!rptV.length){ el.innerHTML=`<div style="text-align:center;color:var(--tx2);padding:20px">No records found for ID: <strong>${id}</strong></div>`; return; }
+      _render(id,pt,anV,pnV,fpV,rptV,el,true);
+    }catch(e){ el.innerHTML=`<div style="text-align:center;color:#c62828;padding:20px">Search failed: ${e.message}</div>`; }
+  }
+
+  function _render(id,pt,anV,pnV,fpV,rptV,el,fromSheets){
+    const EDIT_WINDOW=24*60*60*1000;
+    const sColors={AN:'#1565c0',PN:'#880e4f',FP:'#e65100',RPT:'#6a1b9a'};
+    const sBg={AN:'#e3f2fd',PN:'#fce4ec',FP:'#fff3e0',RPT:'#f3e5f5'};
+    const dateF={AN:'Date Of Registration',PN:'Date Of Registration',FP:'Date Of Registration',RPT:'Date Of Registration'};
+    const hcF={AN:'Served HC',PN:'Served HC',FP:'Served HC',RPT:'Served HC'};
+    const mwF={AN:'MW Name',PN:'MW Name',FP:'MW Name',RPT:'Name Of midwife'};
+    let out='';
+    if(fromSheets) out+=`<div style="background:#e3f2fd;border:1px solid #90caf9;border-radius:var(--r);padding:8px 12px;margin-bottom:10px;font-size:11px;color:#1565c0;display:flex;align-items:center;gap:6px"><i class="ti ti-cloud-check"></i>Found in Google Sheets — all records are view only</div>`;
+    if(pt) out+=`<div style="background:var(--gl);border:1px solid var(--gb);border-radius:var(--r);padding:12px;margin-bottom:14px"><div style="font-weight:700;font-size:14px;margin-bottom:4px">${pt.name||'—'} <span style="font-family:monospace;font-size:11px;color:var(--tx2);font-weight:400">${id}</span></div><div style="font-size:11px;color:var(--tx2);display:flex;gap:12px;flex-wrap:wrap"><span>📞 ${pt.phone||'—'}</span><span>DOB: ${UI.fmtShort(pt.dob)}</span><span>RRIS: ${pt.rris||'—'}</span><span class="pill ${pt.refugee==='Refugee'?'pan':'ppend'}">${pt.refugee||'—'}</span></div></div>`;
+    [{arr:anV,s:'AN'},{arr:pnV,s:'PN'},{arr:fpV,s:'FP'},{arr:rptV,s:'RPT'}].forEach(({arr,s})=>{
+      if(!arr.length) return;
+      out+=`<div class="srch-section"><i class="ti ti-notes"></i>${s} (${arr.length} visit${arr.length!==1?'s':''})</div>`;
+      arr.forEach((r,i)=>{
+        const rAge=Date.now()-(r.ts||0); const rRO=r._facility_pull||r._live_search||r._pulled||r._imported||fromSheets;
+        const rEditable=!rRO&&rAge<=EDIT_WINDOW; const hoursLeft=rEditable?Math.max(0,Math.ceil((EDIT_WINDOW-rAge)/3600000)):0;
+        const editBtn=rRO?`<span style="font-size:10px;color:var(--tx3)"><i class="ti ti-eye"></i> View only</span>`:rEditable?`<button class="srch-edit-btn" data-s="${s.toLowerCase()}" data-vid="${r.visit_id}" style="padding:4px 11px;background:var(--g);color:#fff;border:none;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer"><i class="ti ti-pencil"></i>Edit (${hoursLeft}h)</button>`:`<span style="font-size:10px;color:var(--tx3)"><i class="ti ti-lock"></i> Locked</span>`;
+        out+=`<div style="padding:10px 12px;border-radius:var(--r);background:${sBg[s]};border:1px solid ${sColors[s]}40;margin-bottom:7px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;flex-wrap:wrap"><span class="pill" style="background:${sColors[s]};color:#fff;font-size:10px">${s}</span><strong style="font-size:12px">${r[dateF[s]]||'—'}</strong><span style="font-size:11px;color:var(--tx2)">${r[hcF[s]]||'—'}</span><span style="font-size:11px;color:var(--tx2)">${r[mwF[s]]||'—'}</span><span style="margin-left:auto">${editBtn}</span></div></div>`;
+      });
+    });
+    el.innerHTML=out;
+    el.querySelectorAll('.srch-edit-btn').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const s=btn.getAttribute('data-s'); const vid=btn.getAttribute('data-vid');
+        UI.goTab(s);
+        const formMap={an:FORM_AN,pn:FORM_PN,fp:FORM_FP,rpt:FORM_RPT};
+        formMap[s]?.startEdit(vid);
+        window.scrollTo({top:0,behavior:'smooth'});
+      });
+    });
+  }
+
+  return { doSearch };
+})();
+
+</script>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════════
+// GOAT MCH v2 — App bootstrap + glue code
+// ══════════════════════════════════════════════════════════════════════════
+
+const DEFAULT_EP = 'https://script.google.com/macros/s/AKfycbyZ-nBKAQHPzcagW5687LkJXLX_dHxXkUd_Ab_oFaZL8OSSbmYwO0r723bkMKc-4LPHhA/exec';
+
+// ── SETUP ──────────────────────────────────────────────────────────────────
+const SETUP = {
+  complete() {
+    const name = (g('su-name')?.value || '').trim();
+    const role = g('su-role')?.value || '';
+    const fac  = g('su-fac')?.value  || '';
+    const ep   = (g('su-ep')?.value  || '').trim();
+    if (!name) { g('su-err').textContent='Please enter your name'; g('su-err').style.display='block'; return; }
+    if (!fac)  { g('su-err').textContent='Please select your facility'; g('su-err').style.display='block'; return; }
+    DB.setUser({ name, role, facility: fac });
+    if (ep) DB.setEP(ep);
+    else    DB.setEP(DEFAULT_EP);
+    g('setup-overlay').style.display = 'none';
+    g('main-app').style.display      = 'block';
+    APP.init();
+  }
+};
+
+// ── SYNC UI ────────────────────────────────────────────────────────────────
+const SYNC_UI = {
+  saveEP() {
+    const ep = (g('epurl')?.value || '').trim();
+    if (ep) DB.setEP(ep);
+  },
+
+  async testEP() {
+    const ep  = DB.getEP();
+    const res = g('epres');
+    if (!ep) { if(res){res.className='diag-box show';res.style.color='#c62828';res.textContent='⚠ No URL configured';} return; }
+    if(res){res.className='diag-box show';res.style.color='var(--tx2)';res.textContent='Testing connection...';}
+    const diag = [`Device: ${navigator.userAgent.slice(0,60)}`, `Browser online: ${navigator.onLine}`, `URL: ${ep.slice(0,80)}...`];
+    const t0 = Date.now();
+    try {
+      const result = await SYNC.fetchJSON(ep + (ep.includes('?')?'&':'?') + 'action=health&_t=' + Date.now(), {timeout:12000});
+      const ms = Date.now()-t0;
+      diag.push(`Response time: ${ms}ms (via ${result.via})`);
+      diag.push(`HTTP status: ${result.status}`);
+      diag.push(`Raw response: ${JSON.stringify(result.data).slice(0,100)}`);
+      if(result.ok){
+        SYNC.online = true; UI.updateBar({online:true,syncing:false,probeOk:true});
+        if(res){res.style.color='#0D7377';res.textContent='✓ Connected successfully\n\n'+diag.join('\n');}
+      } else {
+        if(res){res.style.color='#c62828';res.textContent='✗ Server error\n\n'+diag.join('\n');}
+      }
+    } catch(e) {
+      diag.push(`ERROR: ${e.message}`);
+      if(res){res.style.color='#c62828';res.textContent='✗ Connection failed: '+e.message+'\n\n'+diag.join('\n');}
+    }
+  },
+
+  resetEP() {
+    DB.setEP(DEFAULT_EP);
+    const el = g('epurl'); if(el) el.value = DEFAULT_EP;
+    notify('URL reset to default');
+    this.testEP();
+  },
+
+  async syncNow() {
+    const ep = DB.getEP();
+    if (!ep) { notify('No endpoint URL configured','err'); return; }
+    const result = await SYNC.push(ep, UI.updateSyncProgress);
+    if (result) notify(`Sync complete — ${result.ok} synced, ${result.fail} failed`);
+    this.refresh();
+  },
+
+  async pullFacility() {
+    const ep   = DB.getEP();
+    const user = DB.getUser();
+    if (!ep)           { notify('No endpoint URL configured','err'); return; }
+    if (!user?.facility){ notify('Please set your facility in settings first','err'); return; }
+    const since = parseInt(g('pull-since')?.value || '90');
+    const logEl = g('pull-log');
+    const statEl= g('pull-status');
+    if(statEl) statEl.textContent = 'Pulling...';
+    const result = await SYNC.pull(ep, user.facility, since, msg => {
+      DB.addLog('[Pull] ' + msg);
+      if(logEl){ logEl.innerHTML = DB.log.slice(0,20).map(l=>`<div>${l}</div>`).join(''); logEl.scrollTop=0; }
+      if(statEl) statEl.textContent = msg;
+    });
+    if(statEl) statEl.textContent = `Done — +${result.added} new records`;
+    DASH.refresh(); APPTS.updateBadge();
+  },
+
+  async exportBackup() {
+    const btn = g('export-btn');
+    if(btn){btn.disabled=true;btn.innerHTML='<i class="ti ti-loader spinner"></i> Encrypting...';}
+    try {
+      const total = await CRYPTO.exportBackup(false);
+      notify(`Backup saved — ${total} records`);
+    } catch(e) { notify('Export failed: '+e.message,'err'); }
+    if(btn){btn.disabled=false;btn.innerHTML='<i class="ti ti-download"></i> Save backup (.goat)';}
+  },
+
+  async importBackup(file) {
+    try {
+      const result = await CRYPTO.importBackup(file);
+      notify(`Imported — +${result.records} records, +${result.patients} patients`);
+      DASH.refresh(); APPTS.updateBadge();
+    } catch(e) { notify('Import failed: '+e.message,'err'); }
+  },
+
+  async importExcel(file) {
+    const statusEl = g('xlsx-status');
+    if(statusEl) statusEl.textContent = 'Reading...';
+    if (typeof XLSX === 'undefined') { if(statusEl) statusEl.textContent='SheetJS not loaded'; return; }
+    try {
+      const buf = await new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.onerror=rej;r.readAsArrayBuffer(file);});
+      const wb = XLSX.read(new Uint8Array(buf),{type:'array',cellDates:true,dateNF:'yyyy-mm-dd'});
+      const HDR = 1;
+      function parseWS(ws){
+        if(!ws) return [];
+        const raw=XLSX.utils.sheet_to_json(ws,{header:1,raw:false,dateNF:'yyyy-mm-dd',defval:''});
+        if(raw.length<HDR) return [];
+        const headers=raw[HDR-1];
+        return raw.slice(HDR).filter(row=>row.some(c=>c&&String(c).trim())).map(row=>{
+          const obj={};headers.forEach((h,j)=>{if(h)obj[String(h).trim()]=String(row[j]||'').trim();});return obj;
+        });
+      }
+      const cfgs=[
+        {name:wb.Sheets['AN']?'AN':null,       idF:'National ID',dateF:'Date Of Registration'},
+        {name:wb.Sheets['PN']?'PN':null,        idF:'ID client',  dateF:'Date Of Registration'},
+        {name:wb.Sheets['FP']?'FP':null,        idF:'National ID',dateF:'Date Of Registration'},
+        {name:wb.Sheets['REPORTING']?'REPORTING':null,idF:'National ID',dateF:'Date Of Registration'},
+      ];
+      let added=0;
+      cfgs.forEach(cfg=>{
+        if(!cfg.name||!wb.Sheets[cfg.name]) return;
+        parseWS(wb.Sheets[cfg.name]).forEach(row=>{if(DB.upsertRow(row,{sheet:cfg.name,...cfg}))added++;});
+      });
+      DB.persistAll(); DB.mirrorToIDB();
+      DASH.refresh(); APPTS.updateBadge(); PATIENTS.render();
+      if(statusEl) statusEl.textContent = `✓ Imported ${added} records from ${file.name}`;
+      notify(`Excel imported — ${added} records`);
+    } catch(e) { if(statusEl) statusEl.textContent='✗ Import failed: '+e.message; notify('Import failed','err'); }
+  },
+
+  saveUser() {
+    const name = (g('set-name')?.value||'').trim();
+    const role = g('set-role')?.value||'';
+    const fac  = g('set-fac')?.value ||'';
+    if(!name){notify('Please enter your name','err');return;}
+    DB.setUser({name,role,facility:fac});
+    notify('Settings saved');
+    APP.updateTopBar();
+  },
+
+  refresh() {
+    const ep   = DB.getEP();
+    const user = DB.getUser();
+    const sq   = DB.getPending();
+    // Sync queue display
+    const sqEl = g('sq-display');
+    if(sqEl){
+      if(!sq.length){sqEl.innerHTML='<div style="text-align:center;color:var(--tx2);padding:12px">All synced ✓</div>';}
+      else{sqEl.innerHTML=sq.slice(0,20).map(r=>`<div class="sq-item"><span class="pill ${r.synced?'pok':'ppend'}">${r.sheet}</span><span style="font-family:monospace;font-size:10px">${r.visit_id}</span><span style="font-size:10px;color:var(--tx3)">${r.attempts||0} attempt${r.attempts!==1?'s':''}</span></div>`).join('');}
+    }
+    // EP field
+    const epEl = g('epurl'); if(epEl&&!epEl.value&&ep) epEl.value=ep;
+    // User settings
+    if(user){
+      const sn=g('set-name');if(sn&&!sn.value)sn.value=user.name||'';
+      if(g('set-role'))UI.setOpt('set-role',user.role||'');
+      if(g('set-fac'))UI.setOpt('set-fac',user.facility||'');
+    }
+    // Log
+    const logEl=g('slog'); if(logEl) logEl.innerHTML=DB.log.slice(0,50).map(l=>`<div>${l}</div>`).join('');
+    UI.updateBar({online:SYNC.online,syncing:SYNC.syncing,probeOk:SYNC.probeOk});
+  },
+
+  clearLog() { DB.log.length=0; try{localStorage.removeItem('mch_log');}catch(e){} this.refresh(); }
+};
+
+// ── APP ─────────────────────────────────────────────────────────────────────
+const APP = {
+  async init() {
+    // Populate dropdowns
+    UI.populateDropdowns();
+    // Populate setup + settings facility dropdowns
+    const allFacs = [...SCHEMA.HC_LIST,...SCHEMA.MP_LIST];
+    ['su-fac','set-fac'].forEach(id=>{
+      const el=g(id); if(!el) return;
+      el.innerHTML='<option value="">Select facility...</option>';
+      allFacs.forEach(f=>el.innerHTML+=`<option>${f}</option>`);
+    });
+    // Validate and set EP
+    const stored = (localStorage.getItem('mch_ep')||'').trim();
+    const ep = (stored && stored.includes('script.google.com') && stored.startsWith('https://')) ? stored : DEFAULT_EP;
+    DB.setEP(ep);
+    const epEl=g('epurl'); if(epEl) epEl.value=ep;
+    // Recover from IDB if needed
+    const recovered = await DB.recover();
+    if(recovered) notify('Data restored from device backup');
+    // Render
+    this.updateTopBar();
+    DASH.refresh();
+    APPTS.updateBadge();
+    UI.clearForm('an'); UI.clearForm('pn'); UI.clearForm('fp'); UI.clearForm('rpt');
+    // Epi week
+    this.updateEpiWeek();
+    // SYNC status listener
+    SYNC.onStatusChange(status => UI.updateBar(status));
+    SYNC.initListeners();
+    UI.updateBar({online:SYNC.online,syncing:false,probeOk:false});
+    // Startup connectivity probe
+    const probeOk = await SYNC.probe(ep);
+    UI.updateBar({online:probeOk,syncing:false,probeOk:true});
+    if(probeOk) {
+      const pending = DB.getPending();
+      if(pending.length>0) SYNC.push(ep, UI.updateSyncProgress).then(()=>SYNC_UI.refresh());
+      // Start auto-sync
+      const user=DB.getUser();
+      SYNC.startAutoSync(ep, user?.facility||'');
+    }
+    // SW listener for background sync trigger
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.addEventListener('message',e=>{
+        if(e.data?.type==='TRIGGER_FACILITY_SYNC'){
+          const user=DB.getUser();
+          SYNC.facilityAutoSync(DB.getEP(),user?.facility||'').then(()=>{DASH.refresh();APPTS.updateBadge();});
+        }
+      });
+    }
+  },
+
+  updateTopBar() {
+    const user=DB.getUser();
+    const el=g('top-user');
+    if(el&&user) el.textContent=`${user.name} · ${user.facility} · AN · PN · FP`;
+  },
+
+  updateEpiWeek() {
+    const now=new Date(); const start=new Date(now.getFullYear(),0,1);
+    const wk=Math.ceil(((now-start)/86400000+start.getDay()+1)/7);
+    const el=g('epi-wk'); if(el) el.textContent=`Epi Wk ${wk}`;
+  }
+};
+
+// ── STARTUP ─────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', async () => {
+  // Register SW
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  }
+  const user = DB.getUser();
+  if(!user){
+    // First launch — show setup
+    const allFacs=[...SCHEMA.HC_LIST,...SCHEMA.MP_LIST];
+    const suFac=g('su-fac');
+    if(suFac){suFac.innerHTML='<option value="">Select facility...</option>';allFacs.forEach(f=>suFac.innerHTML+=`<option>${f}</option>`);}
+    g('setup-overlay').style.display='flex';
+  } else {
+    g('main-app').style.display='block';
+    APP.init();
+  }
+});
+
+// goTab override to activate data-tab buttons
+const _goTab = goTab;
+window.goTab = function(t){
+  document.querySelectorAll('.tb').forEach(b=>b.classList.toggle('act',b.getAttribute('data-tab')===t));
+  document.querySelectorAll('.panel').forEach(p=>{
+    p.classList.toggle('act', p.id===`p-${t}`);
+  });
+  if(t==='appts') APPTS.renderAppts();
+  if(t==='dash')  DASH.refresh();
+  if(t==='pts')   PATIENTS.render();
+  if(t==='sync')  SYNC_UI.refresh();
+  if(['an','pn','fp','rpt'].includes(t)) UI.applyUserDefaults(t);
+};
+</script>
+</body>
+</html>
