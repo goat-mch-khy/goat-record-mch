@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GOAT MCH — Supervisor Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+:root{--g:#0D7377;--gd:#095E61;--gl:#E8F7F7;--gb:#7CC8CA;--bg:#fff;--bg2:#F2FAFA;--tx:#0A2E30;--tx2:#2C6B6E;--tx3:#6AABAE;--bd:#B8E0E1;--r:8px;--rl:12px;--sh:0 2px 12px rgba(13,115,119,.10)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:linear-gradient(160deg,#EAF5F5,#D6EFEF);min-height:100vh;color:var(--tx);font-size:13px}
+.wrap{max-width:1100px;margin:0 auto;padding:12px 12px 60px}
+.top{background:linear-gradient(135deg,var(--gd),#1A9EA3);color:#fff;padding:12px 18px;border-radius:var(--rl);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;box-shadow:var(--sh)}
+.top-title{font-size:15px;font-weight:800;display:flex;align-items:center;gap:8px}
+.card{background:var(--bg);border:1px solid var(--bd);border-radius:var(--rl);margin-bottom:12px;overflow:hidden;box-shadow:var(--sh)}
+.ch{background:linear-gradient(135deg,var(--gd),#0F8B8F);color:#fff;padding:9px 14px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:7px}
+.cb{padding:14px}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin-bottom:12px}
+.kpi{background:#fff;border:1px solid var(--bd);border-radius:var(--rl);padding:12px;text-align:center;box-shadow:var(--sh)}
+.kpi-num{font-size:28px;font-weight:800;color:var(--g);line-height:1}
+.kpi-lbl{font-size:10px;color:var(--tx2);margin-top:4px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.status-bar{padding:8px 14px;border-radius:var(--r);font-size:12px;font-weight:600;margin-bottom:10px}
+.s-loading{background:#fff3cd;color:#856404}
+.s-ok{background:var(--gl);color:var(--gd)}
+.s-err{background:#ffebee;color:#c62828}
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}
+.fg{display:flex;flex-direction:column;gap:3px}
+.fg label{font-size:10px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.06em}
+select,input[type=date]{padding:8px 10px;border:1px solid var(--bd);border-radius:var(--r);font-size:12px;background:#fff;color:var(--tx);min-width:140px}
+.btn{padding:7px 14px;border-radius:var(--r);font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:5px;border:1px solid var(--bd);background:var(--bg2);color:var(--tx);transition:all .15s}
+.bprim{background:linear-gradient(135deg,var(--gd),#1A9EA3);border-color:var(--gd);color:#fff}
+.tab-nav{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px;background:rgba(255,255,255,.8);padding:5px;border-radius:var(--rl);border:1px solid var(--bd)}
+.tab-btn{padding:6px 14px;border-radius:var(--r);font-size:12px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--tx2);transition:all .15s}
+.tab-btn.act{background:linear-gradient(135deg,var(--gd),#1A9EA3);color:#fff;box-shadow:0 2px 8px rgba(13,115,119,.25)}
+.tab-panel{display:none}.tab-panel.act{display:block}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:var(--bg2);color:var(--tx2);font-weight:700;padding:7px 10px;text-align:left;border-bottom:2px solid var(--bd);font-size:10px;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+td{padding:7px 10px;border-bottom:1px solid #E4F4F4;vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--gl)}
+.pill{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap}
+.pan{background:#e3f2fd;color:#1565c0}.ppn{background:#fce4ec;color:#880e4f}
+.pfp{background:#fff3e0;color:#e65100}.prpt{background:#f3e5f5;color:#6a1b9a}
+.phrp{background:#ffebee;color:#c62828}.pok{background:var(--gl);color:var(--gd)}
+.pdef{background:#ffebee;color:#c62828}.plate{background:#fff8e1;color:#f57f17}
+.bar-wrap{display:flex;align-items:flex-end;gap:3px;height:120px;margin-top:8px}
+.bar-col{display:flex;flex-direction:column;align-items:center;flex:1;gap:2px}
+.bar-lbl{font-size:9px;color:var(--tx3);text-align:center;margin-top:2px}
+.bar-val{font-size:9px;font-weight:700;color:var(--tx2)}
+.auth-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.auth-card{background:#fff;border-radius:20px;padding:32px 28px;box-shadow:0 8px 48px rgba(13,115,119,.18);max-width:380px;width:100%}
+.auth-title{font-size:18px;font-weight:800;text-align:center;margin-bottom:4px}
+.auth-sub{font-size:12px;color:var(--tx2);text-align:center;margin-bottom:24px}
+.auth-input{width:100%;padding:10px 14px;border:1px solid var(--bd);border-radius:var(--r);font-size:14px;margin-bottom:12px}
+.auth-btn{width:100%;padding:12px;background:linear-gradient(135deg,var(--gd),#1A9EA3);color:#fff;border:none;border-radius:var(--r);font-size:14px;font-weight:700;cursor:pointer}
+.dl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.dl-btn{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);cursor:pointer;transition:all .15s;font-size:12px;font-weight:600;color:var(--tx)}
+.dl-btn:hover{background:var(--gl);border-color:var(--gb);color:var(--gd)}
+.dl-btn i{font-size:20px;color:var(--g)}
+.hbar-row{margin-bottom:8px}
+.hbar-label{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px}
+.hbar-track{height:8px;background:#eee;border-radius:4px}
+.hbar-fill{height:8px;border-radius:4px;transition:width .4s}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{animation:spin 1s linear infinite;display:inline-block}
+@media(max-width:600px){.kpi-grid{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="auth-screen" class="auth-wrap">
+  <div class="auth-card">
+    <div style="text-align:center;font-size:44px;margin-bottom:16px">🐐</div>
+    <div class="auth-title">GOAT MCH Dashboard</div>
+    <div class="auth-sub">KHY Area · Supervisor Access</div>
+    <input class="auth-input" type="password" id="pwd" placeholder="Password"
+      onkeydown="if(event.key==='Enter')login()">
+    <button class="auth-btn" onclick="login()"><i class="ti ti-login"></i> Sign in</button>
+    <div id="auth-err" style="color:#c62828;font-size:12px;text-align:center;margin-top:10px;display:none">
+      Incorrect password
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="main" style="display:none">
+<div class="wrap">
+
+<div class="top">
+  <div>
+    <div class="top-title"><i class="ti ti-chart-bar"></i> GOAT MCH Supervisor Dashboard</div>
+    <div style="font-size:11px;opacity:.8;margin-top:2px">KHY Area · Direct from Google Sheets</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+    <span id="last-updated" style="font-size:10px;opacity:.8"></span>
+    <button class="btn" onclick="loadAll()" style="background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.3);font-size:11px">
+      <i class="ti ti-refresh"></i> Refresh
+    </button>
+    <button class="btn" onclick="logout()" style="background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2);font-size:11px">
+      <i class="ti ti-logout"></i>
+    </button>
+  </div>
+</div>
+
+<div class="status-bar s-loading" id="status-bar"></div>
+
+<!-- FILTERS -->
+<div class="card">
+  <div class="ch"><i class="ti ti-filter"></i> Filters</div>
+  <div class="cb">
+    <div class="filters">
+      <div class="fg"><label>Facility</label>
+        <select id="f-hc" onchange="applyFilters()"><option value="">All facilities</option></select>
+      </div>
+      <div class="fg"><label>Midwife</label>
+        <select id="f-mw" onchange="applyFilters()"><option value="">All midwives</option></select>
+      </div>
+      <div class="fg"><label>From</label>
+        <input type="date" id="f-from" onchange="applyFilters()">
+      </div>
+      <div class="fg"><label>To</label>
+        <input type="date" id="f-to" onchange="applyFilters()">
+      </div>
+      <div class="fg"><label>&nbsp;</label>
+        <button class="btn bprim" onclick="clearFilters()"><i class="ti ti-x"></i> Clear</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div id="loading" style="text-align:center;padding:40px;display:none;color:var(--tx2)">
+  <i class="ti ti-loader spin" style="font-size:32px;color:var(--g);display:block;margin-bottom:10px"></i>
+  <div id="loading-msg">Loading from Google Sheets...</div>
+</div>
+
+<div id="dash" style="display:none">
+
+<div class="tab-nav">
+  <button class="tab-btn act" onclick="showTab('overview',this)"><i class="ti ti-layout-dashboard"></i> Overview</button>
+  <button class="tab-btn" onclick="showTab('an',this)"><i class="ti ti-baby-carriage"></i> ANC</button>
+  <button class="tab-btn" onclick="showTab('pn',this)"><i class="ti ti-user-heart"></i> PN</button>
+  <button class="tab-btn" onclick="showTab('fp',this)"><i class="ti ti-shield-heart"></i> FP</button>
+  <button class="tab-btn" onclick="showTab('mw',this)"><i class="ti ti-users"></i> Per Midwife</button>
+  <button class="tab-btn" onclick="showTab('fac',this)"><i class="ti ti-building-hospital"></i> Per Facility</button>
+  <button class="tab-btn" onclick="showTab('dl',this)"><i class="ti ti-download"></i> Download</button>
+</div>
+
+<!-- OVERVIEW -->
+<div class="tab-panel act" id="tab-overview">
+  <div class="kpi-grid">
+    <div class="kpi" style="border-top:3px solid #1565c0"><div class="kpi-num" id="k-an" style="color:#1565c0">0</div><div class="kpi-lbl">ANC Visits</div></div>
+    <div class="kpi" style="border-top:3px solid #880e4f"><div class="kpi-num" id="k-pn" style="color:#880e4f">0</div><div class="kpi-lbl">PN Visits</div></div>
+    <div class="kpi" style="border-top:3px solid #e65100"><div class="kpi-num" id="k-fp" style="color:#e65100">0</div><div class="kpi-lbl">FP Visits</div></div>
+    <div class="kpi" style="border-top:3px solid #6a1b9a"><div class="kpi-num" id="k-rpt" style="color:#6a1b9a">0</div><div class="kpi-lbl">Reporting</div></div>
+    <div class="kpi" style="border-top:3px solid var(--g)"><div class="kpi-num" id="k-pt">0</div><div class="kpi-lbl">Patients</div></div>
+    <div class="kpi" style="border-top:3px solid #c62828"><div class="kpi-num" id="k-hrp" style="color:#c62828">0</div><div class="kpi-lbl">HRP</div></div>
+    <div class="kpi" style="border-top:3px solid #f39c12"><div class="kpi-num" id="k-ap" style="color:#f39c12">0</div><div class="kpi-lbl">At Risk</div></div>
+    <div class="kpi" style="border-top:3px solid var(--g)"><div class="kpi-num" id="k-np">0</div><div class="kpi-lbl">Normal</div></div>
+    <div class="kpi" style="border-top:3px solid var(--g)"><div class="kpi-num" id="k-new">0</div><div class="kpi-lbl">New Cases</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
+    <div class="kpi" style="border-top:3px solid var(--g)"><div class="kpi-num" id="k-active">0</div><div class="kpi-lbl">🟢 Active</div></div>
+    <div class="kpi" style="border-top:3px solid #f57f17"><div class="kpi-num" id="k-late" style="color:#f57f17">0</div><div class="kpi-lbl">🟡 Late</div></div>
+    <div class="kpi" style="border-top:3px solid #c62828"><div class="kpi-num" id="k-def" style="color:#c62828">0</div><div class="kpi-lbl">🔴 Defaulter</div></div>
+    <div class="kpi" style="border-top:3px solid #1565c0"><div class="kpi-num" id="k-closed" style="color:#1565c0">0</div><div class="kpi-lbl">🔵 Closed</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">
+    <div class="kpi" style="border-top:3px solid #4caf50"><div class="kpi-num" id="k-mn" style="color:#4caf50">0</div><div class="kpi-lbl">MUAC ≥23cm</div></div>
+    <div class="kpi" style="border-top:3px solid #ff9800"><div class="kpi-num" id="k-mm" style="color:#ff9800">0</div><div class="kpi-lbl">MAM 21–23cm</div></div>
+    <div class="kpi" style="border-top:3px solid #f44336"><div class="kpi-num" id="k-ms" style="color:#f44336">0</div><div class="kpi-lbl">SAM &lt;21cm</div></div>
+  </div>
+  <div class="card">
+    <div class="ch"><i class="ti ti-chart-bar"></i> Monthly trend</div>
+    <div class="cb">
+      <div id="trend-chart"></div>
+      <div style="display:flex;gap:12px;margin-top:8px;font-size:10px;flex-wrap:wrap">
+        <span><span style="display:inline-block;width:10px;height:10px;background:#1565c0;border-radius:2px;margin-right:3px"></span>AN</span>
+        <span><span style="display:inline-block;width:10px;height:10px;background:#880e4f;border-radius:2px;margin-right:3px"></span>PN</span>
+        <span><span style="display:inline-block;width:10px;height:10px;background:#e65100;border-radius:2px;margin-right:3px"></span>FP</span>
+        <span><span style="display:inline-block;width:10px;height:10px;background:#6a1b9a;border-radius:2px;margin-right:3px"></span>RPT</span>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ch"><i class="ti ti-alert-triangle"></i> High Risk Pregnancies (HRP)</div>
+    <div class="cb" style="overflow-x:auto">
+      <table><thead><tr><th>Name</th><th>ID</th><th>Risk Score</th><th>Risk Factors</th><th>Facility</th><th>Midwife</th><th>Last Visit</th><th>EDD</th><th>MUAC</th></tr></thead>
+      <tbody id="hrp-table"></tbody></table>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ch"><i class="ti ti-clock"></i> Recent visits (last 30)</div>
+    <div class="cb" style="overflow-x:auto">
+      <table><thead><tr><th>Date</th><th>Name</th><th>ID</th><th>Type</th><th>Facility</th><th>Midwife</th></tr></thead>
+      <tbody id="recent-table"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- ANC TAB -->
+<div class="tab-panel" id="tab-an">
+  <div class="card"><div class="ch"><i class="ti ti-baby-carriage"></i> ANC Analysis</div><div class="cb">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;flex-wrap:wrap">
+      <div><div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">Case Type</div><div id="an-casetype"></div></div>
+      <div><div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">Risk Distribution</div><div id="an-risk"></div></div>
+    </div>
+    <div style="margin-top:20px"><div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">Case Status</div><div id="an-cs"></div></div>
+    <div style="margin-top:20px"><div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">Referrals</div><div id="an-ref"></div></div>
+    <div style="margin-top:20px"><div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">Oedema</div><div id="an-oedema"></div></div>
+    <div style="margin-top:20px"><div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">GBV</div><div id="an-gbv"></div></div>
+  </div></div>
+</div>
+
+<!-- PN TAB -->
+<div class="tab-panel" id="tab-pn">
+  <div class="card"><div class="ch"><i class="ti ti-user-heart"></i> PN Analysis</div><div class="cb">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+      <div><div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">Delivery Type</div><div id="pn-type"></div></div>
+      <div><div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">Delivery Place</div><div id="pn-place"></div></div>
+    </div>
+    <div style="margin-top:20px"><div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">MUAC Distribution</div><div id="pn-muac"></div></div>
+    <div style="margin-top:20px"><div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">Delivered By</div><div id="pn-by"></div></div>
+    <div style="margin-top:20px"><div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">Complications</div><div id="pn-comp"></div></div>
+  </div></div>
+</div>
+
+<!-- FP TAB -->
+<div class="tab-panel" id="tab-fp">
+  <div class="card"><div class="ch"><i class="ti ti-shield-heart"></i> FP Analysis</div><div class="cb">
+    <div><div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">Method Mix</div><div id="fp-method"></div></div>
+    <div style="margin-top:20px"><div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">Case Type</div><div id="fp-case"></div></div>
+    <div style="margin-top:20px"><div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">MUAC Distribution</div><div id="fp-muac"></div></div>
+  </div></div>
+</div>
+
+<!-- PER MIDWIFE -->
+<div class="tab-panel" id="tab-mw">
+  <div class="card"><div class="ch"><i class="ti ti-users"></i> Caseload per Midwife</div><div class="cb" style="overflow-x:auto">
+    <table><thead><tr>
+      <th>Midwife</th><th>AN</th><th>PN</th><th>FP</th><th>RPT</th><th>Total</th>
+      <th>HRP</th><th>Active</th><th>🟡 Late</th><th>🔴 Default</th><th>🔵 Closed</th>
+    </tr></thead><tbody id="mw-table"></tbody></table>
+  </div></div>
+</div>
+
+<!-- PER FACILITY -->
+<div class="tab-panel" id="tab-fac">
+  <div class="card"><div class="ch"><i class="ti ti-building-hospital"></i> Activity per Facility</div><div class="cb" style="overflow-x:auto">
+    <table><thead><tr>
+      <th>Facility</th><th>AN</th><th>PN</th><th>FP</th><th>RPT</th><th>Total</th>
+      <th>HRP</th><th>Active</th><th>🔴 Default</th><th>Patients</th><th>Last Visit</th>
+    </tr></thead><tbody id="fac-table"></tbody></table>
+  </div></div>
+</div>
+
+<!-- DOWNLOAD -->
+<div class="tab-panel" id="tab-dl">
+  <div class="card"><div class="ch"><i class="ti ti-download"></i> Download Data</div><div class="cb">
+    <div class="dl-grid">
+      <div class="dl-btn" onclick="dlSheet('an','AN')"><i class="ti ti-file-spreadsheet"></i><div><div>ANC Records</div><div style="font-size:10px;color:var(--tx3);font-weight:400">All filtered AN visits</div></div></div>
+      <div class="dl-btn" onclick="dlSheet('pn','PN')"><i class="ti ti-file-spreadsheet"></i><div><div>PN Records</div><div style="font-size:10px;color:var(--tx3);font-weight:400">All filtered PN visits</div></div></div>
+      <div class="dl-btn" onclick="dlSheet('fp','FP')"><i class="ti ti-file-spreadsheet"></i><div><div>FP Records</div><div style="font-size:10px;color:var(--tx3);font-weight:400">All filtered FP visits</div></div></div>
+      <div class="dl-btn" onclick="dlSheet('rpt','REPORTING')"><i class="ti ti-file-spreadsheet"></i><div><div>Reporting</div><div style="font-size:10px;color:var(--tx3);font-weight:400">All filtered reporting</div></div></div>
+      <div class="dl-btn" onclick="dlHRP()"><i class="ti ti-alert-triangle" style="color:#c62828"></i><div><div>HRP Patients</div><div style="font-size:10px;color:var(--tx3);font-weight:400">High risk only</div></div></div>
+      <div class="dl-btn" onclick="dlDefaulters()"><i class="ti ti-phone-off" style="color:#c62828"></i><div><div>Defaulters</div><div style="font-size:10px;color:var(--tx3);font-weight:400">With call details</div></div></div>
+      <div class="dl-btn" onclick="dlActive()"><i class="ti ti-circle-check" style="color:var(--g)"></i><div><div>Active Cases</div><div style="font-size:10px;color:var(--tx3);font-weight:400">Currently active AN</div></div></div>
+      <div class="dl-btn" onclick="dlAll()"><i class="ti ti-package"></i><div><div>Full Export</div><div style="font-size:10px;color:var(--tx3);font-weight:400">All sheets in one workbook</div></div></div>
+      <div class="dl-btn" onclick="dlPerMW()"><i class="ti ti-user-check"></i><div><div>Per Midwife</div><div style="font-size:10px;color:var(--tx3);font-weight:400">One sheet per midwife</div></div></div>
+      <div class="dl-btn" onclick="dlPerFac()"><i class="ti ti-building-hospital"></i><div><div>Per Facility</div><div style="font-size:10px;color:var(--tx3);font-weight:400">One sheet per facility</div></div></div>
+    </div>
+    <div id="dl-status" style="margin-top:12px;font-size:12px;color:var(--tx2);min-height:20px"></div>
+  </div></div>
+</div>
+
+</div><!-- end dash -->
+</div><!-- end wrap -->
+</div><!-- end main -->
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────────────────
+var SHEET_ID = '11pD_HK5IX1e_ojtpV7aAMQXeZqGCKxCYxJjSaIOMnL0';
+var PASSWORD  = 'GoatMCH@Dash2026';
+var HEADER_ROW = 3; // headers are on row 3 in your sheet
+
+// ── DATA ─────────────────────────────────────────────────────────────────
+var RAW = {an:[], pn:[], fp:[], rpt:[]};
+var FIL = {an:[], pn:[], fp:[], rpt:[]};
+
+// ── AUTH ─────────────────────────────────────────────────────────────────
+function login(){
+  if(document.getElementById('pwd').value !== PASSWORD){
+    document.getElementById('auth-err').style.display='block'; return;
+  }
+  sessionStorage.setItem('dash_auth','1');
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('main').style.display='block';
+  initFilters(); loadAll();
+}
+function logout(){ sessionStorage.clear(); location.reload(); }
+(function(){
+  if(sessionStorage.getItem('dash_auth')==='1'){
+    document.getElementById('auth-screen').style.display='none';
+    document.getElementById('main').style.display='block';
+    initFilters(); setTimeout(loadAll, 100);
+  }
+})();
+
+// ── HELPERS ───────────────────────────────────────────────────────────────
+function g(id){ return document.getElementById(id); }
+function se(id,v){ var e=g(id); if(e) e.textContent=v; }
+function setStatus(msg,cls){
+  var el=g('status-bar');
+  el.className='status-bar '+(cls||'s-loading');
+  el.innerHTML=msg;
+}
+function normKey(s){ return (s||'').toLowerCase().replace(/\s+/g,' ').trim(); }
+function getMW(r){ return (r['MW Name']||r['Name Of midwife']||r['MW name']||r['MW. Name']||'').trim(); }
+function getHC(r){ return (r['Served HC']||r['Served HF']||'').trim(); }
+
+// Normalize any date to YYYY-MM-DD — no UTC offset bug
+function normDate(v){
+  if(!v && v!==0) return '';
+  var s = String(v).trim();
+  if(!s || s==='null') return '';
+  if(/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0,10);
+  var dmy = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+  if(dmy) return dmy[3]+'-'+dmy[2].padStart(2,'0')+'-'+dmy[1].padStart(2,'0');
+  // Date object or timestamp
+  var d = (v instanceof Date) ? v : new Date(s);
+  if(!isNaN(d.getTime())){
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  }
+  return '';
+}
+
+// ── FETCH FROM GOOGLE SHEETS (gviz/tq) ───────────────────────────────────
+// Parses the Google Visualization Query response
+function parseGviz(raw){
+  // Strip the callback wrapper: google.visualization.Query.setResponse({...})
+  var start = raw.indexOf('{');
+  var end   = raw.lastIndexOf('}') + 1;
+  if(start < 0 || end <= start) throw new Error('Invalid gviz response');
+  var data = JSON.parse(raw.slice(start, end));
+  if(data.status === 'error'){
+    var msg = (data.errors||[]).map(function(e){return e.detailed_message||e.message;}).join('; ');
+    throw new Error('Sheets error: ' + msg);
+  }
+  var table = data.table || {};
+  var cols  = (table.cols || []).map(function(c){ return c.label || c.id || ''; });
+  var rows  = (table.rows || []).map(function(row){
+    var obj = {};
+    (row.c || []).forEach(function(cell, i){
+      if(!cols[i]) return;
+      var val = cell ? (cell.v !== null && cell.v !== undefined ? cell.v : '') : '';
+      // Format Date objects from gviz (they come as Date(year,month,day))
+      if(val instanceof Date) val = normDate(val);
+      else val = String(val===null||val===undefined?'':val).trim();
+      obj[cols[i]] = val;
+    });
+    return obj;
+  });
+  return rows;
+}
+
+async function fetchSheet(sheetName, onProgress){
+  if(onProgress) onProgress('Loading ' + sheetName + '...');
+  // gviz URL — works for publicly shared sheets, no API key needed
+  // offset=2 skips rows 1-2, starts at row 3 (our header row)
+  var url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID
+    + '/gviz/tq?tqx=out:json&sheet=' + encodeURIComponent(sheetName)
+    + '&headers=1&range=' + sheetName
+    + '&_t=' + Date.now();
+
+  // Try with range starting at header row 3
+  var url2 = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID
+    + '/gviz/tq?tqx=out:json&sheet=' + encodeURIComponent(sheetName)
+    + '&headers=' + HEADER_ROW
+    + '&_t=' + Date.now();
+
+  var text;
+  try {
+    var resp = await fetch(url2, {cache:'no-store', redirect:'follow'});
+    text = await resp.text();
+  } catch(e) {
+    // XHR fallback
+    text = await new Promise(function(res, rej){
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', url2, true);
+      xhr.timeout = 30000;
+      xhr.onload  = function(){ res(xhr.responseText); };
+      xhr.onerror = function(){ rej(new Error('Network error')); };
+      xhr.ontimeout = function(){ rej(new Error('Timeout')); };
+      xhr.send();
+    });
+  }
+  return parseGviz(text);
+}
+
+// ── LOAD ALL SHEETS ───────────────────────────────────────────────────────
+async function loadAll(){
+  g('loading').style.display = 'block';
+  g('dash').style.display    = 'none';
+  setStatus('<i class="ti ti-loader spin" style="margin-right:5px"></i> Connecting to Google Sheets...', 's-loading');
+
+  var sheets = [
+    {name:'AN',        key:'an',  idF:'National ID', nameF:'Pregnant Name'},
+    {name:'PN',        key:'pn',  idF:'ID client',   nameF:'Name'},
+    {name:'FP',        key:'fp',  idF:'National ID', nameF:'Client name'},
+    {name:'REPORTING', key:'rpt', idF:'National ID', nameF:'Client Name'},
+  ];
+
+  var errors = [];
+
+  for(var i=0; i<sheets.length; i++){
+    var s = sheets[i];
+    setStatus('<i class="ti ti-loader spin" style="margin-right:5px"></i> Loading ' + s.name + '... (' + (i+1) + '/4)', 's-loading');
+    try {
+      var rows = await fetchSheet(s.name);
+      // Filter out completely empty rows and add computed fields
+      RAW[s.key] = rows
+        .filter(function(r){ return Object.values(r).some(function(v){return v&&v!==''}); })
+        .map(function(r){
+          return Object.assign({}, r, {
+            _date: normDate(r['Date Of Registration'] || r['Date of Registration'] || ''),
+            _id:   (r[s.idF] || '').trim(),
+            _mw:   getMW(r),
+            _hc:   getHC(r),
+            _name: r[s.nameF] || ''
+          });
+        });
+      console.log('[Dashboard] ' + s.name + ': ' + RAW[s.key].length + ' rows loaded');
+      if(RAW[s.key].length > 0){
+        console.log('[Dashboard] ' + s.name + ' sample _date:', RAW[s.key][0]._date,
+          '| raw:', RAW[s.key][0]['Date Of Registration']);
+      }
+    } catch(e) {
+      console.error('[Dashboard] ' + s.name + ' failed:', e.message);
+      errors.push(s.name + ': ' + e.message);
+      RAW[s.key] = [];
+    }
+  }
+
+  var total = RAW.an.length + RAW.pn.length + RAW.fp.length + RAW.rpt.length;
+
+  if(errors.length && !total){
+    setStatus('❌ Failed to load: ' + errors.join(' | ') + ' — Make sure sheet is shared publicly (Anyone with link → Viewer)', 's-err');
+    g('loading').style.display = 'none';
+    return;
+  }
+
+  populateFilters();
+  if(!g('f-from').value || !g('f-to').value) initFilters();
+  applyFilters();
+
+  g('loading').style.display = 'none';
+  g('dash').style.display    = 'block';
+  g('last-updated').textContent = 'Updated: ' + new Date().toLocaleTimeString();
+
+  var msg = '✓ ' + total + ' records: AN=' + RAW.an.length
+    + '  PN=' + RAW.pn.length + '  FP=' + RAW.fp.length + '  RPT=' + RAW.rpt.length;
+  if(errors.length) msg += ' ⚠ Errors: ' + errors.join(', ');
+  setStatus(msg, errors.length ? 's-loading' : 's-ok');
+}
+
+// ── FILTERS ───────────────────────────────────────────────────────────────
+function initFilters(){
+  var to=new Date(), from=new Date();
+  from.setFullYear(from.getFullYear()-1);
+  if(!g('f-from').value) g('f-from').value = from.toISOString().slice(0,10);
+  if(!g('f-to').value)   g('f-to').value   = to.toISOString().slice(0,10);
+}
+
+function populateFilters(){
+  var hcMap={}, mwMap={};
+  [RAW.an,RAW.pn,RAW.fp,RAW.rpt].forEach(function(arr){
+    arr.forEach(function(r){
+      if(r._hc){var k=normKey(r._hc);if(!hcMap[k]||r._hc.length>hcMap[k].length)hcMap[k]=r._hc;}
+      if(r._mw){var k=normKey(r._mw);if(!mwMap[k]||r._mw.length>mwMap[k].length)mwMap[k]=r._mw;}
+    });
+  });
+  var hcSel=g('f-hc'), mwSel=g('f-mw');
+  var ch=hcSel.value, cm=mwSel.value;
+  hcSel.innerHTML='<option value="">All facilities</option>';
+  mwSel.innerHTML='<option value="">All midwives</option>';
+  Object.values(hcMap).sort().forEach(function(h){hcSel.innerHTML+='<option>'+h+'</option>';});
+  Object.values(mwMap).sort().forEach(function(m){mwSel.innerHTML+='<option>'+m+'</option>';});
+  if(ch) hcSel.value=ch;
+  if(cm) mwSel.value=cm;
+}
+
+function applyFilters(){
+  var hc   = g('f-hc').value;
+  var mw   = g('f-mw').value;
+  var from = g('f-from').value;
+  var to   = g('f-to').value;
+  function filt(arr){
+    return arr.filter(function(r){
+      if(hc && normKey(r._hc) !== normKey(hc)) return false;
+      if(mw && normKey(r._mw) !== normKey(mw)) return false;
+      if(r._date){
+        if(from && r._date < from) return false;
+        if(to   && r._date > to)   return false;
+      }
+      return true;
+    });
+  }
+  FIL.an=filt(RAW.an); FIL.pn=filt(RAW.pn);
+  FIL.fp=filt(RAW.fp); FIL.rpt=filt(RAW.rpt);
+  renderAll();
+}
+
+function clearFilters(){
+  g('f-hc').value=''; g('f-mw').value='';
+  g('f-from').value=''; g('f-to').value='';
+  initFilters(); applyFilters();
+}
+
+// ── TABS ──────────────────────────────────────────────────────────────────
+function showTab(id, btn){
+  document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('act');});
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('act');});
+  g('tab-'+id).classList.add('act'); btn.classList.add('act');
+}
+
+// ── RENDER ALL ─────────────────────────────────────────────────────────────
+function renderAll(){
+  renderOverview(); renderAN(); renderPN(); renderFP(); renderMW(); renderFac();
+}
+
+// ── OVERVIEW ──────────────────────────────────────────────────────────────
+function renderOverview(){
+  var pts=new Set();
+  [FIL.an,FIL.pn,FIL.fp].forEach(function(a){a.forEach(function(r){if(r._id)pts.add(r._id);});});
+
+  var hrp = FIL.an.filter(function(r){return (r['RISK SCORE']||'').includes('HRP');});
+  var ap  = FIL.an.filter(function(r){return (r['RISK SCORE']||'').includes('AP') && !(r['RISK SCORE']||'').includes('HRP');});
+  var np  = FIL.an.filter(function(r){return (r['RISK SCORE']||'').includes('NP');});
+  var nw  = FIL.an.filter(function(r){
+    var v=(r['New Case/ Follow Up']||r['New Case/Follow Up']||'').toLowerCase();
+    return v.includes('new');
+  });
+
+  // Case status — latest AN per patient
+  var latestAN={};
+  FIL.an.forEach(function(r){
+    if(r._id && (!latestAN[r._id] || r._date > latestAN[r._id]._date)) latestAN[r._id]=r;
+  });
+  var lr = Object.values(latestAN);
+  var cs_active  = lr.filter(function(r){return !r['Case Status']||r['Case Status']==='Active';}).length;
+  var cs_late    = lr.filter(function(r){return r['Case Status']==='Late';}).length;
+  var cs_def     = lr.filter(function(r){return r['Case Status']==='Defaulter';}).length;
+  var cs_closed  = lr.filter(function(r){return (r['Case Status']||'').includes('Closed');}).length;
+
+  // MUAC
+  var muacs = FIL.an.map(function(r){return parseFloat(r['MUAC']);}).filter(function(v){return !isNaN(v)&&v>0;});
+
+  se('k-an',FIL.an.length); se('k-pn',FIL.pn.length);
+  se('k-fp',FIL.fp.length); se('k-rpt',FIL.rpt.length);
+  se('k-pt',pts.size); se('k-hrp',hrp.length);
+  se('k-ap',ap.length); se('k-np',np.length); se('k-new',nw.length);
+  se('k-active',cs_active); se('k-late',cs_late);
+  se('k-def',cs_def); se('k-closed',cs_closed);
+  se('k-mn',muacs.filter(function(v){return v>=230;}).length);
+  se('k-mm',muacs.filter(function(v){return v>=210&&v<230;}).length);
+  se('k-ms',muacs.filter(function(v){return v<210;}).length);
+
+  renderTrend();
+  renderHRP(hrp);
+  renderRecent();
+}
+
+function renderTrend(){
+  var now=new Date(), months=[];
+  for(var i=5;i>=0;i--){
+    var d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    months.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'));
+  }
+  var counts={};
+  months.forEach(function(m){counts[m]={an:0,pn:0,fp:0,rpt:0};});
+  function add(arr,k){arr.forEach(function(r){var mo=(r._date||'').slice(0,7);if(counts[mo])counts[mo][k]++;});}
+  add(FIL.an,'an');add(FIL.pn,'pn');add(FIL.fp,'fp');add(FIL.rpt,'rpt');
+  var maxV=0;
+  months.forEach(function(m){var t=counts[m].an+counts[m].pn+counts[m].fp+counts[m].rpt;if(t>maxV)maxV=t;});
+  if(!maxV) maxV=1;
+  var html='<div class="bar-wrap">';
+  months.forEach(function(m){
+    var c=counts[m]; var tot=c.an+c.pn+c.fp+c.rpt;
+    html+='<div class="bar-col"><div class="bar-val">'+(tot||'')+'</div>'
+      +'<div style="display:flex;flex-direction:column;justify-content:flex-end;height:110px;gap:1px;width:100%">'
+      +'<div style="background:#1565c0;border-radius:2px 2px 0 0;height:'+Math.max(c.an?2:0,Math.round(c.an/maxV*110))+'px"></div>'
+      +'<div style="background:#880e4f;height:'+Math.max(c.pn?2:0,Math.round(c.pn/maxV*110))+'px"></div>'
+      +'<div style="background:#e65100;height:'+Math.max(c.fp?2:0,Math.round(c.fp/maxV*110))+'px"></div>'
+      +'<div style="background:#6a1b9a;height:'+Math.max(c.rpt?2:0,Math.round(c.rpt/maxV*110))+'px"></div>'
+      +'</div><div class="bar-lbl">'+m.slice(5)+'</div></div>';
+  });
+  g('trend-chart').innerHTML=html+'</div>';
+}
+
+function renderHRP(hrp){
+  var seen={};
+  hrp.sort(function(a,b){return (b._date||'').localeCompare(a._date||'');})
+     .forEach(function(r){if(r._id&&!seen[r._id])seen[r._id]=r;});
+  g('hrp-table').innerHTML=Object.values(seen).slice(0,50).map(function(r){
+    return '<tr><td style="font-weight:600">'+r._name+'</td>'
+      +'<td style="font-family:monospace;font-size:10px">'+r._id+'</td>'
+      +'<td><span class="pill phrp">'+(r['RISK SCORE']||'—')+'</span></td>'
+      +'<td style="font-size:10px;max-width:200px">'+(r['Combined Risk Factors']||r['Risk Factor CURRENT PREGNANCY']||'—')+'</td>'
+      +'<td>'+r._hc+'</td><td>'+r._mw+'</td><td>'+r._date+'</td>'
+      +'<td>'+(r['EDD']||'—')+'</td>'
+      +'<td>'+(r['MUAC']?r['MUAC']+'mm':'—')+'</td></tr>';
+  }).join('')||'<tr><td colspan="9" style="text-align:center;color:var(--tx3);padding:20px">No HRP cases in this period</td></tr>';
+}
+
+function renderRecent(){
+  var all=[];
+  var sMap={an:'AN',pn:'PN',fp:'FP',rpt:'RPT'};
+  var sCls={AN:'pan',PN:'ppn',FP:'pfp',RPT:'prpt'};
+  Object.keys(sMap).forEach(function(k){
+    FIL[k].forEach(function(r){all.push({date:r._date,name:r._name,id:r._id,s:sMap[k],hc:r._hc,mw:r._mw});});
+  });
+  all.sort(function(a,b){return (b.date||'').localeCompare(a.date||'');});
+  g('recent-table').innerHTML=all.slice(0,30).map(function(r){
+    return '<tr><td>'+r.date+'</td><td style="font-weight:600">'+r.name+'</td>'
+      +'<td style="font-family:monospace;font-size:10px">'+r.id+'</td>'
+      +'<td><span class="pill '+sCls[r.s]+'">'+r.s+'</span></td>'
+      +'<td>'+r.hc+'</td><td>'+r.mw+'</td></tr>';
+  }).join('')||'<tr><td colspan="6" style="text-align:center;color:var(--tx3);padding:20px">No visits in this period</td></tr>';
+}
+
+// ── BREAKDOWN CHARTS ──────────────────────────────────────────────────────
+function countField(arr,field){
+  var c={};
+  arr.forEach(function(r){var v=(r[field]||'').trim()||'—';c[v]=(c[v]||0)+1;});
+  return Object.entries(c).filter(function(e){return e[0]!=='—'||Object.keys(c).length===1;})
+    .sort(function(a,b){return b[1]-a[1];});
+}
+
+function horizBars(entries, total, colors){
+  if(!entries||!entries.length) return '<div style="color:var(--tx3);font-size:12px;padding:8px">No data</div>';
+  return entries.slice(0,12).map(function(e,i){
+    var pct=total?Math.round(e[1]/total*100):0;
+    var col=colors&&colors[i]?colors[i]:'var(--g)';
+    return '<div class="hbar-row">'
+      +'<div class="hbar-label"><span style="font-weight:600">'+e[0]+'</span>'
+      +'<span style="color:var(--tx2)">'+e[1]+(total?' ('+pct+'%)':'')+'</span></div>'
+      +'<div class="hbar-track"><div class="hbar-fill" style="width:'+pct+'%;background:'+col+'"></div></div>'
+      +'</div>';
+  }).join('');
+}
+
+function renderAN(){
+  g('an-casetype').innerHTML=horizBars(countField(FIL.an,'New Case/ Follow Up'),FIL.an.length,['var(--g)','#f39c12']);
+  g('an-risk').innerHTML=horizBars(countField(FIL.an,'RISK SCORE'),FIL.an.length,['#c62828','#f39c12','var(--g)']);
+  g('an-cs').innerHTML=horizBars(countField(FIL.an,'Case Status'),FIL.an.length,['var(--g)','#f57f17','#c62828','#1565c0','#6a1b9a']);
+  var refs=FIL.an.filter(function(r){var v=(r['REFERRAL']||'').trim();return v&&v!=='—'&&v!=='No'&&v!=='no';});
+  g('an-ref').innerHTML='<div style="font-size:13px;font-weight:700;margin-bottom:8px">'+refs.length+' referrals'
+    +(FIL.an.length?' ('+Math.round(refs.length/FIL.an.length*100)+'%)':'')+'</div>'
+    +horizBars(countField(refs,'REFERRAL'),refs.length);
+  g('an-oedema').innerHTML=horizBars(countField(FIL.an,'Oedema'),FIL.an.length,['var(--g)','#ff9800','#f44336']);
+  g('an-gbv').innerHTML=horizBars(countField(FIL.an,'GBV'),FIL.an.length,['var(--g)','#c62828','#f39c12']);
+}
+
+function renderPN(){
+  g('pn-type').innerHTML=horizBars(countField(FIL.pn,'Type Delivery'),FIL.pn.length,['var(--g)','#1565c0','#f39c12']);
+  g('pn-place').innerHTML=horizBars(countField(FIL.pn,'Place Delivery'),FIL.pn.length,['var(--g)','#880e4f','#f39c12']);
+  var pm=FIL.pn.map(function(r){return parseFloat(r['MUAC']);}).filter(function(v){return !isNaN(v)&&v>0;});
+  g('pn-muac').innerHTML=horizBars([['Normal ≥23cm',pm.filter(function(v){return v>=230;}).length],['MAM 21-23cm',pm.filter(function(v){return v>=210&&v<230;}).length],['SAM <21cm',pm.filter(function(v){return v<210;}).length]],pm.length,['#4caf50','#ff9800','#f44336']);
+  g('pn-by').innerHTML=horizBars(countField(FIL.pn,'delivered by whom'),FIL.pn.length);
+  var comps=FIL.pn.filter(function(r){var v=(r['complications']||'').trim();return v&&v!=='—'&&v.toLowerCase()!=='none'&&v.toLowerCase()!=='no';});
+  g('pn-comp').innerHTML='<div style="font-size:13px;font-weight:700;margin-bottom:8px">'+comps.length+' with complications'+(FIL.pn.length?' ('+Math.round(comps.length/FIL.pn.length*100)+'%)':'')+'</div>'+horizBars(countField(comps,'complications'),comps.length);
+}
+
+function renderFP(){
+  g('fp-method').innerHTML=horizBars(countField(FIL.fp,'Family planning method'),FIL.fp.length);
+  g('fp-case').innerHTML=horizBars(countField(FIL.fp,'New Case/Follow Up'),FIL.fp.length,['var(--g)','#f39c12']);
+  var fm=FIL.fp.map(function(r){return parseFloat(r['MUAC']);}).filter(function(v){return !isNaN(v)&&v>0;});
+  g('fp-muac').innerHTML=horizBars([['Normal ≥23cm',fm.filter(function(v){return v>=230;}).length],['MAM 21-23cm',fm.filter(function(v){return v>=210&&v<230;}).length],['SAM <21cm',fm.filter(function(v){return v<210;}).length]],fm.length,['#4caf50','#ff9800','#f44336']);
+}
+
+// ── PER MIDWIFE ───────────────────────────────────────────────────────────
+function renderMW(){
+  var d={}, disp={};
+  function add(arr,key){arr.forEach(function(r){
+    var k=normKey(r._mw)||'(unknown)';
+    if(!d[k]) d[k]={an:0,pn:0,fp:0,rpt:0,hrp:0,active:0,late:0,def:0,closed:0,pts:new Set()};
+    d[k][key]++;
+    if(r._id) d[k].pts.add(r._id);
+    if(!disp[k]||r._mw.length>(disp[k]||'').length) disp[k]=r._mw;
+    if(key==='an'){
+      if((r['RISK SCORE']||'').includes('HRP')) d[k].hrp++;
+    }
+  });}
+  add(FIL.an,'an');add(FIL.pn,'pn');add(FIL.fp,'fp');add(FIL.rpt,'rpt');
+
+  // Case status per MW
+  var latestMW={};
+  FIL.an.forEach(function(r){
+    var mk=normKey(r._mw); var key=mk+'|'+r._id;
+    if(!latestMW[key]||r._date>latestMW[key]._date) latestMW[key]={r:r,mk:mk};
+  });
+  Object.values(latestMW).forEach(function(e){
+    var cs=e.r['Case Status']||'Active'; var mk=e.mk;
+    if(!d[mk]) return;
+    if(cs==='Active'||!cs) d[mk].active++;
+    else if(cs==='Late') d[mk].late++;
+    else if(cs==='Defaulter') d[mk].def++;
+    else if(cs.includes('Closed')) d[mk].closed++;
+  });
+
+  var rows=Object.entries(d).sort(function(a,b){return (b[1].an+b[1].pn+b[1].fp+b[1].rpt)-(a[1].an+a[1].pn+a[1].fp+a[1].rpt);});
+  g('mw-table').innerHTML=rows.map(function(e){
+    var k=e[0],v=e[1]; var tot=v.an+v.pn+v.fp+v.rpt;
+    return '<tr>'
+      +'<td style="font-weight:600">'+(disp[k]||k)+'</td>'
+      +'<td><span class="pill pan">'+v.an+'</span></td>'
+      +'<td><span class="pill ppn">'+v.pn+'</span></td>'
+      +'<td><span class="pill pfp">'+v.fp+'</span></td>'
+      +'<td><span class="pill prpt">'+v.rpt+'</span></td>'
+      +'<td style="font-weight:800">'+tot+'</td>'
+      +'<td>'+(v.hrp?'<span class="pill phrp">'+v.hrp+'</span>':'—')+'</td>'
+      +'<td><span class="pill pok">'+v.active+'</span></td>'
+      +'<td>'+(v.late?'<span class="pill plate">'+v.late+'</span>':'0')+'</td>'
+      +'<td>'+(v.def?'<span class="pill pdef">'+v.def+'</span>':'0')+'</td>'
+      +'<td>'+v.closed+'</td>'
+      +'</tr>';
+  }).join('')||'<tr><td colspan="11" style="text-align:center;color:var(--tx3);padding:20px">No data</td></tr>';
+}
+
+// ── PER FACILITY ──────────────────────────────────────────────────────────
+function renderFac(){
+  var d={}, disp={}, lastDate={}, pts={};
+  function add(arr,key){arr.forEach(function(r){
+    var k=normKey(r._hc)||'(unknown)';
+    if(!d[k]) d[k]={an:0,pn:0,fp:0,rpt:0,hrp:0,active:0,def:0};
+    if(!pts[k]) pts[k]=new Set();
+    d[k][key]++;
+    if(r._id) pts[k].add(r._id);
+    if(!disp[k]||r._hc.length>(disp[k]||'').length) disp[k]=r._hc;
+    if(r._date&&(!lastDate[k]||r._date>lastDate[k])) lastDate[k]=r._date;
+    if(key==='an'&&(r['RISK SCORE']||'').includes('HRP')) d[k].hrp++;
+  });}
+  add(FIL.an,'an');add(FIL.pn,'pn');add(FIL.fp,'fp');add(FIL.rpt,'rpt');
+
+  var latestFac={};
+  FIL.an.forEach(function(r){
+    var fk=normKey(r._hc); var key=fk+'|'+r._id;
+    if(!latestFac[key]||r._date>latestFac[key]._date) latestFac[key]={r:r,fk:fk};
+  });
+  Object.values(latestFac).forEach(function(e){
+    var cs=e.r['Case Status']||'Active'; var fk=e.fk;
+    if(!d[fk]) return;
+    if(cs==='Active'||!cs) d[fk].active++;
+    else if(cs==='Defaulter') d[fk].def++;
+  });
+
+  var rows=Object.entries(d).sort(function(a,b){return (b[1].an+b[1].pn+b[1].fp+b[1].rpt)-(a[1].an+a[1].pn+a[1].fp+a[1].rpt);});
+  g('fac-table').innerHTML=rows.map(function(e){
+    var k=e[0],v=e[1]; var tot=v.an+v.pn+v.fp+v.rpt;
+    return '<tr>'
+      +'<td style="font-weight:600">'+(disp[k]||k)+'</td>'
+      +'<td><span class="pill pan">'+v.an+'</span></td>'
+      +'<td><span class="pill ppn">'+v.pn+'</span></td>'
+      +'<td><span class="pill pfp">'+v.fp+'</span></td>'
+      +'<td><span class="pill prpt">'+v.rpt+'</span></td>'
+      +'<td style="font-weight:800">'+tot+'</td>'
+      +'<td>'+(v.hrp?'<span class="pill phrp">'+v.hrp+'</span>':'—')+'</td>'
+      +'<td><span class="pill pok">'+v.active+'</span></td>'
+      +'<td>'+(v.def?'<span class="pill pdef">'+v.def+'</span>':'0')+'</td>'
+      +'<td>'+(pts[k]?pts[k].size:0)+'</td>'
+      +'<td style="font-size:11px;color:var(--tx2)">'+(lastDate[k]||'—')+'</td>'
+      +'</tr>';
+  }).join('')||'<tr><td colspan="11" style="text-align:center;color:var(--tx3);padding:20px">No data</td></tr>';
+}
+
+// ── DOWNLOADS ─────────────────────────────────────────────────────────────
+function toRows(arr){
+  if(!arr.length) return [['No data']];
+  var headers=Object.keys(arr[0]).filter(function(k){return !k.startsWith('_');});
+  return [headers].concat(arr.map(function(r){return headers.map(function(h){return r[h]||''});}));
+}
+function saveWB(wb,fname){
+  if(typeof XLSX==='undefined'){g('dl-status').textContent='SheetJS not loaded';return;}
+  XLSX.writeFile(wb,fname);
+  g('dl-status').textContent='✓ Downloaded: '+fname;
+}
+function dlSheet(key,name){
+  var wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(toRows(FIL[key])),name);
+  saveWB(wb,'GOAT_MCH_'+name+'_'+new Date().toISOString().slice(0,10)+'.xlsx');
+}
+function dlHRP(){
+  var wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(toRows(FIL.an.filter(function(r){return (r['RISK SCORE']||'').includes('HRP');}))), 'HRP');
+  saveWB(wb,'GOAT_HRP_'+new Date().toISOString().slice(0,10)+'.xlsx');
+}
+function dlDefaulters(){
+  var wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(toRows(FIL.an.filter(function(r){return r['Case Status']==='Defaulter';}))), 'Defaulters');
+  saveWB(wb,'GOAT_Defaulters_'+new Date().toISOString().slice(0,10)+'.xlsx');
+}
+function dlActive(){
+  var wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(toRows(FIL.an.filter(function(r){return !r['Case Status']||r['Case Status']==='Active';}))), 'Active');
+  saveWB(wb,'GOAT_Active_'+new Date().toISOString().slice(0,10)+'.xlsx');
+}
+function dlAll(){
+  var wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(toRows(FIL.an)),'AN');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(toRows(FIL.pn)),'PN');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(toRows(FIL.fp)),'FP');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(toRows(FIL.rpt)),'REPORTING');
+  saveWB(wb,'GOAT_Full_Export_'+new Date().toISOString().slice(0,10)+'.xlsx');
+}
+function dlPerMW(){
+  var wb=XLSX.utils.book_new();
+  var groups={};
+  FIL.an.forEach(function(r){var k=normKey(r._mw);if(!groups[k]){groups[k]={name:r._mw,rows:[]};} groups[k].rows.push(r);});
+  Object.values(groups).forEach(function(g2){
+    var safe=(g2.name||'MW').replace(/[^\w\s]/g,'').trim().slice(0,28)||'MW';
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(toRows(g2.rows)),safe);
+  });
+  saveWB(wb,'GOAT_PerMW_'+new Date().toISOString().slice(0,10)+'.xlsx');
+}
+function dlPerFac(){
+  var wb=XLSX.utils.book_new();
+  var groups={};
+  [].concat(FIL.an,FIL.pn,FIL.fp,FIL.rpt).forEach(function(r){
+    var k=normKey(r._hc); if(!groups[k]){groups[k]={name:r._hc,rows:[]};} groups[k].rows.push(r);
+  });
+  Object.values(groups).forEach(function(g2){
+    var safe=(g2.name||'Fac').replace(/[^\w\s]/g,'').trim().slice(0,28)||'Fac';
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(toRows(g2.rows)),safe);
+  });
+  saveWB(wb,'GOAT_PerFacility_'+new Date().toISOString().slice(0,10)+'.xlsx');
+}
+
+// Auto-refresh every 5 minutes
+setInterval(function(){
+  if(sessionStorage.getItem('dash_auth')==='1' && document.visibilityState==='visible') loadAll();
+}, 5*60*1000);
+</script>
+</body>
+</html>
