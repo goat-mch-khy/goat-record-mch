@@ -1374,6 +1374,32 @@ function syncNow() {
   updateBar(ONLINE, true, 'Syncing ' + sq.length + ' record(s)...');
   var done = 0, ok = 0, fail = 0;
 
+  function postRecord(item, cb) {
+    var body = JSON.stringify({ sheet: item.sheet, row: item.row });
+    // Use fetch with redirect:follow — Apps Script always redirects POST
+    if (typeof fetch !== 'undefined') {
+      var ctrl = new AbortController();
+      var tid  = setTimeout(function(){ ctrl.abort(); }, 45000);
+      fetch(EP, {
+        method: 'POST', mode: 'cors', redirect: 'follow',
+        headers: { 'Content-Type': 'application/json' },
+        body: body, signal: ctrl.signal
+      }).then(function(r){ clearTimeout(tid); return r.text(); })
+        .then(function(text){ cb(null, text); })
+        .catch(function(e){ clearTimeout(tid); cb(e.message, null); });
+    } else {
+      // XHR fallback
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', EP, true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.timeout = 45000;
+      xhr.onload    = function(){ cb(null, xhr.responseText); };
+      xhr.onerror   = function(){ cb('Network error', null); };
+      xhr.ontimeout = function(){ cb('Timeout', null); };
+      xhr.send(body);
+    }
+  }
+
   function next() {
     if (done >= sq.length) {
       persist('sq');
@@ -1383,59 +1409,35 @@ function syncNow() {
       return;
     }
     var item = sq[done++];
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', EP, true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.timeout = 45000;
-    xhr.onload = function() {
-      try {
-        var d = JSON.parse(xhr.responseText);
-        if (d.status === 'ok') {
-          // Mark synced
-          for (var j = 0; j < DB.sq.length; j++) {
-            if (DB.sq[j].visit_id === item.visit_id) {
-              DB.sq[j].synced = true; DB.sq[j].synced_at = Date.now(); break;
-            }
-          }
-          ok++;
-          addLog('✓ Synced: ' + item.visit_id);
-        } else {
-          // Record the error reason
-          for (var j = 0; j < DB.sq.length; j++) {
-            if (DB.sq[j].visit_id === item.visit_id) {
-              DB.sq[j].attempts = (DB.sq[j].attempts || 0) + 1;
-              DB.sq[j].last_error = d.message || 'Unknown error';
-              break;
-            }
-          }
-          fail++;
-          addLog('✗ Failed: ' + item.visit_id + ' — ' + (d.message || 'error'));
-        }
-      } catch(e) {
-        for (var j = 0; j < DB.sq.length; j++) {
-          if (DB.sq[j].visit_id === item.visit_id) {
-            DB.sq[j].attempts = (DB.sq[j].attempts || 0) + 1;
-            DB.sq[j].last_error = 'Parse error: ' + e.message;
-            break;
-          }
-        }
+    postRecord(item, function(err, text) {
+      var sqItem = null;
+      for (var j = 0; j < DB.sq.length; j++) {
+        if (DB.sq[j].visit_id === item.visit_id) { sqItem = DB.sq[j]; break; }
+      }
+      if (err) {
+        if (sqItem) { sqItem.attempts = (sqItem.attempts||0)+1; sqItem.last_error = err; }
         fail++;
+        addLog('✗ ' + item.visit_id + ': ' + err);
+      } else {
+        try {
+          var d = JSON.parse(text);
+          if (d.status === 'ok') {
+            if (sqItem) { sqItem.synced = true; sqItem.synced_at = Date.now(); }
+            ok++;
+            addLog('✓ ' + item.visit_id);
+          } else {
+            if (sqItem) { sqItem.attempts = (sqItem.attempts||0)+1; sqItem.last_error = d.message||'error'; }
+            fail++;
+            addLog('✗ ' + item.visit_id + ': ' + (d.message||'error'));
+          }
+        } catch(e) {
+          if (sqItem) { sqItem.attempts = (sqItem.attempts||0)+1; sqItem.last_error = 'Parse error'; }
+          fail++;
+        }
       }
       updateBar(ONLINE, true, 'Syncing ' + done + '/' + sq.length + '...');
-      setTimeout(next, 300);
-    };
-    xhr.onerror = xhr.ontimeout = function() {
-      for (var j = 0; j < DB.sq.length; j++) {
-        if (DB.sq[j].visit_id === item.visit_id) {
-          DB.sq[j].attempts = (DB.sq[j].attempts || 0) + 1;
-          DB.sq[j].last_error = 'Network error / timeout';
-          break;
-        }
-      }
-      fail++;
-      setTimeout(next, 300);
-    };
-    xhr.send(JSON.stringify({ sheet: item.sheet, row: item.row }));
+      setTimeout(next, 400);
+    });
   }
   next();
 }
