@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>GOAT MCH — Patient Lookup</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+  :root {
+    --bg:#0f1117; --bg2:#1a1d27; --bg3:#22263a;
+    --ac:#4f8ef7; --ac2:#3a6fd8; --gl:#1a3a1a; --rd:#c0392b;
+    --tx:#e8eaf0; --tx2:#8892a4; --bdr:#2a2f45;
+    --green:#27ae60; --amber:#e67e22; --red:#e74c3c;
+    --radius:12px; --shadow:0 4px 24px rgba(0,0,0,0.4);
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--tx); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; min-height:100vh; padding:0 0 60px; }
+
+  /* ── Header ── */
+  .header { background:var(--bg2); border-bottom:1px solid var(--bdr); padding:16px 20px; display:flex; align-items:center; gap:12px; position:sticky; top:0; z-index:10; }
+  .header .logo { width:34px; height:34px; background:var(--ac); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:900; color:#fff; flex-shrink:0; }
+  .header h1 { font-size:16px; font-weight:700; }
+  .header p { font-size:11px; color:var(--tx2); margin-top:1px; }
+
+  /* ── Search box ── */
+  .search-wrap { max-width:600px; margin:32px auto 0; padding:0 16px; }
+  .search-card { background:var(--bg2); border:1px solid var(--bdr); border-radius:var(--radius); padding:24px; }
+  .search-card h2 { font-size:14px; font-weight:600; color:var(--tx2); text-transform:uppercase; letter-spacing:.06em; margin-bottom:16px; }
+  .search-row { display:flex; gap:10px; }
+  .search-row input {
+    flex:1; background:var(--bg3); border:1.5px solid var(--bdr); border-radius:8px;
+    color:var(--tx); font-size:18px; padding:12px 16px; outline:none; letter-spacing:2px;
+    transition:border-color .2s;
+  }
+  .search-row input:focus { border-color:var(--ac); }
+  .search-row input::placeholder { letter-spacing:0; font-size:14px; color:var(--tx2); }
+  .btn-search {
+    background:var(--ac); color:#fff; border:none; border-radius:8px;
+    padding:12px 20px; font-size:14px; font-weight:600; cursor:pointer;
+    display:flex; align-items:center; gap:6px; white-space:nowrap;
+    transition:background .15s;
+  }
+  .btn-search:hover { background:var(--ac2); }
+  .btn-search:disabled { opacity:.5; cursor:not-allowed; }
+  .hint { font-size:11px; color:var(--tx2); margin-top:8px; }
+
+  /* ── Status ── */
+  .status-wrap { max-width:600px; margin:16px auto 0; padding:0 16px; }
+  .status-bar { background:var(--bg3); border-radius:8px; padding:12px 16px; font-size:12px; color:var(--tx2); display:flex; align-items:center; gap:8px; }
+  .status-bar.err { color:var(--red); background:#2a1010; }
+  .status-bar.ok  { color:var(--green); background:#0d1f0d; }
+  .spin { animation:spin 1s linear infinite; display:inline-block; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  /* ── Result ── */
+  .result-wrap { max-width:600px; margin:20px auto 0; padding:0 16px; }
+
+  /* Patient banner */
+  .pt-banner { background:linear-gradient(135deg,#1a2a4a,#1a1d27); border:1px solid var(--ac); border-radius:var(--radius); padding:20px; margin-bottom:16px; }
+  .pt-name { font-size:20px; font-weight:700; margin-bottom:4px; }
+  .pt-id   { font-size:12px; color:var(--tx2); letter-spacing:1px; margin-bottom:12px; }
+  .pt-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .pt-field { background:rgba(255,255,255,.04); border-radius:6px; padding:8px 10px; }
+  .pt-field .lbl { font-size:10px; color:var(--tx2); text-transform:uppercase; letter-spacing:.05em; margin-bottom:2px; }
+  .pt-field .val { font-size:13px; font-weight:600; }
+  .badge { display:inline-block; padding:2px 8px; border-radius:20px; font-size:10px; font-weight:700; text-transform:uppercase; }
+  .badge.refugee { background:#1a3a1a; color:#4caf50; }
+  .badge.idp     { background:#2a2a1a; color:#ffc107; }
+  .badge.non     { background:#2a1a1a; color:#ef5350; }
+
+  /* Narrative */
+  .narrative-card { background:var(--bg2); border:1px solid var(--bdr); border-radius:var(--radius); padding:20px; margin-bottom:16px; }
+  .narrative-card h3 { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--ac); margin-bottom:14px; display:flex; align-items:center; gap:6px; }
+  .narrative-text { font-size:14px; line-height:1.75; color:var(--tx); }
+  .narrative-text strong { color:var(--ac); }
+
+  /* Visit timeline */
+  .timeline-card { background:var(--bg2); border:1px solid var(--bdr); border-radius:var(--radius); padding:20px; }
+  .timeline-card h3 { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--tx2); margin-bottom:16px; }
+  .visit { display:flex; gap:12px; margin-bottom:16px; }
+  .visit:last-child { margin-bottom:0; }
+  .visit-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; margin-top:4px; }
+  .visit-dot.an  { background:var(--ac); }
+  .visit-dot.pn  { background:var(--green); }
+  .visit-dot.fp  { background:var(--amber); }
+  .visit-dot.rpt { background:#9b59b6; }
+  .visit-line { flex:1; }
+  .visit-header { display:flex; align-items:center; gap:8px; margin-bottom:4px; }
+  .visit-type { font-size:10px; font-weight:700; padding:2px 7px; border-radius:4px; }
+  .visit-type.an  { background:#1a2a4a; color:var(--ac); }
+  .visit-type.pn  { background:#0d2010; color:var(--green); }
+  .visit-type.fp  { background:#2a1f0a; color:var(--amber); }
+  .visit-type.rpt { background:#1f0a2a; color:#9b59b6; }
+  .visit-date { font-size:11px; color:var(--tx2); }
+  .visit-hc   { font-size:11px; color:var(--tx2); margin-left:auto; }
+  .visit-detail { font-size:12px; color:var(--tx2); line-height:1.5; }
+  .visit-detail span { color:var(--tx); }
+
+  /* Not found */
+  .not-found { text-align:center; padding:40px 20px; }
+  .not-found i { font-size:48px; color:var(--tx2); display:block; margin-bottom:12px; }
+  .not-found h3 { font-size:16px; margin-bottom:6px; }
+  .not-found p { font-size:13px; color:var(--tx2); }
+
+  /* Print */
+  @media print {
+    body { background:#fff; color:#000; }
+    .header, .search-wrap, .status-wrap { display:none; }
+    .pt-banner, .narrative-card, .timeline-card { border:1px solid #ccc; }
+    .btn-print { display:none; }
+  }
+  .btn-print { background:var(--bg3); border:1px solid var(--bdr); color:var(--tx); border-radius:8px; padding:8px 14px; font-size:12px; cursor:pointer; display:flex; align-items:center; gap:6px; margin-left:auto; }
+  .pt-actions { display:flex; justify-content:flex-end; margin-bottom:12px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">G</div>
+  <div>
+    <h1>GOAT MCH — Patient Lookup</h1>
+    <p>Search patient history across all sheets</p>
+  </div>
+</div>
+
+<div class="search-wrap">
+  <div class="search-card">
+    <h2><i class="ti ti-search"></i> Search by National ID</h2>
+    <div class="search-row">
+      <input type="number" id="id-input" placeholder="Enter National ID number..." inputmode="numeric"
+        onkeydown="if(event.key==='Enter') doSearch()">
+      <button class="btn-search" id="btn-search" onclick="doSearch()">
+        <i class="ti ti-search"></i> Search
+      </button>
+    </div>
+    <div class="hint">Searches AN · PN · FP · Reporting sheets in real time</div>
+  </div>
+</div>
+
+<div class="status-wrap">
+  <div class="status-bar" id="status" style="display:none"></div>
+</div>
+
+<div class="result-wrap" id="result"></div>
+
+<script>
+var EP = localStorage.getItem('mch_ep') ||
+  'https://script.google.com/macros/s/AKfycbyZ-nBKAQHPzcagW5687LkJXLX_dHxXkUd_Ab_oFaZL8OSSbmYwO0r723bkMKc-4LPHhA/exec';
+
+var SHEETS = [
+  { name:'AN',        label:'Antenatal',  key:'an',  idF:'National ID',   dateF:'Date Of Registration', hcF:'Served HC' },
+  { name:'PN',        label:'Postnatal',  key:'pn',  idF:'ID client',     dateF:'Date Of Registration', hcF:'Served HC' },
+  { name:'FP',        label:'Family Planning', key:'fp', idF:'National ID', dateF:'Date Of Registration', hcF:'Served HC' },
+  { name:'REPORTING', label:'Reporting',  key:'rpt', idF:'National ID',   dateF:'Date Of Registration', hcF:'Served HC' },
+];
+
+function g(id) { return document.getElementById(id); }
+
+function setStatus(msg, type) {
+  var el = g('status');
+  el.style.display = 'flex';
+  el.className = 'status-bar' + (type ? ' '+type : '');
+  el.innerHTML = msg;
+}
+
+function fmtDate(s) {
+  if (!s) return '—';
+  var d = new Date(s);
+  if (isNaN(d)) return s;
+  return d.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+}
+
+function fetchSheet(sheetName, id) {
+  return new Promise(function(res) {
+    var url = EP + '?action=getData&sheet=' + encodeURIComponent(sheetName)
+      + '&id=' + encodeURIComponent(id) + '&_t=' + Date.now();
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.timeout = 20000;
+    xhr.onload = function() {
+      try {
+        var d = JSON.parse(xhr.responseText);
+        if (d && d.status === 'ok' && Array.isArray(d.data)) res(d.data);
+        else res([]);
+      } catch(e) { res([]); }
+    };
+    xhr.onerror = xhr.ontimeout = function() { res([]); };
+    xhr.send();
+  });
+}
+
+function doSearch() {
+  var id = (g('id-input').value || '').trim();
+  if (!id) { setStatus('<i class="ti ti-alert-circle"></i>&nbsp; Please enter a National ID', 'err'); return; }
+
+  g('btn-search').disabled = true;
+  g('btn-search').innerHTML = '<i class="ti ti-loader spin"></i> Searching...';
+  g('result').innerHTML = '';
+  setStatus('<i class="ti ti-loader spin"></i>&nbsp; Searching all sheets for ID <strong>' + id + '</strong>...', '');
+
+  var allResults = {};
+  var done = 0;
+
+  SHEETS.forEach(function(sh) {
+    fetchSheet(sh.name, id).then(function(rows) {
+      allResults[sh.key] = rows;
+      done++;
+      setStatus('<i class="ti ti-loader spin"></i>&nbsp; Loading... (' + done + '/' + SHEETS.length + ' sheets)', '');
+      if (done === SHEETS.length) render(id, allResults);
+    });
+  });
+}
+
+function render(id, data) {
+  g('btn-search').disabled = false;
+  g('btn-search').innerHTML = '<i class="ti ti-search"></i> Search';
+
+  var total = Object.values(data).reduce(function(s,a){ return s+a.length; }, 0);
+
+  if (total === 0) {
+    setStatus('<i class="ti ti-circle-x"></i>&nbsp; No records found for ID ' + id, 'err');
+    g('result').innerHTML = '<div class="not-found"><i class="ti ti-user-off"></i><h3>Patient not found</h3><p>No records for National ID <strong>' + id + '</strong> in any sheet.</p></div>';
+    return;
+  }
+
+  setStatus('<i class="ti ti-circle-check"></i>&nbsp; Found <strong>' + total + ' record(s)</strong> for ID ' + id, 'ok');
+
+  // ── Extract patient profile from first AN record ──
+  var profile = extractProfile(id, data);
+
+  // ── Build narrative ──
+  var narrative = buildNarrative(profile, data);
+
+  // ── Build timeline ──
+  var timeline = buildTimeline(data);
+
+  // ── Render ──
+  var refugeeBadge = '';
+  var ref = (profile.refugee||'').toLowerCase();
+  if (ref.includes('refugee'))  refugeeBadge = '<span class="badge refugee">Refugee</span>';
+  else if (ref.includes('idp')) refugeeBadge = '<span class="badge idp">IDP</span>';
+  else if (ref)                 refugeeBadge = '<span class="badge non">' + profile.refugee + '</span>';
+
+  var html = '';
+  html += '<div class="pt-actions"><button class="btn-print" onclick="window.print()"><i class="ti ti-printer"></i> Print</button></div>';
+
+  // Patient banner
+  html += '<div class="pt-banner">';
+  html += '<div class="pt-name">' + (profile.name || 'Unknown Name') + ' ' + refugeeBadge + '</div>';
+  html += '<div class="pt-id">National ID: ' + id + '</div>';
+  html += '<div class="pt-grid">';
+  if (profile.phone)   html += ptField('Phone', profile.phone, 'ti-phone');
+  if (profile.dob)     html += ptField('Date of Birth', fmtDate(profile.dob), 'ti-cake');
+  if (profile.husband) html += ptField('Husband', profile.husband, 'ti-user');
+  if (profile.rris)    html += ptField('RRIS No.', profile.rris, 'ti-id-badge');
+  if (profile.mhr)     html += ptField('MHR ID', profile.mhr, 'ti-id-badge-2');
+  if (profile.lmp)     html += ptField('Last LMP', fmtDate(profile.lmp), 'ti-calendar');
+  if (profile.edd)     html += ptField('EDD', fmtDate(profile.edd), 'ti-calendar-event');
+  if (profile.facility)html += ptField('Facility', profile.facility, 'ti-building-hospital');
+  html += '</div></div>';
+
+  // Narrative
+  html += '<div class="narrative-card">';
+  html += '<h3><i class="ti ti-file-text"></i> Clinical Summary</h3>';
+  html += '<div class="narrative-text">' + narrative + '</div>';
+  html += '</div>';
+
+  // Timeline
+  if (timeline.length) {
+    html += '<div class="timeline-card">';
+    html += '<h3>Visit Timeline (' + total + ' visits)</h3>';
+    timeline.forEach(function(v) {
+      html += '<div class="visit">';
+      html += '<div class="visit-dot ' + v.type + '"></div>';
+      html += '<div class="visit-line">';
+      html += '<div class="visit-header">';
+      html += '<span class="visit-type ' + v.type + '">' + v.label + '</span>';
+      html += '<span class="visit-date">' + fmtDate(v.date) + '</span>';
+      if (v.hc) html += '<span class="visit-hc"><i class="ti ti-building-hospital" style="font-size:10px"></i> ' + v.hc + '</span>';
+      html += '</div>';
+      if (v.detail) html += '<div class="visit-detail">' + v.detail + '</div>';
+      html += '</div></div>';
+    });
+    html += '</div>';
+  }
+
+  g('result').innerHTML = html;
+}
+
+function ptField(lbl, val, icon) {
+  return '<div class="pt-field"><div class="lbl"><i class="ti ' + icon + '" style="font-size:10px"></i> ' + lbl + '</div><div class="val">' + val + '</div></div>';
+}
+
+function extractProfile(id, data) {
+  var p = { id: id };
+  var prio = ['an','pn','fp','rpt'];
+  prio.forEach(function(key) {
+    (data[key]||[]).forEach(function(r) {
+      function mf(k, v) { if (v && v !== '—' && !p[k]) p[k] = v; }
+      mf('name',    r['Pregnant Name']||r['Name']||r['Client name']||r['Client Name']);
+      mf('phone',   r['Contact Number']||r['Contact No']);
+      mf('dob',     r['DOB']||r['DATE OF BIRTH']);
+      mf('rris',    r['RRIS family number']||r['RRIS']);
+      mf('mhr',     r['MHR ID رقم الامومة']||r['MHR NO']);
+      mf('refugee', r['Refugee Status']||r['Refugee/NotRefugee']||r['Refguee / NonRefguee']);
+      mf('husband', r['Husband name']);
+      mf('lmp',     r['LMP']);
+      mf('edd',     r['EDD']);
+      mf('facility',r['Served HC']);
+      mf('status',  r['Status']);
+      mf('rcurr',   r['Risk Factor CURRENT PREGNANCY']||r['Combined Risk Factors']);
+      mf('rprev',   r['Risk Factor PREVIOUS PREGNANCIES']);
+      mf('gravida', r['Gravida']);
+      mf('para',    r['Para']);
+      mf('ga',      r['Gestational Age (weeks)']||r['GA']);
+    });
+  });
+  return p;
+}
+
+function buildNarrative(p, data) {
+  var parts = [];
+  var name = p.name || 'The patient';
+
+  // Intro
+  var intro = '<strong>' + name + '</strong>';
+  if (p.dob) intro += ', born <strong>' + fmtDate(p.dob) + '</strong>';
+  if (p.refugee) intro += ', <strong>' + p.refugee + '</strong>';
+  intro += ', National ID <strong>' + p.id + '</strong>';
+  if (p.husband) intro += ', wife of ' + p.husband;
+  intro += '.';
+  parts.push(intro);
+
+  // Obstetric history
+  var anRecs = data.an || [];
+  var pnRecs = data.pn || [];
+  var fpRecs = data.fp || [];
+  var rptRecs = data.rpt || [];
+
+  if (anRecs.length) {
+    var latest = anRecs[0];
+    var obs = 'She has <strong>' + anRecs.length + ' antenatal visit(s)</strong> on record';
+    if (p.gravida) obs += ', Gravida <strong>' + p.gravida + '</strong>';
+    if (p.para)    obs += ', Para <strong>' + p.para + '</strong>';
+    obs += '.';
+    if (p.lmp) obs += ' LMP was <strong>' + fmtDate(p.lmp) + '</strong>';
+    if (p.edd) obs += ', EDD <strong>' + fmtDate(p.edd) + '</strong>';
+    if (p.lmp || p.edd) obs += '.';
+    if (p.ga) obs += ' Gestational age recorded as <strong>' + p.ga + ' weeks</strong>.';
+    parts.push(obs);
+  }
+
+  if (p.rcurr) {
+    parts.push('Risk factors in current pregnancy: <strong>' + p.rcurr + '</strong>.');
+  }
+  if (p.rprev) {
+    parts.push('Risk factors from previous pregnancies: <strong>' + p.rprev + '</strong>.');
+  }
+
+  if (pnRecs.length) {
+    var pn = 'There are <strong>' + pnRecs.length + ' postnatal visit(s)</strong>';
+    var delivType = pnRecs[0]['Delivery type'] || pnRecs[0]['Type of delivery'] || '';
+    var delivDate = pnRecs[0]['Date of delivery'] || pnRecs[0]['Date Of Delivery'] || '';
+    if (delivType) pn += ', delivery type: <strong>' + delivType + '</strong>';
+    if (delivDate) pn += ' on <strong>' + fmtDate(delivDate) + '</strong>';
+    pn += '.';
+    parts.push(pn);
+  }
+
+  if (fpRecs.length) {
+    var fp = '<strong>' + fpRecs.length + ' family planning visit(s)</strong>';
+    var method = fpRecs[0]['Family planning method'] || '';
+    if (method) fp += '; current method: <strong>' + method + '</strong>';
+    fp += '.';
+    parts.push(fp);
+  }
+
+  if (rptRecs.length) {
+    parts.push('<strong>' + rptRecs.length + ' reporting entry/entries</strong> recorded.');
+  }
+
+  // Status
+  if (p.status) {
+    parts.push('Current case status: <strong>' + p.status + '</strong>.');
+  }
+
+  // Facility
+  if (p.facility) {
+    parts.push('Last served at: <strong>' + p.facility + '</strong>.');
+  }
+
+  if (p.rris || p.mhr) {
+    var ids = [];
+    if (p.rris) ids.push('RRIS: ' + p.rris);
+    if (p.mhr)  ids.push('MHR: ' + p.mhr);
+    parts.push(ids.join(' · ') + '.');
+  }
+
+  return parts.join(' ');
+}
+
+function buildTimeline(data) {
+  var visits = [];
+
+  (data.an||[]).forEach(function(r) {
+    var detail = '';
+    if (r['Gestational Age (weeks)']||r['GA']) detail += 'GA: <span>' + (r['Gestational Age (weeks)']||r['GA']) + ' wks</span>  ';
+    if (r['BP']||r['Blood Pressure']) detail += 'BP: <span>' + (r['BP']||r['Blood Pressure']) + '</span>  ';
+    if (r['Weight']||r['Weight (kg)']) detail += 'Wt: <span>' + (r['Weight']||r['Weight (kg)']) + ' kg</span>  ';
+    if (r['Risk Factor CURRENT PREGNANCY']||r['Combined Risk Factors']) detail += 'Risk: <span>' + (r['Risk Factor CURRENT PREGNANCY']||r['Combined Risk Factors']) + '</span>';
+    visits.push({ type:'an', label:'ANC', date:r['Date Of Registration']||'', hc:r['Served HC']||'', detail:detail.trim() });
+  });
+
+  (data.pn||[]).forEach(function(r) {
+    var detail = '';
+    if (r['Delivery type']||r['Type of delivery']) detail += 'Delivery: <span>' + (r['Delivery type']||r['Type of delivery']) + '</span>  ';
+    if (r['Baby weight']||r['Birth weight']) detail += 'Baby wt: <span>' + (r['Baby weight']||r['Birth weight']) + ' kg</span>  ';
+    if (r['Breastfeeding']) detail += 'BF: <span>' + r['Breastfeeding'] + '</span>';
+    visits.push({ type:'pn', label:'PNC', date:r['Date Of Registration']||'', hc:r['Served HC']||'', detail:detail.trim() });
+  });
+
+  (data.fp||[]).forEach(function(r) {
+    var detail = '';
+    if (r['Family planning method']) detail += 'Method: <span>' + r['Family planning method'] + '</span>  ';
+    if (r['Case type']||r['Case Type']) detail += 'Case: <span>' + (r['Case type']||r['Case Type']) + '</span>';
+    visits.push({ type:'fp', label:'FP', date:r['Date Of Registration']||'', hc:r['Served HC']||'', detail:detail.trim() });
+  });
+
+  (data.rpt||[]).forEach(function(r) {
+    var detail = '';
+    if (r['Services provided']||r['Services Provided']) detail += 'Services: <span>' + (r['Services provided']||r['Services Provided']) + '</span>';
+    visits.push({ type:'rpt', label:'RPT', date:r['Date Of Registration']||'', hc:r['Served HC']||'', detail:detail.trim() });
+  });
+
+  // Sort by date descending
+  visits.sort(function(a,b) {
+    return (b.date||'') > (a.date||'') ? 1 : -1;
+  });
+
+  return visits;
+}
+</script>
+</body>
+</html>
